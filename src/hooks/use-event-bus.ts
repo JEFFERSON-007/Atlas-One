@@ -66,7 +66,7 @@ class EventBus {
     if (!set) return;
     for (const callback of set) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call
         (callback as any)(...args);
       } catch {
         // Event handlers should not crash the bus
