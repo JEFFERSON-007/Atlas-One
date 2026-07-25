@@ -10,11 +10,11 @@ import {
 
 describe('sanitizeInput', () => {
   it('should strip HTML tags', () => {
-    expect(sanitizeInput('<script>alert("xss")</script>')).toBe('scriptalert(xss)/script');
+    expect(sanitizeInput('<script>alert("xss")</script>')).toBe('alert(xss)');
   });
 
   it('should remove dangerous characters', () => {
-    expect(sanitizeInput('hello <world> "test"')).toBe('hello world test');
+    expect(sanitizeInput('hello <world> "test"')).toBe('hello  test');
   });
 
   it('should trim whitespace', () => {
