@@ -30,10 +30,10 @@ export interface WeatherQuery {
  * @stub This is a placeholder for future implementation.
  * @see https://open-meteo.com/en/docs
  */
-export async function fetchWeather(
+export function fetchWeather(
   _query: WeatherQuery,
 ): Promise<WeatherData | null> {
   // Future implementation will call:
   // https://api.open-meteo.com/v1/forecast?latitude=...&longitude=...
-  return null;
+  return Promise.resolve(null);
 }

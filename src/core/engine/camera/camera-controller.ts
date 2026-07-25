@@ -57,8 +57,8 @@ export class CameraController {
   flyTo(
     longitude: number,
     latitude: number,
-    altitude = FLY_TO_DEFAULTS.searchZoomHeight,
-    duration = FLY_TO_DEFAULTS.duration,
+    altitude: number = FLY_TO_DEFAULTS.searchZoomHeight,
+    duration: number = FLY_TO_DEFAULTS.duration,
   ): void {
     if (!this.viewer) return;
 

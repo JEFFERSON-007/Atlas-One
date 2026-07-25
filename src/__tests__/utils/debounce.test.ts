@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { debounce } from '../../utils/debounce';
 
 describe('debounce', () => {
-  it('should delay function execution', async () => {
+  it('should delay function execution', () => {
     vi.useFakeTimers();
     const fn = vi.fn();
     const debounced = debounce(fn, 200);

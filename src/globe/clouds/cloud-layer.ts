@@ -6,7 +6,6 @@
 import {
   type Viewer,
   type ImageryLayer,
-  SingleTileImageryProvider,
 } from 'cesium';
 import { createLogger } from '../../utils/logger';
 

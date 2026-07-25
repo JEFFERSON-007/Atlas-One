@@ -41,9 +41,9 @@ export class BordersLayer implements ILayer {
         },
       );
       this.dataSource.show = this.enabled;
-      viewer.dataSources.add(this.dataSource);
+      void viewer.dataSources.add(this.dataSource);
       log.info('Country borders loaded');
-    } catch (error) {
+    } catch {
       log.warn('Failed to load country borders GeoJSON');
     }
   }

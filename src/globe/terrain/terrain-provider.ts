@@ -40,7 +40,7 @@ export class TerrainManager {
         });
         viewer.terrainProvider = this.worldTerrain;
         log.info('Cesium World Terrain loaded');
-      } catch (error) {
+      } catch {
         log.warn('Failed to load Cesium World Terrain, using ellipsoid fallback');
         viewer.terrainProvider = this.flatTerrain;
       }

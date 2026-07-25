@@ -3,7 +3,7 @@
  * fly-to on selection, and marker placement.
  */
 
-import { createElement, setTextContent } from '../../../utils/dom';
+import { createElement } from '../../../utils/dom';
 import { debounce } from '../../../utils/debounce';
 import { sanitizeInput } from '../../../utils/validators';
 import { performSearch, flyToResult } from '../../../api/search.service';
@@ -70,7 +70,7 @@ export class SearchPanel {
       placeholder: 'Search for a location...',
       autocomplete: 'off',
       'aria-label': 'Search for a location',
-    }) as HTMLInputElement;
+    });
 
     // Results list
     this.resultsList = createElement('ul', {
@@ -88,7 +88,7 @@ export class SearchPanel {
 
     this.input.addEventListener('input', (e) => {
       const query = (e.target as HTMLInputElement).value;
-      debouncedSearch(query);
+      void debouncedSearch(query);
     });
 
     // Keyboard navigation in results
