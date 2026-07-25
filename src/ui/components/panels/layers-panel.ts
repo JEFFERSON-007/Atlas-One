@@ -14,7 +14,6 @@ const log = createLogger('LayersPanel');
 export class LayersPanel {
   private panel: HTMLElement | null = null;
   private visible = false;
-  private registry: LayerRegistry | null = null;
 
   /**
    * Initializes the layers panel.
@@ -23,7 +22,6 @@ export class LayersPanel {
    * @param registry - Layer registry instance
    */
   init(parentId: string, registry: LayerRegistry): void {
-    this.registry = registry;
     const parent = document.getElementById(parentId);
     if (!parent) return;
 
@@ -122,6 +120,5 @@ export class LayersPanel {
   dispose(): void {
     this.panel?.remove();
     this.panel = null;
-    this.registry = null;
   }
 }

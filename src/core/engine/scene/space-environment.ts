@@ -27,11 +27,11 @@ export class SpaceEnvironment {
     scene.backgroundColor = Color.fromCssColorString('#000000');
 
     // Enable the built-in star field
-    scene.skyBox.show = true;
+    if (scene.skyBox) scene.skyBox.show = true;
 
     // Sun and Moon
-    scene.sun.show = true;
-    scene.moon.show = true;
+    if (scene.sun) scene.sun.show = true;
+    if (scene.moon) scene.moon.show = true;
 
     // Globe depth testing for proper occlusion
     scene.globe.depthTestAgainstTerrain = false;
@@ -47,9 +47,9 @@ export class SpaceEnvironment {
   setVisible(visible: boolean): void {
     if (!this.viewer) return;
     const scene = this.viewer.scene;
-    scene.skyBox.show = visible;
-    scene.sun.show = visible;
-    scene.moon.show = visible;
+    if (scene.skyBox) scene.skyBox.show = visible;
+    if (scene.sun) scene.sun.show = visible;
+    if (scene.moon) scene.moon.show = visible;
   }
 
   /**

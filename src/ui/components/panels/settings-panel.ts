@@ -114,7 +114,7 @@ export class SettingsPanel {
     }) as HTMLInputElement;
     input.checked = checked;
     input.addEventListener('change', () => {
-      (this.state as Record<string, unknown>)[key] = input.checked;
+      (this.state as unknown as Record<string, unknown>)[key] = input.checked;
       this.emitChange(key, input.checked);
     });
     switchEl.appendChild(input);
@@ -150,7 +150,7 @@ export class SettingsPanel {
     }
 
     select.addEventListener('change', () => {
-      (this.state as Record<string, unknown>)[key] = select.value;
+      (this.state as unknown as Record<string, unknown>)[key] = select.value;
       this.emitChange(key, select.value);
     });
 
@@ -186,7 +186,7 @@ export class SettingsPanel {
 
     input.addEventListener('input', () => {
       const val = parseFloat(input.value);
-      (this.state as Record<string, unknown>)[key] = val;
+      (this.state as unknown as Record<string, unknown>)[key] = val;
       lbl.textContent = `${label}: ${val.toFixed(1)}x`;
       this.emitChange(key, val);
     });

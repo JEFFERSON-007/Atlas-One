@@ -13,7 +13,6 @@ const log = createLogger('FPSCounter');
 export class FPSCounter {
   private container: HTMLElement | null = null;
   private valueEl: HTMLElement | null = null;
-  private visible = false;
   private animFrameId: number | null = null;
   private frames = 0;
   private lastTime = performance.now();
@@ -48,7 +47,6 @@ export class FPSCounter {
    * Sets visibility of the FPS counter.
    */
   setVisible(visible: boolean): void {
-    this.visible = visible;
     if (this.container) {
       this.container.classList.toggle('tn-fps--visible', visible);
     }

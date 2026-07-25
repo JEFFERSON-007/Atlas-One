@@ -3,7 +3,7 @@
  * fly-to on selection, and marker placement.
  */
 
-import { createElement, setTextContent } from '../../../utils/dom';
+import { createElement } from '../../../utils/dom';
 import { debounce } from '../../../utils/debounce';
 import { sanitizeInput } from '../../../utils/validators';
 import { performSearch, flyToResult } from '../../../api/search.service';

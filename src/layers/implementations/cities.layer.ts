@@ -10,7 +10,6 @@ import {
   VerticalOrigin,
   HorizontalOrigin,
   NearFarScalar,
-  type EntityCollection,
 } from 'cesium';
 import { type ILayer, type LayerMetadata, LayerCategory } from '../layer.interface';
 
