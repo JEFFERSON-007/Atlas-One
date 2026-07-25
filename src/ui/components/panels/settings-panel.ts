@@ -111,7 +111,7 @@ export class SettingsPanel {
       class: 'tn-toggle-input',
       role: 'switch',
       'aria-label': label,
-    }) as HTMLInputElement;
+    });
     input.checked = checked;
     input.addEventListener('change', () => {
       (this.state as unknown as Record<string, unknown>)[key] = input.checked;
@@ -141,7 +141,7 @@ export class SettingsPanel {
       id: `setting-${key}`,
       class: 'tn-settings-panel__select',
       'aria-label': label,
-    }) as HTMLSelectElement;
+    });
 
     for (const opt of options) {
       const option = createElement('option', { value: opt.value }, opt.label);
@@ -182,7 +182,7 @@ export class SettingsPanel {
       step: String(step),
       value: String(value),
       'aria-label': label,
-    }) as HTMLInputElement;
+    });
 
     input.addEventListener('input', () => {
       const val = parseFloat(input.value);

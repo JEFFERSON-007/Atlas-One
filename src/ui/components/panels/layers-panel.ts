@@ -80,7 +80,7 @@ export class LayersPanel {
         class: 'tn-toggle-input',
         role: 'switch',
         'aria-label': `Toggle ${layer.metadata.name}`,
-      }) as HTMLInputElement;
+      });
 
       toggle.checked = layer.isEnabled();
 

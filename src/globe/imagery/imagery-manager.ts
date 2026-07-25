@@ -49,7 +49,7 @@ export class ImageryManager {
       this.nightLayer.dayAlpha = 0.0; // Hide during day
       this.nightLayer.nightAlpha = 1.0; // Show at night
       log.info('Earth at Night layer added');
-    } catch (error) {
+    } catch {
       log.warn('Failed to load Earth at Night layer');
     }
   }

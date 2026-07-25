@@ -44,7 +44,7 @@ export class SceneManager {
    * @param containerId - DOM element ID for the viewer
    * @returns The initialized Viewer instance
    */
-  async init(containerId: string): Promise<Viewer> {
+  init(containerId: string): Promise<Viewer> {
     const config = getAppConfig();
 
     // Configure Cesium Ion token if available
@@ -137,9 +137,7 @@ export class SceneManager {
     );
 
     log.info('Scene initialized successfully');
-    eventBus.emit('scene:ready');
-
-    return this.viewer;
+    return Promise.resolve(this.viewer);
   }
 
   /**

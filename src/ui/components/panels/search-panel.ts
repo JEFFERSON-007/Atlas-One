@@ -70,7 +70,7 @@ export class SearchPanel {
       placeholder: 'Search for a location...',
       autocomplete: 'off',
       'aria-label': 'Search for a location',
-    }) as HTMLInputElement;
+    });
 
     // Results list
     this.resultsList = createElement('ul', {
@@ -88,7 +88,7 @@ export class SearchPanel {
 
     this.input.addEventListener('input', (e) => {
       const query = (e.target as HTMLInputElement).value;
-      debouncedSearch(query);
+      void debouncedSearch(query);
     });
 
     // Keyboard navigation in results
