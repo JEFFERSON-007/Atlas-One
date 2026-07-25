@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="globe-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1e40af;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e3a5f;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="glow" cx="35%" cy="35%">
+      <stop offset="0%" style="stop-color:#93c5fd;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  <!-- Atmosphere glow -->
+  <circle cx="32" cy="32" r="30" fill="url(#glow)" />
+  <!-- Globe -->
+  <circle cx="32" cy="32" r="24" fill="url(#globe-gradient)" />
+  <!-- Landmass hints -->
+  <path d="M24 20 Q28 18 32 20 Q36 22 34 26 Q30 28 26 26 Q22 24 24 20Z" fill="#22c55e" opacity="0.6"/>
+  <path d="M36 30 Q40 28 42 32 Q44 36 40 38 Q36 40 34 36 Q32 32 36 30Z" fill="#22c55e" opacity="0.5"/>
+  <path d="M20 32 Q22 30 26 32 Q28 36 24 38 Q20 36 20 32Z" fill="#22c55e" opacity="0.4"/>
+  <!-- Highlight -->
+  <ellipse cx="26" cy="22" rx="8" ry="6" fill="white" opacity="0.08" />
+</svg>

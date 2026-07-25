@@ -1,0 +1,52 @@
+/* =============================================================================
+ * Cesium Widget Style Overrides
+ * Hides default Cesium UI and adjusts styling to match Atlas One dark theme
+ * ============================================================================= */
+
+/* Hide Cesium's default credit display — we use our own */
+.cesium-viewer-bottom {
+  display: none !important;
+}
+
+/* Hide default Cesium toolbar */
+.cesium-viewer-toolbar {
+  display: none !important;
+}
+
+/* Hide animation widget */
+.cesium-viewer-animationContainer {
+  display: none !important;
+}
+
+/* Hide timeline */
+.cesium-viewer-timelineContainer {
+  display: none !important;
+}
+
+/* Hide fullscreen button */
+.cesium-viewer-fullscreenContainer {
+  display: none !important;
+}
+
+/* Adjust the Cesium canvas cursor */
+.cesium-viewer .cesium-widget canvas {
+  cursor: grab;
+}
+
+.cesium-viewer .cesium-widget canvas:active {
+  cursor: grabbing;
+}
+
+/* Fix Cesium info box styling if ever needed */
+.cesium-infoBox {
+  background: var(--tn-bg-glass, rgba(15, 23, 42, 0.75)) !important;
+  border: 1px solid var(--tn-border-glass, rgba(148, 163, 184, 0.18)) !important;
+  border-radius: 12px !important;
+  color: var(--tn-text-primary, #e2e8f0) !important;
+}
+
+/* Loading indicator */
+.cesium-widget > .cesium-widget-errorPanel {
+  background: var(--tn-bg-primary, #0a0e17) !important;
+  color: var(--tn-text-primary, #e2e8f0) !important;
+}

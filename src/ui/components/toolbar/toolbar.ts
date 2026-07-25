@@ -1,0 +1,146 @@
+/**
+ * Toolbar — Primary navigation toolbar with glassmorphism styling.
+ * Contains icon buttons for Search, Layers, Home, Settings, Fullscreen, and Coordinates.
+ */
+
+import { createElement } from '../../../utils/dom';
+import { eventBus } from '../../../hooks/use-event-bus';
+import { createLogger } from '../../../utils/logger';
+
+const log = createLogger('Toolbar');
+
+export interface ToolbarButton {
+  id: string;
+  label: string;
+  icon: string;
+  action: () => void;
+  toggle?: boolean;
+}
+
+/**
+ * Creates and manages the main toolbar.
+ */
+export class Toolbar {
+  private container: HTMLElement | null = null;
+  private buttons: Map<string, HTMLButtonElement> = new Map();
+
+  /**
+   * Initializes the toolbar and appends it to the UI overlay.
+   *
+   * @param parentId - ID of the parent container
+   * @param onButtonClick - Callback when a toolbar button is clicked
+   */
+  init(
+    parentId: string,
+    onButtonClick: (buttonId: string) => void,
+  ): void {
+    const parent = document.getElementById(parentId);
+    if (!parent) return;
+
+    this.container = createElement('nav', {
+      id: 'toolbar',
+      class: 'tn-toolbar',
+      role: 'toolbar',
+      'aria-label': 'Main navigation toolbar',
+    });
+
+    const toolbarButtons: ToolbarButton[] = [
+      {
+        id: 'btn-search',
+        label: 'Search locations',
+        icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+        action: () => onButtonClick('search'),
+      },
+      {
+        id: 'btn-layers',
+        label: 'Toggle layers',
+        icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>`,
+        action: () => onButtonClick('layers'),
+      },
+      {
+        id: 'btn-home',
+        label: 'Reset to home view',
+        icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+        action: () => {
+          eventBus.emit('camera:reset');
+          onButtonClick('home');
+        },
+      },
+      {
+        id: 'btn-settings',
+        label: 'Settings',
+        icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+        action: () => onButtonClick('settings'),
+      },
+      {
+        id: 'btn-fullscreen',
+        label: 'Toggle fullscreen',
+        icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`,
+        action: () => {
+          this.toggleFullscreen();
+          onButtonClick('fullscreen');
+        },
+      },
+      {
+        id: 'btn-coordinates',
+        label: 'Show coordinates',
+        icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg>`,
+        action: () => onButtonClick('coordinates'),
+        toggle: true,
+      },
+    ];
+
+    for (const btn of toolbarButtons) {
+      const button = createElement('button', {
+        id: btn.id,
+        class: 'tn-toolbar__btn',
+        'aria-label': btn.label,
+        title: btn.label,
+        type: 'button',
+      });
+      button.innerHTML = btn.icon;
+      button.addEventListener('click', btn.action);
+      this.container.appendChild(button);
+      this.buttons.set(btn.id, button);
+    }
+
+    parent.appendChild(this.container);
+    log.info('Toolbar initialized');
+  }
+
+  /**
+   * Sets the active/pressed state of a toolbar button.
+   */
+  setActive(buttonId: string, active: boolean): void {
+    const btn = this.buttons.get(buttonId);
+    if (btn) {
+      btn.classList.toggle('tn-toolbar__btn--active', active);
+      btn.setAttribute('aria-pressed', String(active));
+    }
+  }
+
+  /**
+   * Toggles browser fullscreen mode.
+   */
+  private toggleFullscreen(): void {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {
+        eventBus.emit('notification:show', {
+          message: 'Fullscreen not supported in this browser',
+          type: 'warn',
+        });
+      });
+    } else {
+      document.exitFullscreen().catch(() => {/* ignore */});
+    }
+  }
+
+  /**
+   * Cleans up the toolbar.
+   */
+  dispose(): void {
+    this.container?.remove();
+    this.container = null;
+    this.buttons.clear();
+  }
+}
