@@ -3,6 +3,7 @@
  * Bootstraps the Earth Intelligence Platform.
  */
 
+import './cesium-init';
 import './styles/index.css';
 import './styles/cesium-overrides.css';
 
