@@ -32,8 +32,8 @@ export class LightingManager {
     }
 
     // Configure sun
-    scene.sun.show = true;
-    scene.moon.show = true;
+    if (scene.sun) scene.sun.show = true;
+    if (scene.moon) scene.moon.show = true;
 
     // Set globe base color for unlit areas (deep navy for oceans)
     scene.globe.baseColor = Color.fromCssColorString('#0a1628');

@@ -7,6 +7,7 @@ import {
   Viewer,
   Ion,
   Cartesian3,
+  Cartesian2,
   Math as CesiumMath,
   ScreenSpaceEventType,
   ScreenSpaceEventHandler,
@@ -148,7 +149,7 @@ export class SceneManager {
     const handler = new ScreenSpaceEventHandler(scene.canvas);
 
     handler.setInputAction(
-      (movement: { endPosition: { x: number; y: number } }) => {
+      (movement: { endPosition: Cartesian2 }) => {
         const cartesian = scene.pickPosition(movement.endPosition);
         if (defined(cartesian)) {
           const cartographic = Cartographic.fromCartesian(
@@ -164,7 +165,7 @@ export class SceneManager {
             label: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
           });
           // Store for coordinates display
-          (window as Record<string, unknown>).__tn_cursor = { lat, lng, alt };
+          (window as unknown as Record<string, unknown>).__tn_cursor = { lat, lng, alt };
         }
       },
       ScreenSpaceEventType.MOUSE_MOVE,

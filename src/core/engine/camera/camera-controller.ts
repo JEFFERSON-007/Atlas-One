@@ -4,16 +4,15 @@
  */
 
 import {
+  Cartesian2,
   Cartesian3,
   Math as CesiumMath,
-  HeadingPitchRange,
   type Viewer,
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
   Cartographic,
   defined,
   Ellipsoid,
-  BoundingSphere,
 } from 'cesium';
 
 import { DEFAULT_CAMERA, FLY_TO_DEFAULTS, CAMERA_LIMITS } from '../../../config/cesium.config';
@@ -194,7 +193,7 @@ export class CameraController {
     const handler = new ScreenSpaceEventHandler(this.viewer.scene.canvas);
 
     handler.setInputAction(
-      (click: { position: { x: number; y: number } }) => {
+      (click: { position: Cartesian2 }) => {
         if (!this.viewer) return;
 
         const cartesian = this.viewer.scene.pickPosition(click.position);
@@ -226,7 +225,7 @@ export class CameraController {
    */
   private setupEventListeners(): void {
     const unsub1 = eventBus.on('camera:flyTo', ({ lat, lng, altitude }) => {
-      this.flyTo(lng, lat, altitude);
+      this.flyTo(lng, lat, altitude ?? FLY_TO_DEFAULTS.searchZoomHeight);
     });
 
     const unsub2 = eventBus.on('camera:reset', () => {

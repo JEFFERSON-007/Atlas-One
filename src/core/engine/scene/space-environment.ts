@@ -3,7 +3,7 @@
  * and space-related visual settings.
  */
 
-import { type Viewer, SkyBox, Color } from 'cesium';
+import { type Viewer, Color } from 'cesium';
 import { createLogger } from '../../../utils/logger';
 
 const log = createLogger('SpaceEnvironment');
