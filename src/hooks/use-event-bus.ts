@@ -41,10 +41,10 @@ class EventBus {
     event: K,
     callback: EventCallback<AppEvents[K]>,
   ): () => void {
-    if (!this.listeners.has(event as string)) {
-      this.listeners.set(event as string, new Set());
+    if (!this.listeners.has(event)) {
+      this.listeners.set(event, new Set());
     }
-    const set = this.listeners.get(event as string)!;
+    const set = this.listeners.get(event)!;
     set.add(callback as EventCallback<unknown>);
 
     return () => {
@@ -62,11 +62,15 @@ class EventBus {
     event: K,
     ...args: AppEvents[K] extends void ? [] : [AppEvents[K]]
   ): void {
-    const set = this.listeners.get(event as string);
+    const set = this.listeners.get(event);
     if (!set) return;
     for (const callback of set) {
       try {
-        (callback as (...a: unknown[]) => void)(...args);
+        if (args.length === 0) {
+          (callback as () => void)();
+        } else {
+          callback(args[0]);
+        }
       } catch {
         // Event handlers should not crash the bus
       }
@@ -80,7 +84,7 @@ class EventBus {
    */
   off(event?: keyof AppEvents): void {
     if (event) {
-      this.listeners.delete(event as string);
+      this.listeners.delete(event);
     } else {
       this.listeners.clear();
     }

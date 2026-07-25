@@ -111,10 +111,10 @@ export class SettingsPanel {
       class: 'tn-toggle-input',
       role: 'switch',
       'aria-label': label,
-    }) as HTMLInputElement;
+    });
     input.checked = checked;
     input.addEventListener('change', () => {
-      (this.state as Record<string, unknown>)[key] = input.checked;
+      (this.state as unknown as Record<string, unknown>)[key] = input.checked;
       this.emitChange(key, input.checked);
     });
     switchEl.appendChild(input);
@@ -141,7 +141,7 @@ export class SettingsPanel {
       id: `setting-${key}`,
       class: 'tn-settings-panel__select',
       'aria-label': label,
-    }) as HTMLSelectElement;
+    });
 
     for (const opt of options) {
       const option = createElement('option', { value: opt.value }, opt.label);
@@ -150,7 +150,7 @@ export class SettingsPanel {
     }
 
     select.addEventListener('change', () => {
-      (this.state as Record<string, unknown>)[key] = select.value;
+      (this.state as unknown as Record<string, unknown>)[key] = select.value;
       this.emitChange(key, select.value);
     });
 
@@ -182,11 +182,11 @@ export class SettingsPanel {
       step: String(step),
       value: String(value),
       'aria-label': label,
-    }) as HTMLInputElement;
+    });
 
     input.addEventListener('input', () => {
       const val = parseFloat(input.value);
-      (this.state as Record<string, unknown>)[key] = val;
+      (this.state as unknown as Record<string, unknown>)[key] = val;
       lbl.textContent = `${label}: ${val.toFixed(1)}x`;
       this.emitChange(key, val);
     });

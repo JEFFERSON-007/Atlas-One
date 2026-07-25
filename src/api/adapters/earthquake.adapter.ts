@@ -33,10 +33,10 @@ export interface EarthquakeQuery {
  * @stub This is a placeholder for future implementation.
  * @see https://earthquake.usgs.gov/fdsnws/event/1/
  */
-export async function fetchEarthquakes(
+export function fetchEarthquakes(
   _query: EarthquakeQuery,
 ): Promise<EarthquakeEvent[]> {
   // Future implementation will call:
   // https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&...
-  return [];
+  return Promise.resolve([]);
 }

@@ -89,7 +89,7 @@ export class CoordinatesDisplay {
    */
   private startUpdating(): void {
     const update = throttle((..._args: unknown[]) => {
-      const cursor = (window as Record<string, unknown>).__tn_cursor as
+      const cursor = (window as unknown as Record<string, unknown>).__tn_cursor as
         | { lat: number; lng: number; alt: number }
         | undefined;
 

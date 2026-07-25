@@ -17,7 +17,6 @@ const log = createLogger('ImageryManager');
  * Manages imagery layers for the globe, including base and overlay layers.
  */
 export class ImageryManager {
-  private viewer: Viewer | null = null;
   private nightLayer: ImageryLayer | null = null;
 
   /**
@@ -27,7 +26,6 @@ export class ImageryManager {
    * @param hasIonToken - Whether Cesium Ion is available
    */
   async init(viewer: Viewer, hasIonToken: boolean): Promise<void> {
-    this.viewer = viewer;
     const layers = viewer.imageryLayers;
 
     if (!hasIonToken) {
@@ -51,7 +49,7 @@ export class ImageryManager {
       this.nightLayer.dayAlpha = 0.0; // Hide during day
       this.nightLayer.nightAlpha = 1.0; // Show at night
       log.info('Earth at Night layer added');
-    } catch (error) {
+    } catch {
       log.warn('Failed to load Earth at Night layer');
     }
   }
@@ -67,7 +65,6 @@ export class ImageryManager {
    * Cleans up imagery resources.
    */
   dispose(): void {
-    this.viewer = null;
     this.nightLayer = null;
     log.info('Imagery disposed');
   }
