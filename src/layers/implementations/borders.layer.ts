@@ -32,7 +32,7 @@ export class BordersLayer implements ILayer {
     try {
       // Use Natural Earth GeoJSON hosted on GitHub
       this.dataSource = await GeoJsonDataSource.load(
-        'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson',
+        'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_boundary_lines_land.geojson',
         {
           stroke: Color.fromCssColorString('#64748b'),
           strokeWidth: 1,
