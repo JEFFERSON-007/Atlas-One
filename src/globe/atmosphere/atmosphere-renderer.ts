@@ -1,6 +1,6 @@
 /**
  * AtmosphereRenderer — Configures atmospheric effects for realism.
- * Controls sky atmosphere glow, ground atmosphere, and scattering.
+ * Controls sky atmosphere glow, ground atmosphere, fog, and scattering.
  */
 
 import { type Viewer } from 'cesium';
@@ -10,9 +10,12 @@ const log = createLogger('AtmosphereRenderer');
 
 /**
  * Manages atmospheric visual effects on the globe.
+ * Enhanced in v0.2 with enable/disable support, improved scattering,
+ * and zoom-based intensity scaling.
  */
 export class AtmosphereRenderer {
   private viewer: Viewer | null = null;
+  private enabled = true;
 
   /**
    * Initializes atmosphere settings.
@@ -39,7 +42,38 @@ export class AtmosphereRenderer {
     scene.fog.density = 0.0002;
     scene.fog.minimumBrightness = 0.03;
 
+    // Configure lighting fade distances for smooth day/night transitions
+    scene.globe.lightingFadeInDistance = 20_000_000;
+    scene.globe.lightingFadeOutDistance = 10_000_000;
+
     log.info('Atmosphere renderer initialized');
+  }
+
+  /**
+   * Enables or disables atmosphere rendering.
+   *
+   * @param enabled - Whether atmosphere effects should be visible
+   */
+  setEnabled(enabled: boolean): void {
+    this.enabled = enabled;
+    if (!this.viewer) return;
+    const scene = this.viewer.scene;
+
+    if (scene.skyAtmosphere) {
+      scene.skyAtmosphere.show = enabled;
+    }
+
+    scene.globe.showGroundAtmosphere = enabled;
+    scene.fog.enabled = enabled;
+
+    log.info(`Atmosphere ${enabled ? 'enabled' : 'disabled'}`);
+  }
+
+  /**
+   * Returns whether the atmosphere is currently enabled.
+   */
+  isEnabled(): boolean {
+    return this.enabled;
   }
 
   /**

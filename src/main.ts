@@ -19,6 +19,20 @@ import { loadAppConfig } from './config/app.config';
 import { createLogger } from './utils/logger';
 import { eventBus } from './hooks/use-event-bus';
 
+// v0.3 — Earth Event Engine imports
+import { EarthEventEngine } from './events/engine/event-engine';
+import { EventRenderer } from './events/rendering/event-renderer';
+import { HeatmapEngine } from './events/rendering/heatmap-engine';
+import { FilterEngine } from './events/engine/filter-engine';
+
+// v0.3 — Event Providers
+import { USGSEarthquakeProvider } from './events/providers/usgs-earthquake.provider';
+import { NASAWildfireProvider } from './events/providers/nasa-firms-wildfire.provider';
+import { SmithsonianVolcanoProvider } from './events/providers/smithsonian-volcano.provider';
+import { BlitzortungLightningProvider } from './events/providers/blitzortung-lightning.provider';
+import { NOAAStormProvider } from './events/providers/noaa-storm.provider';
+import { GDACSTsunamiProvider } from './events/providers/gdacs-tsunami.provider';
+
 // Layer implementations
 import { SatelliteImageryLayer } from './layers/implementations/satellite-imagery.layer';
 import { BordersLayer } from './layers/implementations/borders.layer';
@@ -26,6 +40,17 @@ import { CitiesLayer } from './layers/implementations/cities.layer';
 import { TerrainToggleLayer } from './layers/implementations/terrain.layer';
 import { CloudsToggleLayer } from './layers/implementations/clouds.layer';
 import { GridLayer } from './layers/implementations/grid.layer';
+import { AtmosphereLayer } from './layers/implementations/atmosphere.layer';
+import { DayNightLayer } from './layers/implementations/daynight.layer';
+
+// v0.3 — Event Layer Implementations
+import { EarthquakeLayer } from './layers/implementations/earthquake.layer';
+import { WildfireLayer } from './layers/implementations/wildfire.layer';
+import { VolcanoLayer } from './layers/implementations/volcano.layer';
+import { LightningLayer } from './layers/implementations/lightning.layer';
+import { StormLayer } from './layers/implementations/storm.layer';
+import { TsunamiLayer } from './layers/implementations/tsunami.layer';
+import { HeatmapLayer } from './layers/implementations/heatmap.layer';
 
 const log = createLogger('Main');
 
@@ -34,7 +59,7 @@ const log = createLogger('Main');
  * Initializes all systems in the correct order.
  */
 async function bootstrap(): Promise<void> {
-  log.info('Atlas One v0.1 — Starting...');
+  log.info('Atlas One v0.3 — Starting Earth Intelligence Platform...');
 
   // 1. Load configuration
   const config = loadAppConfig();
@@ -59,7 +84,35 @@ async function bootstrap(): Promise<void> {
   const globeManager = new GlobeManager();
   await globeManager.init(viewer);
 
-  // 6. Initialize layer system
+  // 6. Initialize v0.3 Earth Event Subsystems
+  const eventRenderer = new EventRenderer();
+  eventRenderer.init(viewer);
+
+  const heatmapEngine = new HeatmapEngine();
+  heatmapEngine.init(viewer);
+
+  const filterEngine = new FilterEngine();
+
+  const eventEngine = new EarthEventEngine();
+  eventEngine.registerProvider(new USGSEarthquakeProvider());
+  eventEngine.registerProvider(new NASAWildfireProvider());
+  eventEngine.registerProvider(new SmithsonianVolcanoProvider());
+  eventEngine.registerProvider(new BlitzortungLightningProvider());
+  eventEngine.registerProvider(new NOAAStormProvider());
+  eventEngine.registerProvider(new GDACSTsunamiProvider());
+
+  // Connect store changes to renderer and heatmap
+  eventBus.on('events:updated', () => {
+    const allEvents = eventEngine.store.getAll();
+    const filtered = filterEngine.filterEvents(allEvents);
+    eventRenderer.renderEvents(filtered);
+    heatmapEngine.update(filtered);
+  });
+
+  // Start event engine
+  eventEngine.start();
+
+  // 7. Initialize layer system
   const layerRegistry = new LayerRegistry();
   layerRegistry.setViewer(viewer);
 
@@ -67,24 +120,34 @@ async function bootstrap(): Promise<void> {
   await Promise.all([
     layerRegistry.register(new SatelliteImageryLayer()),
     layerRegistry.register(new TerrainToggleLayer()),
-    layerRegistry.register(new CloudsToggleLayer()),
+    layerRegistry.register(new AtmosphereLayer(globeManager.atmosphere)),
+    layerRegistry.register(new DayNightLayer(lightingManager)),
+    layerRegistry.register(new CloudsToggleLayer(globeManager.clouds)),
     layerRegistry.register(new BordersLayer()),
     layerRegistry.register(new CitiesLayer()),
     layerRegistry.register(new GridLayer()),
+    // v0.3 Event Layers
+    layerRegistry.register(new EarthquakeLayer(eventRenderer)),
+    layerRegistry.register(new WildfireLayer(eventRenderer)),
+    layerRegistry.register(new VolcanoLayer(eventRenderer)),
+    layerRegistry.register(new LightningLayer(eventRenderer)),
+    layerRegistry.register(new StormLayer(eventRenderer)),
+    layerRegistry.register(new TsunamiLayer(eventRenderer)),
+    layerRegistry.register(new HeatmapLayer(heatmapEngine)),
   ]);
 
-  log.info(`${layerRegistry.getAll().length} layers registered`);
+  log.info(`${layerRegistry.getAll().length} total layers registered`);
 
-  // 7. Initialize UI
+  // 8. Initialize UI
   const uiManager = new UIManager();
-  uiManager.init(viewer, layerRegistry, cameraController, sceneManager, globeManager);
+  uiManager.init(viewer, layerRegistry, cameraController, sceneManager, globeManager, eventEngine, filterEngine);
 
-  // 8. Play landing animation
+  // 9. Play landing animation
   const animationController = new AnimationController();
   animationController.init(viewer);
   await animationController.playLandingSequence();
 
-  // 9. Show missing token notification if applicable
+  // 10. Show notification
   if (!config.hasCesiumIon) {
     eventBus.emit('notification:show', {
       message: 'Running without Cesium Ion token. Add VITE_CESIUM_ION_TOKEN to .env for terrain and premium imagery.',
@@ -92,13 +155,16 @@ async function bootstrap(): Promise<void> {
     });
   }
 
-  log.info('Atlas One initialized successfully');
+  log.info('Atlas One v0.3 Earth Intelligence Platform initialized successfully');
 
   // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
     animationController.dispose();
     uiManager.dispose();
     layerRegistry.dispose();
+    eventEngine.dispose();
+    eventRenderer.dispose();
+    heatmapEngine.dispose();
     globeManager.dispose();
     cameraController.dispose();
     lightingManager.dispose();
@@ -130,11 +196,9 @@ window.addEventListener('unhandledrejection', (event) => {
 bootstrap().catch((error) => {
   log.error('Failed to initialize Atlas One', error);
 
-  // Remove splash screen so user sees something
   const splash = document.getElementById('splash-screen');
   if (splash) splash.style.display = 'none';
 
-  // Show error in UI
   const app = document.getElementById('app');
   if (app) {
     const errorDiv = document.createElement('div');

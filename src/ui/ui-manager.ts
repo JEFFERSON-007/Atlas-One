@@ -7,13 +7,21 @@ import { Toolbar } from './components/toolbar/toolbar';
 import { SearchPanel } from './components/panels/search-panel';
 import { LayersPanel } from './components/panels/layers-panel';
 import { SettingsPanel } from './components/panels/settings-panel';
+import { InfoPanel } from './components/panels/info-panel';
 import { CoordinatesDisplay } from './components/panels/coordinates-display';
 import { FPSCounter } from './components/panels/fps-counter';
+import { EventDetailPanel } from './components/panels/event-detail-panel';
+import { EventListPanel } from './components/panels/event-list-panel';
+import { AnalyticsPanel } from './components/panels/analytics-panel';
+import { FilterPanel } from './components/panels/filter-panel';
+import { EventTimeline } from './components/panels/event-timeline';
 import { initNotificationToast } from './components/notification-toast';
 import type { LayerRegistry } from '../layers/layer-registry';
 import type { CameraController } from '../core/engine/camera/camera-controller';
 import type { SceneManager } from '../core/engine/scene-manager';
 import type { GlobeManager } from '../globe/globe-manager';
+import type { EarthEventEngine } from '../events/engine/event-engine';
+import type { FilterEngine } from '../events/engine/filter-engine';
 import { createLogger } from '../utils/logger';
 import { getAppConfig, updateGraphicsQuality, type GraphicsQuality } from '../config/app.config';
 
@@ -27,6 +35,12 @@ export class UIManager {
   private searchPanel: SearchPanel;
   private layersPanel: LayersPanel;
   private settingsPanel: SettingsPanel;
+  private infoPanel: InfoPanel;
+  private eventDetailPanel: EventDetailPanel;
+  private eventListPanel: EventListPanel;
+  private analyticsPanel: AnalyticsPanel;
+  private filterPanel: FilterPanel;
+  private eventTimeline: EventTimeline;
   private coordinatesDisplay: CoordinatesDisplay;
   private fpsCounter: FPSCounter;
 
@@ -35,6 +49,12 @@ export class UIManager {
     this.searchPanel = new SearchPanel();
     this.layersPanel = new LayersPanel();
     this.settingsPanel = new SettingsPanel();
+    this.infoPanel = new InfoPanel();
+    this.eventDetailPanel = new EventDetailPanel();
+    this.eventListPanel = new EventListPanel();
+    this.analyticsPanel = new AnalyticsPanel();
+    this.filterPanel = new FilterPanel();
+    this.eventTimeline = new EventTimeline();
     this.coordinatesDisplay = new CoordinatesDisplay();
     this.fpsCounter = new FPSCounter();
   }
@@ -48,6 +68,8 @@ export class UIManager {
     cameraController: CameraController,
     sceneManager: SceneManager,
     globeManager: GlobeManager,
+    eventEngine?: EarthEventEngine,
+    filterEngine?: FilterEngine,
   ): void {
     const overlayId = 'ui-overlay';
 
@@ -59,9 +81,25 @@ export class UIManager {
       this.handleToolbarClick(buttonId);
     });
 
-    // Initialize panels
+    // Initialize core panels
     this.searchPanel.init(overlayId, viewer);
     this.layersPanel.init(overlayId, layerRegistry);
+    this.infoPanel.init(overlayId);
+
+    // Initialize v0.3 Earth Event panels
+    if (eventEngine) {
+      this.eventDetailPanel.init(overlayId, (id) => eventEngine.store.get(id));
+      this.eventListPanel.init(overlayId, () => eventEngine.store.getAll());
+      this.analyticsPanel.init(overlayId, () => eventEngine.store.getAll());
+    }
+
+    if (filterEngine) {
+      this.filterPanel.init(overlayId, filterEngine, () => {
+        this.eventListPanel.refresh();
+      });
+    }
+
+    this.eventTimeline.init(overlayId);
 
     const config = getAppConfig();
     this.settingsPanel.init(
@@ -82,53 +120,66 @@ export class UIManager {
     this.coordinatesDisplay.init(overlayId);
     this.fpsCounter.init(overlayId);
 
-    log.info('UI Manager initialized');
+    log.info('UI Manager initialized with v0.3 Earth Intelligence panels');
   }
 
   /**
    * Handles toolbar button clicks.
    */
   private handleToolbarClick(buttonId: string): void {
-    // Close all panels first, then open the requested one
-    const panels = [this.searchPanel, this.layersPanel, this.settingsPanel];
+    // Left-side panels (mutually exclusive)
+    const leftPanels = [
+      this.searchPanel,
+      this.layersPanel,
+      this.settingsPanel,
+      this.eventListPanel,
+      this.analyticsPanel,
+      this.filterPanel,
+    ];
 
     switch (buttonId) {
       case 'search':
-        panels.filter((p) => p !== this.searchPanel).forEach((p) => {
-          if (p.isVisible()) p.toggle();
-        });
-        this.searchPanel.toggle();
-        this.toolbar.setActive('btn-search', this.searchPanel.isVisible());
+        this.toggleExclusivePanel(this.searchPanel, leftPanels, 'btn-search');
         break;
-
       case 'layers':
-        panels.filter((p) => p !== this.layersPanel).forEach((p) => {
-          if (p.isVisible()) p.toggle();
-        });
-        this.layersPanel.toggle();
-        this.toolbar.setActive('btn-layers', this.layersPanel.isVisible());
+        this.toggleExclusivePanel(this.layersPanel, leftPanels, 'btn-layers');
         break;
-
+      case 'info':
+        this.infoPanel.toggle();
+        this.toolbar.setActive('btn-info', this.infoPanel.isVisible());
+        break;
+      case 'analytics':
+        this.toggleExclusivePanel(this.analyticsPanel, leftPanels, 'btn-analytics');
+        break;
+      case 'events-list':
+        this.toggleExclusivePanel(this.eventListPanel, leftPanels, 'btn-events-list');
+        break;
+      case 'filter':
+        this.toggleExclusivePanel(this.filterPanel, leftPanels, 'btn-filter');
+        break;
       case 'settings':
-        panels.filter((p) => p !== this.settingsPanel).forEach((p) => {
-          if (p.isVisible()) p.toggle();
-        });
-        this.settingsPanel.toggle();
-        this.toolbar.setActive('btn-settings', this.settingsPanel.isVisible());
+        this.toggleExclusivePanel(this.settingsPanel, leftPanels, 'btn-settings');
         break;
-
       case 'coordinates':
         this.coordinatesDisplay.toggle();
         break;
-
       case 'home':
-        // Camera reset handled by event bus in toolbar
         break;
-
       case 'fullscreen':
-        // Fullscreen handled directly in toolbar
         break;
     }
+  }
+
+  private toggleExclusivePanel(
+    target: { isVisible: () => boolean; toggle: () => void },
+    allPanels: Array<{ isVisible: () => boolean; toggle: () => void }>,
+    buttonId: string,
+  ): void {
+    allPanels.filter((p) => p !== target).forEach((p) => {
+      if (p.isVisible()) p.toggle();
+    });
+    target.toggle();
+    this.toolbar.setActive(buttonId, target.isVisible());
   }
 
   /**
@@ -158,9 +209,6 @@ export class UIManager {
         updateGraphicsQuality(value as GraphicsQuality);
         sceneManager.applyQuality(value as GraphicsQuality);
         break;
-      case 'animationSpeed':
-        // Could control clock speed or animation durations
-        break;
     }
   }
 
@@ -172,6 +220,12 @@ export class UIManager {
     this.searchPanel.dispose();
     this.layersPanel.dispose();
     this.settingsPanel.dispose();
+    this.infoPanel.dispose();
+    this.eventDetailPanel.dispose();
+    this.eventListPanel.dispose();
+    this.analyticsPanel.dispose();
+    this.filterPanel.dispose();
+    this.eventTimeline.dispose();
     this.coordinatesDisplay.dispose();
     this.fpsCounter.dispose();
     log.info('UI Manager disposed');

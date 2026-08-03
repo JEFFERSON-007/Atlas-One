@@ -13,6 +13,8 @@ import {
   Cartographic,
   defined,
   Ellipsoid,
+  Entity,
+  Color,
 } from 'cesium';
 
 import { DEFAULT_CAMERA, FLY_TO_DEFAULTS, CAMERA_LIMITS } from '../../../config/cesium.config';
@@ -220,20 +222,64 @@ export class CameraController {
     });
   }
 
+  private markerEntity: Entity | null = null;
+
   /**
    * Listens for event bus commands.
    */
   private setupEventListeners(): void {
     const unsub1 = eventBus.on('camera:flyTo', ({ lat, lng, altitude }) => {
       this.flyTo(lng, lat, altitude ?? FLY_TO_DEFAULTS.searchZoomHeight);
+      this.setLocationMarker(lat, lng);
     });
 
     const unsub2 = eventBus.on('camera:reset', () => {
       this.resetView();
+      this.clearLocationMarker();
+    });
+
+    const unsub3 = eventBus.on('location:click', ({ lat, lng }) => {
+      this.setLocationMarker(lat, lng);
+    });
+
+    const unsub4 = eventBus.on('info-panel:close', () => {
+      this.clearLocationMarker();
     });
 
     this.disposal.registerFn(unsub1);
     this.disposal.registerFn(unsub2);
+    this.disposal.registerFn(unsub3);
+    this.disposal.registerFn(unsub4);
+  }
+
+  /**
+   * Displays an animated location marker on the globe at the given coordinates.
+   */
+  private setLocationMarker(lat: number, lng: number): void {
+    if (!this.viewer) return;
+
+    this.clearLocationMarker();
+
+    this.markerEntity = this.viewer.entities.add({
+      position: Cartesian3.fromDegrees(lng, lat),
+      point: {
+        pixelSize: 10,
+        color: Color.fromCssColorString('#22d3ee'),
+        outlineColor: Color.fromCssColorString('#3b82f6'),
+        outlineWidth: 3,
+        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+      },
+    });
+  }
+
+  /**
+   * Removes the active location marker.
+   */
+  private clearLocationMarker(): void {
+    if (this.viewer && this.markerEntity) {
+      this.viewer.entities.remove(this.markerEntity);
+      this.markerEntity = null;
+    }
   }
 
   /**

@@ -1,21 +1,14 @@
 /**
- * WeatherAdapter — Open-Meteo API stub.
- * Future-ready module with types defined but no implementation.
- * Designed for the Open-Meteo free weather API.
+ * WeatherAdapter — Facade over the WeatherService for backward compatibility.
+ * Delegates to the pluggable provider system introduced in v0.2.
+ * @see https://open-meteo.com/en/docs
  */
 
-/** Current weather data point. */
-export interface WeatherData {
-  latitude: number;
-  longitude: number;
-  temperature: number;
-  humidity: number;
-  windSpeed: number;
-  windDirection: number;
-  weatherCode: number;
-  description: string;
-  timestamp: Date;
-}
+import { getWeatherService } from '../services/weather.service';
+import type { WeatherResult } from '../providers/weather-provider.interface';
+
+/** Re-export types from the provider interface for backward compatibility. */
+export type { WeatherResult as WeatherData } from '../providers/weather-provider.interface';
 
 /** Query parameters for weather data. */
 export interface WeatherQuery {
@@ -25,15 +18,14 @@ export interface WeatherQuery {
 }
 
 /**
- * Fetches current weather data from Open-Meteo.
+ * Fetches current weather data using the active weather provider.
  *
- * @stub This is a placeholder for future implementation.
- * @see https://open-meteo.com/en/docs
+ * @param query - Location and unit preferences
+ * @returns Weather result or null if unavailable
  */
-export function fetchWeather(
-  _query: WeatherQuery,
-): Promise<WeatherData | null> {
-  // Future implementation will call:
-  // https://api.open-meteo.com/v1/forecast?latitude=...&longitude=...
-  return Promise.resolve(null);
+export async function fetchWeather(
+  query: WeatherQuery,
+): Promise<WeatherResult | null> {
+  const service = getWeatherService();
+  return service.getWeather(query.latitude, query.longitude);
 }

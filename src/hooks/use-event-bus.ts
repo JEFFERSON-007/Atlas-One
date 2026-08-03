@@ -19,6 +19,21 @@ export interface AppEvents {
   'ui:panelToggle': { panelId: string; open: boolean };
   'notification:show': { message: string; type: 'info' | 'warn' | 'error' };
   'animation:complete': { name: string };
+  // v0.2 — Weather & Location events
+  'weather:data': import('../api/providers/weather-provider.interface').WeatherResult;
+  'weather:error': { message: string };
+  'location:click': { lat: number; lng: number; alt: number };
+  'info-panel:open': { lat: number; lng: number };
+  'info-panel:close': void;
+  // v0.3 — Earth Event Engine events
+  'events:updated': { totalCount: number; addedCount: number; updatedCount: number };
+  'events:added': { count: number; types: string[] };
+  'events:removed': { id: string; type: string };
+  'event:select': { eventId: string };
+  'event:deselect': void;
+  'provider:fetch-start': { providerId: string };
+  'provider:fetch-complete': { providerId: string; eventCount: number; success: boolean };
+  'provider:error': { providerId: string; message: string };
 }
 
 type EventCallback<T> = T extends void ? () => void : (payload: T) => void;

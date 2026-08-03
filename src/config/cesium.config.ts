@@ -38,6 +38,7 @@ export interface CesiumQualityPreset {
   groundAtmosphere: boolean;
   skyAtmosphere: boolean;
   requestRenderMode: boolean;
+  hdr: boolean;
 }
 
 export const QUALITY_PRESETS: Record<GraphicsQuality, CesiumQualityPreset> = {
@@ -51,6 +52,7 @@ export const QUALITY_PRESETS: Record<GraphicsQuality, CesiumQualityPreset> = {
     groundAtmosphere: false,
     skyAtmosphere: true,
     requestRenderMode: true,
+    hdr: false,
   },
   medium: {
     terrainDetailLevel: 8,
@@ -62,6 +64,7 @@ export const QUALITY_PRESETS: Record<GraphicsQuality, CesiumQualityPreset> = {
     groundAtmosphere: true,
     skyAtmosphere: true,
     requestRenderMode: false,
+    hdr: false,
   },
   high: {
     terrainDetailLevel: 12,
@@ -73,6 +76,7 @@ export const QUALITY_PRESETS: Record<GraphicsQuality, CesiumQualityPreset> = {
     groundAtmosphere: true,
     skyAtmosphere: true,
     requestRenderMode: false,
+    hdr: true,
   },
   ultra: {
     terrainDetailLevel: 16,
@@ -84,6 +88,7 @@ export const QUALITY_PRESETS: Record<GraphicsQuality, CesiumQualityPreset> = {
     groundAtmosphere: true,
     skyAtmosphere: true,
     requestRenderMode: false,
+    hdr: true,
   },
 } as const;
 

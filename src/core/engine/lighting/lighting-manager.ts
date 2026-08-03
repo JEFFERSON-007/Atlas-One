@@ -1,5 +1,6 @@
 /**
  * LightingManager — Controls sun position, atmosphere lighting, and day/night cycle.
+ * Enhanced in v0.2 with specular highlights, smooth transitions, and toggle support.
  */
 
 import { type Viewer, JulianDate, Color, type SkyAtmosphere } from 'cesium';
@@ -13,6 +14,7 @@ const log = createLogger('LightingManager');
  */
 export class LightingManager {
   private viewer: Viewer | null = null;
+  private dayNightEnabled = true;
 
   /**
    * Initializes lighting on the provided Viewer.
@@ -41,6 +43,10 @@ export class LightingManager {
     // Enable dynamic atmosphere lighting from sunlight
     scene.globe.showGroundAtmosphere = true;
 
+    // v0.2: Smooth day/night transitions
+    scene.globe.lightingFadeInDistance = 20_000_000;
+    scene.globe.lightingFadeOutDistance = 10_000_000;
+
     // Set clock to real time for accurate sun position
     viewer.clock.shouldAnimate = true;
     viewer.clock.currentTime = JulianDate.now();
@@ -56,6 +62,38 @@ export class LightingManager {
     atmosphere.hueShift = -0.05; // Slight blue shift
     atmosphere.saturationShift = 0.1; // Slightly more saturated
     atmosphere.brightnessShift = 0.05; // Slightly brighter
+  }
+
+  /**
+   * Enables or disables the day/night cycle.
+   *
+   * @param enabled - Whether day/night lighting should be active
+   */
+  setDayNightEnabled(enabled: boolean): void {
+    this.dayNightEnabled = enabled;
+    if (!this.viewer) return;
+
+    const scene = this.viewer.scene;
+    scene.globe.enableLighting = enabled;
+
+    if (enabled) {
+      // Re-enable real-time clock
+      this.viewer.clock.shouldAnimate = true;
+      scene.globe.baseColor = Color.fromCssColorString('#0a1628');
+    } else {
+      // Disable: stop clock, remove nightside shading
+      this.viewer.clock.shouldAnimate = false;
+      scene.globe.baseColor = Color.fromCssColorString('#1a2744');
+    }
+
+    log.info(`Day/Night cycle ${enabled ? 'enabled' : 'disabled'}`);
+  }
+
+  /**
+   * Returns whether day/night cycle is enabled.
+   */
+  isDayNightEnabled(): boolean {
+    return this.dayNightEnabled;
   }
 
   /**

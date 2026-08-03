@@ -125,6 +125,9 @@ export class SceneManager {
     // Set up coordinate tracking
     this.setupCoordinateTracking(scene);
 
+    // Set up left-click location handler (v0.2)
+    this.setupClickHandler(scene);
+
     // Handle window resize
     const resizeHandler = () => {
       if (this.viewer && !this.viewer.isDestroyed()) {
@@ -175,6 +178,35 @@ export class SceneManager {
   }
 
   /**
+   * Sets up left-click to emit location:click for the info panel.
+   * Distinct from double-click fly-to in CameraController.
+   */
+  private setupClickHandler(scene: Scene): void {
+    const handler = new ScreenSpaceEventHandler(scene.canvas);
+
+    handler.setInputAction(
+      (click: { position: Cartesian2 }) => {
+        const cartesian = scene.pickPosition(click.position);
+        if (defined(cartesian)) {
+          const cartographic = Cartographic.fromCartesian(
+            cartesian,
+            Ellipsoid.WGS84,
+          );
+          const lat = CesiumMath.toDegrees(cartographic.latitude);
+          const lng = CesiumMath.toDegrees(cartographic.longitude);
+          const alt = cartographic.height;
+          eventBus.emit('location:click', { lat, lng, alt });
+        }
+      },
+      ScreenSpaceEventType.LEFT_CLICK,
+    );
+
+    this.disposal.registerFn(() => {
+      if (!handler.isDestroyed()) handler.destroy();
+    });
+  }
+
+  /**
    * Returns the active Viewer instance.
    * Throws if not initialized.
    */
@@ -203,6 +235,7 @@ export class SceneManager {
     scene.postProcessStages.fxaa.enabled = preset.fxaa;
     scene.globe.showGroundAtmosphere = preset.groundAtmosphere;
     scene.globe.maximumScreenSpaceError = preset.maximumScreenSpaceError;
+    scene.highDynamicRange = preset.hdr;
 
     if (scene.skyAtmosphere) {
       scene.skyAtmosphere.show = preset.skyAtmosphere;

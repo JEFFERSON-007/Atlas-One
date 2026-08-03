@@ -19,16 +19,20 @@
 
 | Feature | Description |
 |---|---|
-| 🌐 **Interactive 3D Globe** | Photorealistic Earth with terrain, atmosphere, and day/night cycle |
-| 🔍 **Location Search** | OpenStreetMap Nominatim geocoding with fly-to animation |
-| 🗂️ **Modular Layers** | Satellite imagery, borders, cities, terrain, clouds, lat/lng grid |
-| 🎬 **Cinematic Landing** | GSAP-powered fade-in → camera approach → UI reveal |
-| ⚙️ **Settings** | Graphics quality, FPS counter, auto-rotate, terrain/cloud toggles |
-| 🌗 **Day/Night Cycle** | Real-time sun position, Earth at Night imagery |
-| 🎮 **Camera Controls** | Orbit, fly-to, keyboard (WASD), double-click zoom, auto-rotate |
-| 📱 **Responsive** | Desktop, laptop, tablet, mobile, ultra-wide |
-| ♿ **Accessible** | ARIA labels, keyboard navigation, reduced motion, high contrast |
-| 🔒 **Secure** | Input sanitization, no eval, safe URL handling, no secrets in source |
+| 🌍 **Earth Event Engine** | Generic, reusable real-time natural event monitoring system |
+| 🌋 **6 Live Data Providers** | USGS Earthquakes, NASA Wildfires, Smithsonian Volcanoes, Blitzortung Lightning, NOAA Storms, GDACS Tsunamis |
+| 📊 **Earth Intelligence Dashboard** | Real-time stat cards, severity breakdown bars, and critical alert highlights |
+| 📍 **Severity Markers & Animation** | SVG data URI markers with color/size severity coding and pulse animation rings |
+| 🌡️ **Offscreen Heatmap Layer** | GPU-optimized canvas density heatmap overlay |
+| 🧩 **Spatial Clustering** | Zoom-aware grid clustering with severity aggregation |
+| 📋 **Event List & Detail Panels** | Grouped, sortable event list + full GIS metadata detail panel with location sharing |
+| 🔍 **Universal Filter System** | Search keywords, event types, and severity level filtering |
+| ⏱️ **Event Timeline Strip** | Bottom temporal control bar for time-series visualization |
+| 🌐 **Interactive 3D Globe** | Photorealistic Earth with high-res terrain, atmosphere glow, and HDR lighting |
+| 🌤️ **Live Weather System** | Pluggable weather architecture powered by Open-Meteo |
+| ℹ️ **Information Panel** | Click any globe location for geocoded address, live weather metrics & local time |
+| ☁️ **Global Cloud Overlay** | Real MODIS cloud coverage via NASA GIBS imagery |
+| 🗂️ **Modular Layer Manager** | Satellite imagery, terrain, clouds, atmosphere, day/night, events, heatmaps |
 
 ---
 
@@ -36,7 +40,7 @@
 
 ```
 src/
-├── config/                  # App & Cesium configuration
+├── config/                  # App & Cesium configuration & quality presets
 ├── core/engine/             # Scene, Camera, Lighting, Animation
 │   ├── camera/
 │   ├── lighting/
@@ -45,19 +49,21 @@ src/
 ├── globe/                   # Earth rendering subsystems
 │   ├── terrain/
 │   ├── imagery/providers/
-│   ├── clouds/
-│   └── atmosphere/
+│   ├── clouds/              # NASA GIBS MODIS cloud layer
+│   └── atmosphere/          # Sky scattering & depth fog
 ├── layers/                  # Modular layer system
-│   └── implementations/     # Individual layer classes
+│   └── implementations/     # Imagery, terrain, clouds, atmosphere, day/night, etc.
 ├── api/                     # HTTP client & service adapters
-│   └── adapters/            # Nominatim, Earthquake (stub), Weather (stub)
-├── ui/                      # All UI components
+│   ├── providers/           # Pluggable Weather providers (Open-Meteo)
+│   ├── services/            # Weather service with 30s TTL cache & deduplication
+│   └── adapters/            # Nominatim, Weather adapter facade
+├── ui/                      # Glassmorphism UI components
 │   └── components/
 │       ├── toolbar/
-│       └── panels/
+│       └── panels/          # Search, Layers, Settings, InfoPanel, Coordinates, FPS
 ├── hooks/                   # Event bus
 ├── utils/                   # Debounce, throttle, DOM, validators, logger
-├── styles/                  # CSS design system
+├── styles/                  # CSS design system & glassmorphism tokens
 ├── types/                   # TypeScript declarations
 └── main.ts                  # Bootstrap entry point
 ```
