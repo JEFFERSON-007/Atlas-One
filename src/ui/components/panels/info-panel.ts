@@ -83,13 +83,11 @@ export class InfoPanel {
     parent.appendChild(this.panel);
 
     // Listen for location click events
-    const throttledClick = throttle((lat: unknown, lng: unknown) => {
-      if (typeof lat === 'number' && typeof lng === 'number') {
-        this.handleLocationClick(lat, lng);
-      }
+    const throttledClick = throttle((lat: number, lng: number) => {
+      this.handleLocationClick(lat, lng);
     }, 1000);
 
-    eventBus.on('location:click', (payload: any) => {
+    eventBus.on('location:click', (payload) => {
       throttledClick(payload.lat, payload.lng);
     });
 

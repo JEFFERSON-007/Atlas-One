@@ -54,9 +54,10 @@ export class EventRenderer {
     // Handle click detection
     const handler = new ScreenSpaceEventHandler(viewer.scene.canvas);
     handler.setInputAction((click: { position: Cartesian2 }) => {
-      const picked = viewer.scene.pick(click.position);
-      if (picked?.id instanceof Entity) {
-        const eventId = (picked.id as Entity & { eventId?: string }).eventId;
+      const picked = viewer.scene.pick(click.position) as { id?: Entity } | undefined;
+      const entity = picked?.id;
+      if (entity instanceof Entity) {
+        const eventId = (entity as Entity & { eventId?: string }).eventId;
         if (eventId) {
           eventBus.emit('event:select', { eventId });
         }

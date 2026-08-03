@@ -150,6 +150,7 @@ export class BlitzortungLightningProvider implements IEventProvider {
   };
 
   async fetchEvents(): Promise<EarthEvent[]> {
+    await Promise.resolve();
     // Generate batch of realistic lightning strikes
     const strikes: EarthEvent[] = [];
     const count = Math.floor(STRIKES_PER_FETCH * (0.5 + Math.random()));

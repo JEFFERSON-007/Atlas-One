@@ -199,7 +199,7 @@ export class HeatmapEngine {
    * Builds a 256-entry RGBA lookup table from the gradient config.
    */
   private buildGradientLUT(): Array<[number, number, number, number]> {
-    const lut: Array<[number, number, number, number]> = new Array(256);
+    const lut: Array<[number, number, number, number]> = [];
     const stops = this.config.gradient;
     const defaultStop: [number, number, number, number, number] = [0, 0, 0, 0, 0];
 

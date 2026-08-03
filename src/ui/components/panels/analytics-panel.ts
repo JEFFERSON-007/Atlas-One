@@ -5,7 +5,7 @@
  */
 
 import type { EarthEvent } from '../../../events/earth-event.types';
-import { EventSeverity, EVENT_ICONS } from '../../../events/earth-event.types';
+import { EventType, EventSeverity, EVENT_ICONS } from '../../../events/earth-event.types';
 import { querySelectorSafe, createElement } from '../../../utils/dom';
 import { createLogger } from '../../../utils/logger';
 
@@ -169,12 +169,12 @@ export class AnalyticsPanel {
 
     for (const e of events) {
       switch (e.type) {
-        case 'earthquake': earthquakes++; break;
-        case 'wildfire': wildfires++; break;
-        case 'volcano': volcanoes++; break;
-        case 'lightning': lightning++; break;
-        case 'storm': storms++; break;
-        case 'tsunami': tsunamis++; break;
+        case EventType.Earthquake: earthquakes++; break;
+        case EventType.Wildfire: wildfires++; break;
+        case EventType.Volcano: volcanoes++; break;
+        case EventType.Lightning: lightning++; break;
+        case EventType.Storm: storms++; break;
+        case EventType.Tsunami: tsunamis++; break;
       }
 
       if (e.severity === EventSeverity.Extreme) critical++;
