@@ -43,7 +43,6 @@ export class InfoPanel {
   private contentEl: HTMLElement | null = null;
   private currentLat = 0;
   private currentLng = 0;
-  private unsubscribers: Array<() => void> = [];
 
   /**
    * Initializes the panel and attaches it to the parent container.

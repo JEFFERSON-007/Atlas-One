@@ -8,6 +8,9 @@ import {
   type ImageryLayer,
   WebMapTileServiceImageryProvider,
   GeographicTilingScheme,
+  TimeIntervalCollection,
+  TimeInterval,
+  JulianDate,
 } from 'cesium';
 import { createLogger } from '../../utils/logger';
 
@@ -29,18 +32,24 @@ export class CloudLayer {
   private rotationHandle: ReturnType<typeof setInterval> | null = null;
 
   /**
-   * Initializes the cloud layer on the viewer.
-   * Uses NASA GIBS cloud imagery or degrades gracefully.
-   *
-   * @param viewer - CesiumJS Viewer instance
+   * Initializes the cloud layer.
    */
   init(viewer: Viewer): void {
     this.viewer = viewer;
 
     try {
-      // Get today's date for GIBS tile request (MODIS data is daily)
       const today = new Date();
+      today.setUTCDate(today.getUTCDate() - 1);
       const dateStr = today.toISOString().split('T')[0];
+
+      const julianDate = JulianDate.fromDate(today);
+      const times = new TimeIntervalCollection([
+        new TimeInterval({
+          start: julianDate,
+          stop: julianDate,
+          data: dateStr,
+        }),
+      ]);
 
       const provider = new WebMapTileServiceImageryProvider({
         url: GIBS_CLOUD_URL,
@@ -52,28 +61,7 @@ export class CloudLayer {
         tileWidth: 512,
         tileHeight: 512,
         tilingScheme: new GeographicTilingScheme(),
-        times: {
-          getStartTime: () => dateStr,
-          getStopTime: () => dateStr,
-          get isEmpty(): boolean { return false; },
-          get isStartIncluded(): boolean { return true; },
-          get isStopIncluded(): boolean { return true; },
-          get start(): string { return dateStr; },
-          get stop(): string { return dateStr; },
-          contains(_julianDate: import('cesium').JulianDate): boolean { return true; },
-          findIntervalContainingDate(_julianDate: import('cesium').JulianDate) { return this; },
-          findDataForIntervalContainingDate(_julianDate: import('cesium').JulianDate) { return dateStr; },
-          indexOf: () => 0,
-          get: () => ({ start: dateStr, stop: dateStr, isStartIncluded: true, isStopIncluded: true, data: dateStr }),
-          length: 1,
-          changed: { addEventListener: () => () => { /* noop */ }, removeEventListener: () => { /* noop */ }, numberOfListeners: 0, raiseEvent: () => { /* noop */ } },
-          equals: () => true,
-          findInterval: () => undefined,
-          intersect: () => [],
-          merge: () => { /* noop */ },
-          addInterval: () => { /* noop */ },
-          removeInterval: () => false,
-        } as unknown as import('cesium').TimeIntervalCollection,
+        times,
       });
 
       this.cloudLayer = viewer.imageryLayers.addImageryProvider(provider);
