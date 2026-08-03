@@ -181,11 +181,11 @@ export class HeatmapEngine {
     const gradientLUT = this.buildGradientLUT();
 
     for (let i = 0; i < data.length; i += 4) {
-      const intensity = data[i + 3]; // Alpha channel = intensity
+      const intensity = data[i + 3] ?? 0;
       if (intensity === 0) continue;
 
       const lutIndex = Math.min(255, intensity);
-      const color = gradientLUT[lutIndex];
+      const color = gradientLUT[lutIndex] ?? [0, 0, 0, 0];
       data[i] = color[0];     // R
       data[i + 1] = color[1]; // G
       data[i + 2] = color[2]; // B
@@ -201,17 +201,19 @@ export class HeatmapEngine {
   private buildGradientLUT(): Array<[number, number, number, number]> {
     const lut: Array<[number, number, number, number]> = new Array(256);
     const stops = this.config.gradient;
+    const defaultStop: [number, number, number, number, number] = [0, 0, 0, 0, 0];
 
     for (let i = 0; i < 256; i++) {
       const t = i / 255;
-      // Find surrounding stops
-      let lower = stops[0];
-      let upper = stops[stops.length - 1];
+      let lower = stops[0] ?? defaultStop;
+      let upper = stops[stops.length - 1] ?? defaultStop;
 
       for (let s = 0; s < stops.length - 1; s++) {
-        if (t >= stops[s][0] && t <= stops[s + 1][0]) {
-          lower = stops[s];
-          upper = stops[s + 1];
+        const curr = stops[s];
+        const next = stops[s + 1];
+        if (curr && next && t >= curr[0] && t <= next[0]) {
+          lower = curr;
+          upper = next;
           break;
         }
       }

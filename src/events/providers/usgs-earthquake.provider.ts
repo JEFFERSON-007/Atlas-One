@@ -11,7 +11,6 @@ import {
   EventSeverity,
   EventPriority,
   EventStatus,
-  EVENT_TYPE_COLORS,
   EVENT_ICONS,
 } from '../earth-event.types';
 import { apiGet } from '../../api/api-client';

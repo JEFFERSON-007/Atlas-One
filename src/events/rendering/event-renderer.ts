@@ -5,6 +5,7 @@
  */
 
 import {
+  Cartesian2,
   Cartesian3,
   Color,
   ConstantPositionProperty,
@@ -13,6 +14,8 @@ import {
   HorizontalOrigin,
   LabelStyle,
   NearFarScalar,
+  ScreenSpaceEventHandler,
+  ScreenSpaceEventType,
   VerticalOrigin,
   type Viewer,
 } from 'cesium';
@@ -49,8 +52,8 @@ export class EventRenderer {
     );
 
     // Handle click detection
-    const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
-    handler.setInputAction((click: { position: Cesium.Cartesian2 }) => {
+    const handler = new ScreenSpaceEventHandler(viewer.scene.canvas);
+    handler.setInputAction((click: { position: Cartesian2 }) => {
       const picked = viewer.scene.pick(click.position);
       if (picked?.id instanceof Entity) {
         const eventId = (picked.id as Entity & { eventId?: string }).eventId;
@@ -58,7 +61,7 @@ export class EventRenderer {
           eventBus.emit('event:select', { eventId });
         }
       }
-    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    }, ScreenSpaceEventType.LEFT_CLICK);
 
     log.info('Event renderer initialized');
   }
@@ -197,11 +200,11 @@ export class EventRenderer {
         style: new ConstantProperty(LabelStyle.FILL_AND_OUTLINE),
         horizontalOrigin: new ConstantProperty(HorizontalOrigin.LEFT),
         verticalOrigin: new ConstantProperty(VerticalOrigin.CENTER),
-        pixelOffset: new ConstantProperty(new Cesium.Cartesian2(20, 0)),
+        pixelOffset: new ConstantProperty(new Cartesian2(20, 0)),
         scaleByDistance: new ConstantProperty(new NearFarScalar(1.5e5, 1.0, 5.0e6, 0.0)),
         showBackground: new ConstantProperty(true),
         backgroundColor: new ConstantProperty(new Color(0.04, 0.06, 0.09, 0.8)),
-        backgroundPadding: new ConstantProperty(new Cesium.Cartesian2(6, 4)),
+        backgroundPadding: new ConstantProperty(new Cartesian2(6, 4)),
         disableDepthTestDistance: new ConstantProperty(Number.POSITIVE_INFINITY),
       },
       show: event.visible,

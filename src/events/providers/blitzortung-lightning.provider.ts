@@ -77,7 +77,7 @@ function selectWeightedZone(): [number, number, number, number] {
     cumulative += zone[3];
     if (rand <= cumulative) return zone;
   }
-  return THUNDERSTORM_ZONES[0];
+  return THUNDERSTORM_ZONES[0] ?? [0, 0, 5, 0.1];
 }
 
 let strikeCounter = 0;

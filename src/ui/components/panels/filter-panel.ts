@@ -4,7 +4,7 @@
 
 import { EventType, EventSeverity } from '../../../events/earth-event.types';
 import type { FilterEngine } from '../../../events/engine/filter-engine';
-import { safeQuerySelector, createDOMElement } from '../../../utils/dom';
+import { querySelectorSafe, createElement } from '../../../utils/dom';
 import { createLogger } from '../../../utils/logger';
 
 const log = createLogger('FilterPanel');
@@ -16,15 +16,15 @@ export class FilterPanel {
   private onFilterChange: (() => void) | null = null;
 
   init(parentId: string, filterEngine: FilterEngine, onFilterChange: () => void): void {
-    const parent = safeQuerySelector(`#${parentId}`);
+    const parent = querySelectorSafe(`#${parentId}`);
     if (!parent) return;
 
     this.filterEngine = filterEngine;
     this.onFilterChange = onFilterChange;
 
-    this.container = createDOMElement('div', {
+    this.container = createElement('div', {
       id: 'filter-panel',
-      className: 'ao-panel ao-panel--left ao-filter-panel',
+      class: 'ao-panel ao-panel--left ao-filter-panel',
     });
     this.container.style.display = 'none';
     parent.appendChild(this.container);

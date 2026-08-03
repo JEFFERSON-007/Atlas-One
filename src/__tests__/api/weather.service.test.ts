@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { WeatherService } from '../../api/services/weather.service';
 import type { IWeatherProvider, WeatherResult } from '../../api/providers/weather-provider.interface';
 

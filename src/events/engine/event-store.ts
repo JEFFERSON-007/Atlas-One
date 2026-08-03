@@ -323,8 +323,11 @@ export class EventStore {
       // Remove oldest until within limit
       const excess = events.length - MAX_EVENTS_PER_TYPE;
       for (let i = 0; i < excess; i++) {
-        this.events.delete(events[i].id);
-        ids.delete(events[i].id);
+        const item = events[i];
+        if (item) {
+          this.events.delete(item.id);
+          ids.delete(item.id);
+        }
       }
 
       log.info(`Pruned ${excess} oldest ${type} events (limit: ${MAX_EVENTS_PER_TYPE})`);

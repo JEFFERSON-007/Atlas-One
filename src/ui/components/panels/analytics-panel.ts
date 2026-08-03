@@ -6,7 +6,7 @@
 
 import type { EarthEvent } from '../../../events/earth-event.types';
 import { EventSeverity, EVENT_ICONS } from '../../../events/earth-event.types';
-import { safeQuerySelector, createDOMElement } from '../../../utils/dom';
+import { querySelectorSafe, createElement } from '../../../utils/dom';
 import { createLogger } from '../../../utils/logger';
 
 const log = createLogger('AnalyticsPanel');
@@ -24,14 +24,14 @@ export class AnalyticsPanel {
    * Initializes the analytics panel.
    */
   init(parentId: string, eventGetter: () => EarthEvent[]): void {
-    const parent = safeQuerySelector(`#${parentId}`);
+    const parent = querySelectorSafe(`#${parentId}`);
     if (!parent) return;
 
     this.getEvents = eventGetter;
 
-    this.container = createDOMElement('div', {
+    this.container = createElement('div', {
       id: 'analytics-panel',
-      className: 'ao-panel ao-panel--left ao-analytics-panel',
+      class: 'ao-panel ao-panel--left ao-analytics-panel',
     });
     this.container.style.display = 'none';
     parent.appendChild(this.container);

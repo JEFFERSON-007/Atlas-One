@@ -53,12 +53,8 @@ export class CloudLayer {
         tileHeight: 512,
         tilingScheme: new GeographicTilingScheme(),
         times: {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           getStartTime: () => dateStr,
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           getStopTime: () => dateStr,
-          isStartIncluded: () => true,
-          isStopIncluded: () => true,
           get isEmpty(): boolean { return false; },
           get isStartIncluded(): boolean { return true; },
           get isStopIncluded(): boolean { return true; },

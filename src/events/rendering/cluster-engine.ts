@@ -5,10 +5,7 @@
  */
 
 import type { EarthEvent, EventSeverity } from '../earth-event.types';
-import { EventSeverity as Severity, EVENT_TYPE_COLORS } from '../earth-event.types';
-import { createLogger } from '../../utils/logger';
-
-const log = createLogger('ClusterEngine');
+import { EventSeverity as Severity, EventType, EVENT_TYPE_COLORS } from '../earth-event.types';
 
 /** A cluster of nearby events. */
 export interface EventCluster {
@@ -23,7 +20,7 @@ export interface EventCluster {
   /** Worst severity among clustered events. */
   maxSeverity: EventSeverity;
   /** Dominant event type. */
-  dominantType: string;
+  dominantType: EventType;
   /** Representative color (worst severity color). */
   color: string;
   /** The actual events in this cluster. */
@@ -55,8 +52,6 @@ export class ClusterEngine {
    * @param altitude - Camera altitude in meters
    */
   updateForZoom(altitude: number): void {
-    // At orbital view (~15M meters), cluster in 10-degree cells
-    // At city view (~50K meters), cluster in 0.5-degree cells
     if (altitude > 10_000_000) {
       this.cellSizeDegrees = 10;
     } else if (altitude > 5_000_000) {
@@ -80,7 +75,6 @@ export class ClusterEngine {
    */
   cluster(events: EarthEvent[]): EventCluster[] {
     if (!this.enabled || events.length === 0) {
-      // Return each event as a single-item cluster
       return events.map((e) => ({
         id: e.id,
         latitude: e.latitude,
@@ -96,7 +90,6 @@ export class ClusterEngine {
 
     const grid = new Map<string, EarthEvent[]>();
 
-    // Assign events to grid cells
     for (const event of events) {
       const cellX = Math.floor(event.longitude / this.cellSizeDegrees);
       const cellY = Math.floor(event.latitude / this.cellSizeDegrees);
@@ -108,13 +101,12 @@ export class ClusterEngine {
       grid.get(key)!.push(event);
     }
 
-    // Convert grid cells to clusters
     const clusters: EventCluster[] = [];
 
     for (const [key, cellEvents] of grid) {
       if (cellEvents.length === 1) {
-        // Single event — no clustering
         const e = cellEvents[0];
+        if (!e) continue;
         clusters.push({
           id: e.id,
           latitude: e.latitude,
@@ -127,7 +119,6 @@ export class ClusterEngine {
           isSingle: true,
         });
       } else {
-        // Multiple events — create cluster
         const center = this.computeCenter(cellEvents);
         const maxSeverity = this.getMaxSeverity(cellEvents);
         const dominantType = this.getDominantType(cellEvents);
@@ -139,7 +130,7 @@ export class ClusterEngine {
           count: cellEvents.length,
           maxSeverity,
           dominantType,
-          color: EVENT_TYPE_COLORS[dominantType as keyof typeof EVENT_TYPE_COLORS] || '#94a3b8',
+          color: EVENT_TYPE_COLORS[dominantType] || '#94a3b8',
           events: cellEvents,
           isSingle: false,
         });
@@ -149,27 +140,14 @@ export class ClusterEngine {
     return clusters;
   }
 
-  /**
-   * Enables or disables clustering.
-   */
   setEnabled(enabled: boolean): void {
     this.enabled = enabled;
   }
 
-  /**
-   * Returns whether clustering is enabled.
-   */
   isEnabled(): boolean {
     return this.enabled;
   }
 
-  // ---------------------------------------------------------------------------
-  // Private
-  // ---------------------------------------------------------------------------
-
-  /**
-   * Computes the centroid of a group of events.
-   */
   private computeCenter(events: EarthEvent[]): { lat: number; lng: number } {
     let latSum = 0;
     let lngSum = 0;
@@ -178,14 +156,11 @@ export class ClusterEngine {
       lngSum += e.longitude;
     }
     return {
-      lat: latSum / events.length,
-      lng: lngSum / events.length,
+      lat: latSum / (events.length || 1),
+      lng: lngSum / (events.length || 1),
     };
   }
 
-  /**
-   * Returns the worst severity among events.
-   */
   private getMaxSeverity(events: EarthEvent[]): EventSeverity {
     let maxRank = 0;
     let maxSev: EventSeverity = Severity.Info;
@@ -199,15 +174,12 @@ export class ClusterEngine {
     return maxSev;
   }
 
-  /**
-   * Returns the most common event type in the group.
-   */
-  private getDominantType(events: EarthEvent[]): string {
-    const counts = new Map<string, number>();
+  private getDominantType(events: EarthEvent[]): EventType {
+    const counts = new Map<EventType, number>();
     for (const e of events) {
       counts.set(e.type, (counts.get(e.type) ?? 0) + 1);
     }
-    let dominant = events[0].type;
+    let dominant: EventType = events[0]?.type ?? EventType.Custom;
     let maxCount = 0;
     for (const [type, count] of counts) {
       if (count > maxCount) {

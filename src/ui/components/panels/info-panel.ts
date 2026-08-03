@@ -31,7 +31,7 @@ interface NominatimReverseResult {
 function windDirectionLabel(degrees: number): string {
   const dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
   const index = Math.round(degrees / 22.5) % 16;
-  return dirs[index];
+  return dirs[index] ?? 'N';
 }
 
 /**
@@ -43,9 +43,12 @@ export class InfoPanel {
   private contentEl: HTMLElement | null = null;
   private currentLat = 0;
   private currentLng = 0;
+  private unsubscribers: Array<() => void> = [];
 
   /**
-   * Initializes the info panel UI.
+   * Initializes the panel and attaches it to the parent container.
+   *
+   * @param parentId - ID of parent container
    */
   init(parentId: string): void {
     const parent = document.getElementById(parentId);
@@ -81,12 +84,14 @@ export class InfoPanel {
     parent.appendChild(this.panel);
 
     // Listen for location click events
-    const throttledClick = throttle((payload: { lat: number; lng: number }) => {
-      this.handleLocationClick(payload.lat, payload.lng);
+    const throttledClick = throttle((lat: unknown, lng: unknown) => {
+      if (typeof lat === 'number' && typeof lng === 'number') {
+        this.handleLocationClick(lat, lng);
+      }
     }, 1000);
 
-    eventBus.on('location:click', (payload) => {
-      throttledClick(payload);
+    eventBus.on('location:click', (payload: any) => {
+      throttledClick(payload.lat, payload.lng);
     });
 
     log.info('Info panel initialized');

@@ -8,7 +8,7 @@ import { eventBus } from '../../../hooks/use-event-bus';
 import type { EarthEvent } from '../../../events/earth-event.types';
 import { EVENT_ICONS } from '../../../events/earth-event.types';
 import { createLogger } from '../../../utils/logger';
-import { safeQuerySelector, createDOMElement } from '../../../utils/dom';
+import { querySelectorSafe, createElement } from '../../../utils/dom';
 
 const log = createLogger('EventDetailPanel');
 
@@ -29,14 +29,14 @@ export class EventDetailPanel {
    * @param eventLookup - Function to look up events by ID from the store
    */
   init(parentId: string, eventLookup: (id: string) => EarthEvent | undefined): void {
-    const parent = safeQuerySelector(`#${parentId}`);
+    const parent = querySelectorSafe(`#${parentId}`);
     if (!parent) return;
 
     this.getEventById = eventLookup;
 
-    this.container = createDOMElement('div', {
+    this.container = createElement('div', {
       id: 'event-detail-panel',
-      className: 'ao-panel ao-panel--right ao-event-detail-panel',
+      class: 'ao-panel ao-panel--right ao-event-detail-panel',
     });
     this.container.style.display = 'none';
     parent.appendChild(this.container);

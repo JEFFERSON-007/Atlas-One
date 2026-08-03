@@ -5,7 +5,6 @@
 
 import {
   type EarthEvent,
-  EventType,
   SEVERITY_SIZES,
   EVENT_TYPE_COLORS,
 } from '../earth-event.types';

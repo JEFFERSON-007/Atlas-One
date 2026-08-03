@@ -2,7 +2,7 @@
  * EventTimeline — Horizontal bottom timeline bar for temporal control.
  */
 
-import { safeQuerySelector, createDOMElement } from '../../../utils/dom';
+import { querySelectorSafe, createElement } from '../../../utils/dom';
 import { createLogger } from '../../../utils/logger';
 
 const log = createLogger('EventTimeline');
@@ -12,12 +12,12 @@ export class EventTimeline {
   private visible = false;
 
   init(parentId: string): void {
-    const parent = safeQuerySelector(`#${parentId}`);
+    const parent = querySelectorSafe(`#${parentId}`);
     if (!parent) return;
 
-    this.container = createDOMElement('div', {
+    this.container = createElement('div', {
       id: 'event-timeline',
-      className: 'ao-timeline-strip',
+      class: 'ao-timeline-strip',
     });
     this.container.style.display = 'none';
     parent.appendChild(this.container);

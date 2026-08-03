@@ -7,7 +7,7 @@ import type { EarthEvent, EventType } from '../../../events/earth-event.types';
 import { EVENT_ICONS, EVENT_TYPE_COLORS } from '../../../events/earth-event.types';
 import { eventBus } from '../../../hooks/use-event-bus';
 import { createLogger } from '../../../utils/logger';
-import { safeQuerySelector, createDOMElement } from '../../../utils/dom';
+import { querySelectorSafe, createElement } from '../../../utils/dom';
 
 const log = createLogger('EventListPanel');
 
@@ -34,14 +34,14 @@ export class EventListPanel {
    * Initializes the event list panel.
    */
   init(parentId: string, eventGetter: () => EarthEvent[]): void {
-    const parent = safeQuerySelector(`#${parentId}`);
+    const parent = querySelectorSafe(`#${parentId}`);
     if (!parent) return;
 
     this.getEvents = eventGetter;
 
-    this.container = createDOMElement('div', {
+    this.container = createElement('div', {
       id: 'event-list-panel',
-      className: 'ao-panel ao-panel--left ao-event-list-panel',
+      class: 'ao-panel ao-panel--left ao-event-list-panel',
     });
     this.container.style.display = 'none';
     parent.appendChild(this.container);
