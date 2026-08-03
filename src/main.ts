@@ -177,15 +177,39 @@ async function bootstrap(): Promise<void> {
 
 // Global error handler
 window.addEventListener('error', (event) => {
-  log.error(`Uncaught error: ${event.message}`);
-  eventBus.emit('notification:show', {
-    message: 'An unexpected error occurred. Some features may be unavailable.',
-    type: 'error',
-  });
+  // Ignore non-JavaScript errors like element/resource load errors (img, script, link)
+  if (
+    event.target &&
+    event.target !== window &&
+    (event.target instanceof HTMLElement || (event.target as { tagName?: string }).tagName)
+  ) {
+    log.warn('Resource load error ignored:', event.target);
+    return;
+  }
+
+  // Ignore benign browser layout errors
+  if (typeof event.message === 'string' && event.message.includes('ResizeObserver')) {
+    return;
+  }
+
+  log.error(`Uncaught error: ${event.message}`, event.error);
+  if (event.message) {
+    eventBus.emit('notification:show', {
+      message: 'An unexpected error occurred. Some features may be unavailable.',
+      type: 'error',
+    });
+  }
 });
 
 window.addEventListener('unhandledrejection', (event) => {
-  log.error(`Unhandled promise rejection: ${String(event.reason)}`);
+  const reason = String(event.reason ?? '');
+  log.error(`Unhandled promise rejection: ${reason}`);
+
+  // Don't show toast for user-initiated aborts or cancelled fetch requests
+  if (reason.includes('AbortError') || reason.includes('canceled')) {
+    return;
+  }
+
   eventBus.emit('notification:show', {
     message: 'A background operation failed. Please try again.',
     type: 'error',

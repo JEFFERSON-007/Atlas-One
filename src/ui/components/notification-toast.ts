@@ -14,6 +14,8 @@ const AUTO_DISMISS_MS = 5000;
 
 interface Toast {
   id: string;
+  message: string;
+  type: 'info' | 'warn' | 'error';
   element: HTMLElement;
   timer: ReturnType<typeof setTimeout>;
 }
@@ -52,6 +54,16 @@ function showToast(
   type: 'info' | 'warn' | 'error' = 'info',
 ): void {
   if (!container) return;
+
+  // Deduplicate active toasts with exact same message and type
+  const existing = activeToasts.find((t) => t.message === message && t.type === type);
+  if (existing) {
+    clearTimeout(existing.timer);
+    existing.timer = setTimeout(() => {
+      dismissToast(existing);
+    }, AUTO_DISMISS_MS);
+    return;
+  }
 
   // Remove oldest if at max
   while (activeToasts.length >= MAX_VISIBLE) {
@@ -102,7 +114,7 @@ function showToast(
     if (toast) dismissToast(toast);
   }, AUTO_DISMISS_MS);
 
-  activeToasts.push({ id, element: el, timer });
+  activeToasts.push({ id, message, type, element: el, timer });
 }
 
 function dismissToast(toast: Toast): void {
