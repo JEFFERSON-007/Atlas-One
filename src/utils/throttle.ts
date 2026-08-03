@@ -6,7 +6,7 @@
  * @param limit - Minimum time between invocations in milliseconds
  * @returns A throttled version of the function
  */
-export function throttle<T extends (...args: unknown[]) => void>(
+export function throttle<T extends (...args: any[]) => void>(
   fn: T,
   limit: number,
 ): T {
