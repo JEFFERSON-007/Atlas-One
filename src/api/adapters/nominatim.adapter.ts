@@ -71,11 +71,7 @@ export async function searchLocation(query: string): Promise<SearchResult[]> {
 
   const url = `${NOMINATIM_CONFIG.baseUrl}/search?q=${encodeQueryParam(sanitized)}&format=json&addressdetails=1&limit=${NOMINATIM_CONFIG.maxResults}`;
 
-  const response = await apiGet<NominatimResult[]>(url, {
-    headers: {
-      'User-Agent': NOMINATIM_CONFIG.userAgent,
-    },
-  });
+  const response = await apiGet<NominatimResult[]>(url);
 
   if (response.error || !response.data) {
     log.error(`Search failed: ${response.error}`);

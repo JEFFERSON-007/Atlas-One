@@ -183,7 +183,6 @@ window.addEventListener('error', (event) => {
     event.target !== window &&
     (event.target instanceof HTMLElement || (event.target as { tagName?: string }).tagName)
   ) {
-    log.warn('Resource load error ignored:', event.target);
     return;
   }
 
@@ -192,8 +191,23 @@ window.addEventListener('error', (event) => {
     return;
   }
 
-  log.error(`Uncaught error: ${event.message}`, event.error);
-  if (event.message) {
+  // Ignore CesiumJS internal errors (workers, tile loading, rendering pipeline)
+  const msg = typeof event.message === 'string' ? event.message : '';
+  const filename = typeof event.filename === 'string' ? event.filename : '';
+  if (
+    filename.includes('cesium') ||
+    filename.includes('Cesium') ||
+    filename.includes('Workers/') ||
+    msg.includes('An error occurred while rendering') ||
+    msg.includes('RangeError') ||
+    msg.includes('Script error')
+  ) {
+    log.warn(`CesiumJS internal error suppressed: ${msg}`);
+    return;
+  }
+
+  log.error(`Uncaught error: ${msg}`, event.error);
+  if (msg) {
     eventBus.emit('notification:show', {
       message: 'An unexpected error occurred. Some features may be unavailable.',
       type: 'error',
@@ -203,13 +217,26 @@ window.addEventListener('error', (event) => {
 
 window.addEventListener('unhandledrejection', (event) => {
   const reason = String(event.reason ?? '');
-  log.error(`Unhandled promise rejection: ${reason}`);
 
-  // Don't show toast for user-initiated aborts or cancelled fetch requests
-  if (reason.includes('AbortError') || reason.includes('canceled')) {
+  // Don't show toast for non-critical rejections
+  if (
+    reason.includes('AbortError') ||
+    reason.includes('canceled') ||
+    reason.includes('Cesium') ||
+    reason.includes('cesium') ||
+    reason.includes('tile') ||
+    reason.includes('imagery') ||
+    reason.includes('Failed to fetch') ||
+    reason.includes('NetworkError') ||
+    reason.includes('Load failed') ||
+    reason.includes('CORS') ||
+    reason.includes('net::ERR')
+  ) {
+    log.warn(`Non-critical rejection suppressed: ${reason.slice(0, 120)}`);
     return;
   }
 
+  log.error(`Unhandled promise rejection: ${reason}`);
   eventBus.emit('notification:show', {
     message: 'A background operation failed. Please try again.',
     type: 'error',

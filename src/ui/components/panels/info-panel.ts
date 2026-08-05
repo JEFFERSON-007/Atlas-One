@@ -145,7 +145,6 @@ export class InfoPanel {
       const response = await apiGet<NominatimReverseResult>(url, {
         timeout: 5000,
         retries: 0,
-        headers: { 'User-Agent': 'Atlas One/0.2 (Earth Intelligence Platform)' },
       });
 
       if (response.data) {
@@ -183,13 +182,14 @@ export class InfoPanel {
     const locSection = this.createSection('📍 Location');
     locSection.appendChild(this.createRow('Latitude', `${lat.toFixed(5)}°`));
     locSection.appendChild(this.createRow('Longitude', `${lng.toFixed(5)}°`));
-    locSection.appendChild(this.createRow('Country', ''));
-    // Add shimmer to country
-    const countryValue = locSection.querySelector('.tn-info-panel__value:last-child');
+    
+    const countryRow = this.createRow('Country', '');
+    const countryValue = countryRow.querySelector('.tn-info-panel__value');
     if (countryValue) {
       countryValue.classList.add('tn-info-panel__skeleton');
       setTextContent(countryValue as HTMLElement, '██████████');
     }
+    locSection.appendChild(countryRow);
 
     this.contentEl.appendChild(locSection);
 

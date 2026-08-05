@@ -139,6 +139,12 @@ export class SceneManager {
       window.removeEventListener('resize', resizeHandler),
     );
 
+    // Catch CesiumJS rendering errors to prevent them from propagating
+    // to window.onerror and showing user-facing error toasts
+    scene.renderError.addEventListener((_scene: Scene, error: unknown) => {
+      log.warn('CesiumJS render error caught:', error);
+    });
+
     log.info('Scene initialized successfully');
     return Promise.resolve(this.viewer);
   }
