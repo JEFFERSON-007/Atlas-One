@@ -175,72 +175,23 @@ async function bootstrap(): Promise<void> {
   });
 }
 
-// Global error handler
+// Global error handler — log only, no user-facing toast.
+// Each module (search, event providers, layers) handles its own errors
+// with specific user-facing messages. This handler is a safety net for logging.
 window.addEventListener('error', (event) => {
-  // Ignore non-JavaScript errors like element/resource load errors (img, script, link)
-  if (
-    event.target &&
-    event.target !== window &&
-    (event.target instanceof HTMLElement || (event.target as { tagName?: string }).tagName)
-  ) {
-    return;
-  }
+  // Ignore resource load errors (img, script, link 404s)
+  if (event.target && event.target !== window) return;
 
   // Ignore benign browser layout errors
-  if (typeof event.message === 'string' && event.message.includes('ResizeObserver')) {
-    return;
-  }
+  if (typeof event.message === 'string' && event.message.includes('ResizeObserver')) return;
 
-  // Ignore CesiumJS internal errors (workers, tile loading, rendering pipeline)
   const msg = typeof event.message === 'string' ? event.message : '';
-  const filename = typeof event.filename === 'string' ? event.filename : '';
-  if (
-    filename.includes('cesium') ||
-    filename.includes('Cesium') ||
-    filename.includes('Workers/') ||
-    msg.includes('An error occurred while rendering') ||
-    msg.includes('RangeError') ||
-    msg.includes('Script error')
-  ) {
-    log.warn(`CesiumJS internal error suppressed: ${msg}`);
-    return;
-  }
-
-  log.error(`Uncaught error: ${msg}`, event.error);
-  if (msg) {
-    eventBus.emit('notification:show', {
-      message: 'An unexpected error occurred. Some features may be unavailable.',
-      type: 'error',
-    });
-  }
+  log.warn(`Uncaught error (suppressed): ${msg}`);
 });
 
 window.addEventListener('unhandledrejection', (event) => {
   const reason = String(event.reason ?? '');
-
-  // Don't show toast for non-critical rejections
-  if (
-    reason.includes('AbortError') ||
-    reason.includes('canceled') ||
-    reason.includes('Cesium') ||
-    reason.includes('cesium') ||
-    reason.includes('tile') ||
-    reason.includes('imagery') ||
-    reason.includes('Failed to fetch') ||
-    reason.includes('NetworkError') ||
-    reason.includes('Load failed') ||
-    reason.includes('CORS') ||
-    reason.includes('net::ERR')
-  ) {
-    log.warn(`Non-critical rejection suppressed: ${reason.slice(0, 120)}`);
-    return;
-  }
-
-  log.error(`Unhandled promise rejection: ${reason}`);
-  eventBus.emit('notification:show', {
-    message: 'A background operation failed. Please try again.',
-    type: 'error',
-  });
+  log.warn(`Unhandled rejection (suppressed): ${reason.slice(0, 200)}`);
 });
 
 // Launch the application
