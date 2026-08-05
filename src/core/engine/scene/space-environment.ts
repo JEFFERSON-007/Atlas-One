@@ -33,8 +33,8 @@ export class SpaceEnvironment {
     if (scene.sun) scene.sun.show = true;
     if (scene.moon) scene.moon.show = true;
 
-    // Globe depth testing for proper occlusion
-    scene.globe.depthTestAgainstTerrain = false;
+    // Globe depth testing for proper occlusion of markers on the back of the Earth
+    scene.globe.depthTestAgainstTerrain = true;
 
     log.info('Space environment initialized');
   }
