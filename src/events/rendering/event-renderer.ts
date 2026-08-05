@@ -190,7 +190,6 @@ export class EventRenderer {
         verticalOrigin: new ConstantProperty(VerticalOrigin.CENTER),
         scaleByDistance: new ConstantProperty(new NearFarScalar(1.5e5, 1.5, 1.5e7, 0.3)),
         translucencyByDistance: new ConstantProperty(new NearFarScalar(1.5e5, 1.0, 2.5e7, 0.4)),
-        disableDepthTestDistance: new ConstantProperty(Number.POSITIVE_INFINITY),
       },
       label: {
         text: new ConstantProperty(marker.label),
@@ -206,7 +205,6 @@ export class EventRenderer {
         showBackground: new ConstantProperty(true),
         backgroundColor: new ConstantProperty(new Color(0.04, 0.06, 0.09, 0.8)),
         backgroundPadding: new ConstantProperty(new Cartesian2(6, 4)),
-        disableDepthTestDistance: new ConstantProperty(Number.POSITIVE_INFINITY),
       },
       show: event.visible,
     });
