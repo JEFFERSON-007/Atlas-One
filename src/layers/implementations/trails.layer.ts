@@ -11,7 +11,7 @@ export class TrailsLayer implements ILayer {
   readonly metadata: LayerMetadata = {
     id: 'layer-trails',
     name: 'Vehicle Motion Trails',
-    category: LayerCategory.Overlays,
+    category: LayerCategory.Overlay,
     icon: '✨',
     description: 'Aircraft contrails, ship wakes, and movement history vectors',
     defaultEnabled: true,

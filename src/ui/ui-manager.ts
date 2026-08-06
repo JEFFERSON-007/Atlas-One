@@ -15,6 +15,7 @@ import { EventListPanel } from './components/panels/event-list-panel';
 import { AnalyticsPanel } from './components/panels/analytics-panel';
 import { FilterPanel } from './components/panels/filter-panel';
 import { EventTimeline } from './components/panels/event-timeline';
+import { initNotificationToast } from './components/notification-toast';
 import { ObjectDetailPanel } from './components/panels/object-detail-panel';
 import { ObjectListPanel } from './components/panels/object-list-panel';
 import { MobilityAnalyticsPanel } from './components/panels/mobility-analytics-panel';

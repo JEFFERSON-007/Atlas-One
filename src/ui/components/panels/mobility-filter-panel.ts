@@ -2,7 +2,6 @@
  * MobilityFilterPanel — Panel for filtering dynamic objects by type, country, and text search.
  */
 
-import { eventBus } from '../../../hooks/use-event-bus';
 import type { MobilityFilterEngine } from '../../../mobility/engine/mobility-filter-engine';
 import { ObjectType } from '../../../mobility/dynamic-object.types';
 import { createLogger } from '../../../utils/logger';

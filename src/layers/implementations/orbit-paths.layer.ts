@@ -11,7 +11,7 @@ export class OrbitPathsLayer implements ILayer {
   readonly metadata: LayerMetadata = {
     id: 'layer-orbit-paths',
     name: 'Orbital Paths',
-    category: LayerCategory.Overlays,
+    category: LayerCategory.Overlay,
     icon: '⭕',
     description: '3D projected orbital trajectories for satellites, ISS, and constellations',
     defaultEnabled: true,

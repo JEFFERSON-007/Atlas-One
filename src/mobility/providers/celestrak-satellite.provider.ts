@@ -100,9 +100,6 @@ export class CelesTrakSatelliteProvider implements IObjectProvider {
   private tleCacheTime = 0;
   private readonly TLE_CACHE_TTL = 4 * 60 * 60 * 1000; // 4 hours
 
-  /** Limit active satellites to prevent overwhelming the browser. */
-  private readonly MAX_ACTIVE_SATS = 200;
-
   /** satellite.js module (dynamically imported). */
   private satLib: typeof import('satellite.js') | null = null;
 

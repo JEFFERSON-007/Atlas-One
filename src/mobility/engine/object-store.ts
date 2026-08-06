@@ -8,7 +8,6 @@ import {
   type DynamicObject,
   type PositionSnapshot,
   ObjectType,
-  ObjectStatus,
   MAX_HISTORY_LENGTH,
 } from '../dynamic-object.types';
 import { eventBus } from '../../hooks/use-event-bus';

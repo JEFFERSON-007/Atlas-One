@@ -175,7 +175,7 @@ export class AISShipProvider implements IObjectProvider {
     // Random ship type based on weight distribution
     const typeRoll = rng();
     let cumWeight = 0;
-    let shipInfo = SHIP_TYPES[0];
+    let shipInfo = SHIP_TYPES[0]!;
     for (const st of SHIP_TYPES) {
       cumWeight += st.weight;
       if (typeRoll <= cumWeight) {
@@ -196,7 +196,7 @@ export class AISShipProvider implements IObjectProvider {
     const nextPos = this.interpolateLane(lane.waypoints, Math.min(progress + 0.01, 1));
     const heading = this.calculateBearing(pos.lat, pos.lng, nextPos.lat, nextPos.lng);
 
-    const country = SHIP_FLAGS[Math.floor(rng() * SHIP_FLAGS.length)];
+    const country = SHIP_FLAGS[Math.floor(rng() * SHIP_FLAGS.length)] ?? 'Panama';
     const color = SHIP_TYPE_COLORS[shipInfo.type];
 
     const mmsi = `${200000000 + globalIdx}`;
@@ -293,8 +293,10 @@ export class AISShipProvider implements IObjectProvider {
     const segIdx = Math.min(Math.floor(segFloat), segCount - 1);
     const segT = segFloat - segIdx;
 
-    const [lat1, lng1] = waypoints[segIdx];
-    const [lat2, lng2] = waypoints[segIdx + 1];
+    const wp1 = waypoints[segIdx] ?? [0, 0];
+    const wp2 = waypoints[segIdx + 1] ?? wp1;
+    const [lat1, lng1] = wp1;
+    const [lat2, lng2] = wp2;
 
     return {
       lat: lat1 + (lat2 - lat1) * segT,
