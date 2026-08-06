@@ -15,7 +15,12 @@ import { EventListPanel } from './components/panels/event-list-panel';
 import { AnalyticsPanel } from './components/panels/analytics-panel';
 import { FilterPanel } from './components/panels/filter-panel';
 import { EventTimeline } from './components/panels/event-timeline';
-import { initNotificationToast } from './components/notification-toast';
+import { ObjectDetailPanel } from './components/panels/object-detail-panel';
+import { ObjectListPanel } from './components/panels/object-list-panel';
+import { MobilityAnalyticsPanel } from './components/panels/mobility-analytics-panel';
+import { MobilityFilterPanel } from './components/panels/mobility-filter-panel';
+import type { DynamicObjectEngine } from '../mobility/engine/object-engine';
+import type { MobilityFilterEngine } from '../mobility/engine/mobility-filter-engine';
 import type { LayerRegistry } from '../layers/layer-registry';
 import type { CameraController } from '../core/engine/camera/camera-controller';
 import type { SceneManager } from '../core/engine/scene-manager';
@@ -40,6 +45,10 @@ export class UIManager {
   private eventListPanel: EventListPanel;
   private analyticsPanel: AnalyticsPanel;
   private filterPanel: FilterPanel;
+  private objectDetailPanel: ObjectDetailPanel;
+  private objectListPanel: ObjectListPanel;
+  private mobilityAnalyticsPanel: MobilityAnalyticsPanel;
+  private mobilityFilterPanel: MobilityFilterPanel;
   private eventTimeline: EventTimeline;
   private coordinatesDisplay: CoordinatesDisplay;
   private fpsCounter: FPSCounter;
@@ -54,6 +63,10 @@ export class UIManager {
     this.eventListPanel = new EventListPanel();
     this.analyticsPanel = new AnalyticsPanel();
     this.filterPanel = new FilterPanel();
+    this.objectDetailPanel = new ObjectDetailPanel();
+    this.objectListPanel = new ObjectListPanel();
+    this.mobilityAnalyticsPanel = new MobilityAnalyticsPanel();
+    this.mobilityFilterPanel = new MobilityFilterPanel();
     this.eventTimeline = new EventTimeline();
     this.coordinatesDisplay = new CoordinatesDisplay();
     this.fpsCounter = new FPSCounter();
@@ -70,6 +83,8 @@ export class UIManager {
     globeManager: GlobeManager,
     eventEngine?: EarthEventEngine,
     filterEngine?: FilterEngine,
+    objectEngine?: DynamicObjectEngine,
+    mobilityFilterEngine?: MobilityFilterEngine,
   ): void {
     const overlayId = 'ui-overlay';
 
@@ -99,6 +114,19 @@ export class UIManager {
       });
     }
 
+    // Initialize v0.4 Mobility panels
+    if (objectEngine) {
+      this.objectDetailPanel.init(overlayId, (id) => objectEngine.store.get(id));
+      this.objectListPanel.init(overlayId, () => objectEngine.store.getAll());
+      this.mobilityAnalyticsPanel.init(overlayId, () => objectEngine.store.getAll());
+    }
+
+    if (mobilityFilterEngine) {
+      this.mobilityFilterPanel.init(overlayId, mobilityFilterEngine, () => {
+        // Refresh object list if needed
+      });
+    }
+
     this.eventTimeline.init(overlayId);
 
     const config = getAppConfig();
@@ -120,7 +148,7 @@ export class UIManager {
     this.coordinatesDisplay.init(overlayId);
     this.fpsCounter.init(overlayId);
 
-    log.info('UI Manager initialized with v0.3 Earth Intelligence panels');
+    log.info('UI Manager initialized with v0.3 Earth Intelligence & v0.4 Mobility panels');
   }
 
   /**
@@ -135,6 +163,9 @@ export class UIManager {
       this.eventListPanel,
       this.analyticsPanel,
       this.filterPanel,
+      this.objectListPanel,
+      this.mobilityAnalyticsPanel,
+      this.mobilityFilterPanel,
     ];
 
     switch (buttonId) {
@@ -156,6 +187,15 @@ export class UIManager {
         break;
       case 'filter':
         this.toggleExclusivePanel(this.filterPanel, leftPanels, 'btn-filter');
+        break;
+      case 'mobility-analytics':
+        this.toggleExclusivePanel(this.mobilityAnalyticsPanel, leftPanels, 'btn-mobility-analytics');
+        break;
+      case 'mobility-list':
+        this.toggleExclusivePanel(this.objectListPanel, leftPanels, 'btn-mobility-list');
+        break;
+      case 'mobility-filter':
+        this.toggleExclusivePanel(this.mobilityFilterPanel, leftPanels, 'btn-mobility-filter');
         break;
       case 'settings':
         this.toggleExclusivePanel(this.settingsPanel, leftPanels, 'btn-settings');
@@ -225,6 +265,10 @@ export class UIManager {
     this.eventListPanel.dispose();
     this.analyticsPanel.dispose();
     this.filterPanel.dispose();
+    this.objectDetailPanel.dispose();
+    this.objectListPanel.dispose();
+    this.mobilityAnalyticsPanel.dispose();
+    this.mobilityFilterPanel.dispose();
     this.eventTimeline.dispose();
     this.coordinatesDisplay.dispose();
     this.fpsCounter.dispose();

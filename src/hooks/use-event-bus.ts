@@ -34,6 +34,12 @@ export interface AppEvents {
   'provider:fetch-start': { providerId: string };
   'provider:fetch-complete': { providerId: string; eventCount: number; success: boolean };
   'provider:error': { providerId: string; message: string };
+  // v0.4 — Dynamic Object Engine events
+  'objects:updated': { totalCount: number; addedCount: number; updatedCount: number };
+  'object:select': { objectId: string };
+  'object:deselect': void;
+  'mobility-provider:fetch-start': { providerId: string };
+  'mobility-provider:fetch-complete': { providerId: string; objectCount: number; success: boolean };
 }
 
 type EventCallback<T> = T extends void ? () => void : (payload: T) => void;

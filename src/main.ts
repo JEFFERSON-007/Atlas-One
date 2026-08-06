@@ -52,6 +52,29 @@ import { StormLayer } from './layers/implementations/storm.layer';
 import { TsunamiLayer } from './layers/implementations/tsunami.layer';
 import { HeatmapLayer } from './layers/implementations/heatmap.layer';
 
+// v0.4 — Dynamic Object Engine & Mobility imports
+import { DynamicObjectEngine } from './mobility/engine/object-engine';
+import { ObjectRenderer } from './mobility/rendering/object-renderer';
+import { TrailEngine } from './mobility/rendering/trail-engine';
+import { OrbitEngine } from './mobility/rendering/orbit-engine';
+import { MobilityFilterEngine } from './mobility/engine/mobility-filter-engine';
+
+// v0.4 — Mobility Providers
+import { OpenSkyFlightProvider } from './mobility/providers/opensky-flight.provider';
+import { CelesTrakSatelliteProvider } from './mobility/providers/celestrak-satellite.provider';
+import { ISSTrackerProvider } from './mobility/providers/iss-tracker.provider';
+import { AISShipProvider } from './mobility/providers/ais-ship.provider';
+
+// v0.4 — Mobility Layer Implementations
+import { FlightsLayer } from './layers/implementations/flights.layer';
+import { ShipsLayer } from './layers/implementations/ships.layer';
+import { SatellitesLayer } from './layers/implementations/satellites.layer';
+import { ISSLayer } from './layers/implementations/iss.layer';
+import { StarlinkLayer } from './layers/implementations/starlink.layer';
+import { GPSConstellationLayer } from './layers/implementations/gps-constellation.layer';
+import { OrbitPathsLayer } from './layers/implementations/orbit-paths.layer';
+import { TrailsLayer } from './layers/implementations/trails.layer';
+
 const log = createLogger('Main');
 
 /**
@@ -59,7 +82,7 @@ const log = createLogger('Main');
  * Initializes all systems in the correct order.
  */
 async function bootstrap(): Promise<void> {
-  log.info('Atlas One v0.3 — Starting Earth Intelligence Platform...');
+  log.info('Atlas One v0.4 — Starting Global Mobility & Space Intelligence Platform...');
 
   // 1. Load configuration
   const config = loadAppConfig();
@@ -112,7 +135,35 @@ async function bootstrap(): Promise<void> {
   // Start event engine
   eventEngine.start();
 
-  // 7. Initialize layer system
+  // 7. Initialize v0.4 Dynamic Object Engine & Mobility Subsystems
+  const objectRenderer = new ObjectRenderer();
+  objectRenderer.init(viewer);
+
+  const trailEngine = new TrailEngine();
+  trailEngine.init(viewer);
+
+  const orbitEngine = new OrbitEngine();
+  await orbitEngine.init(viewer);
+
+  const mobilityFilterEngine = new MobilityFilterEngine();
+
+  const objectEngine = new DynamicObjectEngine();
+  objectEngine.registerProvider(new OpenSkyFlightProvider());
+  objectEngine.registerProvider(new CelesTrakSatelliteProvider());
+  objectEngine.registerProvider(new ISSTrackerProvider());
+  objectEngine.registerProvider(new AISShipProvider());
+
+  eventBus.on('objects:updated', () => {
+    const allObjects = objectEngine.store.getAll();
+    const filtered = mobilityFilterEngine.apply(allObjects);
+    objectRenderer.renderObjects(filtered);
+    trailEngine.updateTrails(filtered);
+    orbitEngine.renderOrbits(filtered);
+  });
+
+  objectEngine.start();
+
+  // 8. Initialize layer system
   const layerRegistry = new LayerRegistry();
   layerRegistry.setViewer(viewer);
 
@@ -134,20 +185,39 @@ async function bootstrap(): Promise<void> {
     layerRegistry.register(new StormLayer(eventRenderer)),
     layerRegistry.register(new TsunamiLayer(eventRenderer)),
     layerRegistry.register(new HeatmapLayer(heatmapEngine)),
+    // v0.4 Mobility & Space Layers
+    layerRegistry.register(new FlightsLayer(objectRenderer)),
+    layerRegistry.register(new ShipsLayer(objectRenderer)),
+    layerRegistry.register(new SatellitesLayer(objectRenderer)),
+    layerRegistry.register(new ISSLayer(objectRenderer)),
+    layerRegistry.register(new StarlinkLayer(objectRenderer)),
+    layerRegistry.register(new GPSConstellationLayer(objectRenderer)),
+    layerRegistry.register(new OrbitPathsLayer(orbitEngine)),
+    layerRegistry.register(new TrailsLayer(trailEngine)),
   ]);
 
   log.info(`${layerRegistry.getAll().length} total layers registered`);
 
-  // 8. Initialize UI
+  // 9. Initialize UI
   const uiManager = new UIManager();
-  uiManager.init(viewer, layerRegistry, cameraController, sceneManager, globeManager, eventEngine, filterEngine);
+  uiManager.init(
+    viewer,
+    layerRegistry,
+    cameraController,
+    sceneManager,
+    globeManager,
+    eventEngine,
+    filterEngine,
+    objectEngine,
+    mobilityFilterEngine,
+  );
 
-  // 9. Play landing animation
+  // 10. Play landing animation
   const animationController = new AnimationController();
   animationController.init(viewer);
   await animationController.playLandingSequence();
 
-  // 10. Show notification
+  // 11. Show notification
   if (!config.hasCesiumIon) {
     eventBus.emit('notification:show', {
       message: 'Running without Cesium Ion token. Add VITE_CESIUM_ION_TOKEN to .env for terrain and premium imagery.',
@@ -155,13 +225,17 @@ async function bootstrap(): Promise<void> {
     });
   }
 
-  log.info('Atlas One v0.3 Earth Intelligence Platform initialized successfully');
+  log.info('Atlas One v0.4 Global Mobility & Space Intelligence Platform initialized successfully');
 
   // Cleanup on page unload
   window.addEventListener('beforeunload', () => {
     animationController.dispose();
     uiManager.dispose();
     layerRegistry.dispose();
+    objectEngine.dispose();
+    objectRenderer.dispose();
+    trailEngine.dispose();
+    orbitEngine.dispose();
     eventEngine.dispose();
     eventRenderer.dispose();
     heatmapEngine.dispose();

@@ -5,6 +5,35 @@ All notable changes to the **Atlas One** Earth Intelligence Platform project wil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - Global Mobility & Space Intelligence Platform - 2026-08-06
+
+### Added
+- **Dynamic Object Engine Core**: Universal, unified engine orchestrating real-time tracking, interpolation, deduplication, and viewport rendering for all moving objects across Earth and space.
+- **4 Mobility & Orbital Data Providers**:
+  - **OpenSky Network Aircraft**: Live worldwide commercial and private flight tracking with altitude, ground speed, callsign, and origin country.
+  - **CelesTrak Satellite Tracker**: Orbital mechanics propagation (SGP4/SDP4 via `satellite.js`) for active satellites across LEO, MEO, GEO, and HEO.
+  - **WhereTheISS Live Tracker**: Real-time International Space Station telemetry, altitude, velocity, and ground footprint tracking.
+  - **AIS Vessel Tracker**: Simulated real-world maritime vessel movement across 12 major global shipping lanes (Suez, Panama, Malacca, North Atlantic, etc.).
+- **Rendering Subsystem**:
+  - **Object Renderer**: Entity pooling, altitude-aware positioning, heading-based billboard rotation, and LOD frustum culling.
+  - **Trail Engine**: GPU-optimized polyline motion trails for aircraft contrails, ship wakes, and ground tracks.
+  - **Orbit Engine**: 3D orbital trajectory rendering generated via SGP4 propagation.
+  - **Mobility Marker Factory**: Vector SVG marker generator for rotatable aircraft silhouettes, ship hulls, glowing satellite dots, and ISS station icons.
+- **8 Mobility Layer Implementations**:
+  - `FlightsLayer` (OpenSky Aircraft)
+  - `ShipsLayer` (Maritime Vessels)
+  - `SatellitesLayer` (Active Satellites)
+  - `ISSLayer` (Space Station)
+  - `StarlinkLayer` (Constellation)
+  - `GPSConstellationLayer` (GNSS - GPS, GLONASS, Galileo, BeiDou)
+  - `OrbitPathsLayer` (3D Orbit Trajectories)
+  - `TrailsLayer` (Vehicle Motion Trails)
+- **4 Mobility UI Panels**:
+  - **Object Detail Panel**: Full telemetry, position, heading, altitude, speed, metadata inspection, and camera follow/focus controls.
+  - **Object List Panel**: Filterable, sortable list of active aircraft, ships, and satellites.
+  - **Mobility Analytics Dashboard**: Real-time metric cards for online flights, vessels, satellites, ISS live status banner, and average speeds.
+  - **Mobility Filter Panel**: Universal filter controls for object types, status, and text search.
+
 ## [0.3.0] - Earth Event Engine — Real-time Intelligence Platform - 2026-08-03
 
 ### Added
