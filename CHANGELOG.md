@@ -5,6 +5,40 @@ All notable changes to the **Atlas One** Earth Intelligence Platform project wil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - Global Digital Twin & Geospatial Intelligence Platform - 2026-08-10
+
+### Added
+- **Global Digital Twin Subsystem**:
+  - **Universal `GeospatialEntity` Model**: Standardized model for 23 geospatial entity types (Country, State, City, Building, Road, Airport, Port, Railway, River, Lake, Dam, PowerPlant, Hospital, School, University, WeatherStation, SatelliteGroundStation, Telecom, Industrial, Forest, ProtectedArea).
+  - **Spatial Hash Index**: Grid-based spatial hash index (`CELL_SIZE_DEG = 2.0`) enabling O(1) bounding box queries and Haversine radius queries.
+  - **Geospatial Entity Engine**: Centralized orchestrator coordinating data providers, schema validation, XSS text sanitization, spatial storage, and event bus emissions.
+- **5 Open Geospatial Data Providers**:
+  - **REST Countries Provider**: 250+ country boundaries, populations, capitals, areas, densities, regions, currencies, languages, timezones, and borders.
+  - **OpenStreetMap Overpass Provider**: Global transport hubs, international airports (IATA/ICAO), and maritime container ports.
+  - **Cesium OSM 3D Buildings Streaming Provider**: Global 3D building tileset streaming via Cesium `createOsmBuildingsAsync()`.
+  - **Hydrology & Waterways Provider**: Major global rivers (Amazon, Nile, Yangtze, Mississippi), lakes (Caspian, Superior, Baikal), and hydro dams.
+  - **Population Metrics Provider**: Global urban megacities and regional density statistics.
+- **Intelligence & Context Systems**:
+  - **Location Context Engine**: Real-time context aggregator returning country, city, Open-Meteo weather, natural hazards (v0.3), dynamic objects (v0.4), and infrastructure for any clicked coordinate.
+  - **Related Entity System**: Interconnected entity relationship graph linking airports, ports, cities, events, flights, and ships.
+  - **Dynamic LOD Manager**: Camera height-driven Level of Detail engine (Space View >5000km, Country View 500-5000km, City View 50-500km, Street View <50km).
+  - **Master Time Controller**: Centralized time playback engine with real-time sync, simulation clock, step controls, and 0.25x to 100x playback speeds.
+  - **Terrain Intelligence & Exaggeration**: Pointer elevation picker (Lat/Lng/Meters) and vertical terrain exaggeration controls (0.5x, 1x, 2x, 5x, 10x).
+  - **Client-Side LRU Cache Manager**: Per-key TTL caching layer with capacity pruning.
+- **Rendering & Selection Subsystems**:
+  - **Unified Entity Renderer**: Billboard, label, and marker renderer with entity pooling and LOD visibility culling.
+  - **3D Building Renderer**: Height-based gradient styling and 3D Tiles highlighting.
+  - **Vector Feature Renderer**: Polyline renderer for rivers, roads, and boundaries.
+  - **Unified Selection Manager**: Click picker for countries, cities, 3D buildings, airports, ports, infrastructure, aircraft, ships, satellites, and natural events.
+- **8 Digital Twin Layer Implementations**:
+  - `CountriesLayer`, `Buildings3DLayer`, `RoadsLayer`, `HydrologyLayer`, `AirportsLayer`, `PortsLayer`, `InfrastructureLayer`, `PopulationLayer`.
+- **Digital Twin UI Components**:
+  - **Digital Twin Inspection Panel**: 7-tabbed modal (Overview, Geography, Weather, Infrastructure, Transit, Events, Sources).
+  - **Country Intelligence Panel**: Demographics, capital, population, languages, timezones, and borders explorer.
+  - **City Intelligence Panel**: Megacities and urban statistics inspector.
+  - **Globe Telemetry HUD**: Bottom-right HUD displaying Lat, Lng, Elevation (m), Camera altitude (km), LOD, and Exaggeration controls.
+  - **Time Controller Bar**: Bottom playback control bar (Live sync, Play/Pause, Step, 0.25x-100x speed selector).
+
 ## [0.4.0] - Global Mobility & Space Intelligence Platform - 2026-08-06
 
 ### Added

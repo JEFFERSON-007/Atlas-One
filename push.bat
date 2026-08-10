@@ -1,0 +1,9 @@
+@echo off
+echo Adding files to git...
+git add .
+echo Committing changes...
+git commit -m "feat(twin): release v0.5 Digital Twin & Geospatial Intelligence"
+echo Pushing to GitHub...
+git push
+echo Done!
+pause

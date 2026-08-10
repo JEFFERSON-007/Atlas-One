@@ -20,8 +20,16 @@ import { ObjectDetailPanel } from './components/panels/object-detail-panel';
 import { ObjectListPanel } from './components/panels/object-list-panel';
 import { MobilityAnalyticsPanel } from './components/panels/mobility-analytics-panel';
 import { MobilityFilterPanel } from './components/panels/mobility-filter-panel';
+import { DigitalTwinPanel } from './components/panels/digital-twin-panel';
+import { CountryIntelligencePanel } from './components/panels/country-intelligence-panel';
+import { CityIntelligencePanel } from './components/panels/city-intelligence-panel';
+import { GlobeHUD } from './components/panels/globe-hud';
+import { TimeControllerBar } from './components/panels/time-controller-bar';
 import type { DynamicObjectEngine } from '../mobility/engine/object-engine';
 import type { MobilityFilterEngine } from '../mobility/engine/mobility-filter-engine';
+import type { GeospatialEntityEngine } from '../twin/entity/geospatial-entity-engine';
+import type { TerrainIntelligence } from '../twin/terrain/terrain-intelligence';
+import type { TimeController } from '../twin/time/time-controller';
 import type { LayerRegistry } from '../layers/layer-registry';
 import type { CameraController } from '../core/engine/camera/camera-controller';
 import type { SceneManager } from '../core/engine/scene-manager';
@@ -50,6 +58,11 @@ export class UIManager {
   private objectListPanel: ObjectListPanel;
   private mobilityAnalyticsPanel: MobilityAnalyticsPanel;
   private mobilityFilterPanel: MobilityFilterPanel;
+  private digitalTwinPanel: DigitalTwinPanel;
+  private countryIntelligencePanel: CountryIntelligencePanel;
+  private cityIntelligencePanel: CityIntelligencePanel;
+  private globeHUD: GlobeHUD;
+  private timeControllerBar: TimeControllerBar;
   private eventTimeline: EventTimeline;
   private coordinatesDisplay: CoordinatesDisplay;
   private fpsCounter: FPSCounter;
@@ -68,6 +81,11 @@ export class UIManager {
     this.objectListPanel = new ObjectListPanel();
     this.mobilityAnalyticsPanel = new MobilityAnalyticsPanel();
     this.mobilityFilterPanel = new MobilityFilterPanel();
+    this.digitalTwinPanel = new DigitalTwinPanel();
+    this.countryIntelligencePanel = new CountryIntelligencePanel();
+    this.cityIntelligencePanel = new CityIntelligencePanel();
+    this.globeHUD = new GlobeHUD();
+    this.timeControllerBar = new TimeControllerBar();
     this.eventTimeline = new EventTimeline();
     this.coordinatesDisplay = new CoordinatesDisplay();
     this.fpsCounter = new FPSCounter();
@@ -86,6 +104,9 @@ export class UIManager {
     filterEngine?: FilterEngine,
     objectEngine?: DynamicObjectEngine,
     mobilityFilterEngine?: MobilityFilterEngine,
+    geospatialEngine?: GeospatialEntityEngine,
+    terrainIntel?: TerrainIntelligence,
+    timeController?: TimeController,
   ): void {
     const overlayId = 'ui-overlay';
 
@@ -128,6 +149,20 @@ export class UIManager {
       });
     }
 
+    // Initialize v0.5 Digital Twin panels & HUD
+    this.digitalTwinPanel.init(overlayId);
+
+    if (geospatialEngine) {
+      this.countryIntelligencePanel.init(overlayId, () => geospatialEngine.store.getAll());
+      this.cityIntelligencePanel.init(overlayId, () => geospatialEngine.store.getAll());
+    }
+
+    this.globeHUD.init(overlayId, terrainIntel);
+
+    if (timeController) {
+      this.timeControllerBar.init(overlayId, timeController);
+    }
+
     this.eventTimeline.init(overlayId);
 
     const config = getAppConfig();
@@ -149,7 +184,7 @@ export class UIManager {
     this.coordinatesDisplay.init(overlayId);
     this.fpsCounter.init(overlayId);
 
-    log.info('UI Manager initialized with v0.3 Earth Intelligence & v0.4 Mobility panels');
+    log.info('UI Manager initialized with v0.3 Events, v0.4 Mobility, & v0.5 Digital Twin panels');
   }
 
   /**
@@ -167,6 +202,9 @@ export class UIManager {
       this.objectListPanel,
       this.mobilityAnalyticsPanel,
       this.mobilityFilterPanel,
+      this.digitalTwinPanel,
+      this.countryIntelligencePanel,
+      this.cityIntelligencePanel,
     ];
 
     switch (buttonId) {
@@ -197,6 +235,12 @@ export class UIManager {
         break;
       case 'mobility-filter':
         this.toggleExclusivePanel(this.mobilityFilterPanel, leftPanels, 'btn-mobility-filter');
+        break;
+      case 'digital-twin':
+        this.digitalTwinPanel.hide();
+        break;
+      case 'country-intel':
+        this.toggleExclusivePanel(this.countryIntelligencePanel, leftPanels, 'btn-country-intel');
         break;
       case 'settings':
         this.toggleExclusivePanel(this.settingsPanel, leftPanels, 'btn-settings');
@@ -270,6 +314,11 @@ export class UIManager {
     this.objectListPanel.dispose();
     this.mobilityAnalyticsPanel.dispose();
     this.mobilityFilterPanel.dispose();
+    this.digitalTwinPanel.dispose();
+    this.countryIntelligencePanel.dispose();
+    this.cityIntelligencePanel.dispose();
+    this.globeHUD.dispose();
+    this.timeControllerBar.dispose();
     this.eventTimeline.dispose();
     this.coordinatesDisplay.dispose();
     this.fpsCounter.dispose();

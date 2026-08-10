@@ -75,6 +75,35 @@ import { GPSConstellationLayer } from './layers/implementations/gps-constellatio
 import { OrbitPathsLayer } from './layers/implementations/orbit-paths.layer';
 import { TrailsLayer } from './layers/implementations/trails.layer';
 
+// v0.5 — Global Digital Twin imports
+import { GeospatialEntityEngine } from './twin/entity/geospatial-entity-engine';
+import { EntityRenderer } from './twin/rendering/entity-renderer';
+import { Building3DRenderer } from './twin/rendering/building-3d-renderer';
+import { VectorFeatureRenderer } from './twin/rendering/vector-feature-renderer';
+import { SelectionManager } from './twin/selection/selection-manager';
+import { LocationContextEngine } from './twin/context/location-context-engine';
+import { RelatedEntitySystem } from './twin/context/related-entity-system';
+import { LODManager } from './twin/lod/lod-manager';
+import { TimeController } from './twin/time/time-controller';
+import { TerrainIntelligence } from './twin/terrain/terrain-intelligence';
+
+// v0.5 — Digital Twin Providers
+import { RESTCountriesProvider } from './twin/providers/rest-countries.provider';
+import { OverpassGeospatialProvider } from './twin/providers/overpass-geospatial.provider';
+import { CesiumOSMBuildingsProvider } from './twin/providers/cesium-osm-buildings.provider';
+import { HydrologyProvider } from './twin/providers/hydrology.provider';
+import { PopulationProvider } from './twin/providers/population.provider';
+
+// v0.5 — Digital Twin Layer Implementations
+import { CountriesLayer } from './layers/implementations/countries.layer';
+import { Buildings3DLayer } from './layers/implementations/buildings-3d.layer';
+import { RoadsLayer } from './layers/implementations/roads.layer';
+import { HydrologyLayer } from './layers/implementations/hydrology.layer';
+import { AirportsLayer } from './layers/implementations/airports.layer';
+import { PortsLayer } from './layers/implementations/ports.layer';
+import { InfrastructureLayer } from './layers/implementations/infrastructure.layer';
+import { PopulationLayer } from './layers/implementations/population.layer';
+
 const log = createLogger('Main');
 
 /**
@@ -163,7 +192,53 @@ async function bootstrap(): Promise<void> {
 
   objectEngine.start();
 
-  // 8. Initialize layer system
+  // 8. Initialize v0.5 Global Digital Twin & Geospatial Subsystems
+  const entityRenderer = new EntityRenderer();
+  entityRenderer.init(viewer);
+
+  const buildingProvider = new CesiumOSMBuildingsProvider();
+  await buildingProvider.initTileset(viewer);
+
+  const buildingRenderer = new Building3DRenderer();
+  buildingRenderer.init(viewer, buildingProvider);
+
+  const vectorRenderer = new VectorFeatureRenderer();
+  vectorRenderer.init(viewer);
+
+  const locationContextEngine = new LocationContextEngine();
+  const relatedEntitySystem = new RelatedEntitySystem();
+  relatedEntitySystem.init(locationContextEngine);
+
+  const geospatialEngine = new GeospatialEntityEngine();
+  geospatialEngine.registerProvider(new RESTCountriesProvider());
+  geospatialEngine.registerProvider(new OverpassGeospatialProvider());
+  geospatialEngine.registerProvider(buildingProvider);
+  geospatialEngine.registerProvider(new HydrologyProvider());
+  geospatialEngine.registerProvider(new PopulationProvider());
+
+  locationContextEngine.init(geospatialEngine, eventEngine, objectEngine);
+
+  const selectionManager = new SelectionManager();
+  selectionManager.init(viewer, geospatialEngine, relatedEntitySystem);
+
+  const lodManager = new LODManager();
+  lodManager.init(viewer);
+
+  const timeController = new TimeController();
+  timeController.init();
+
+  const terrainIntel = new TerrainIntelligence();
+  terrainIntel.init(viewer);
+
+  eventBus.on('entities:updated', () => {
+    const allEntities = geospatialEngine.store.getAll();
+    entityRenderer.renderEntities(allEntities);
+    vectorRenderer.renderVectorFeatures(allEntities);
+  });
+
+  await geospatialEngine.start();
+
+  // 9. Initialize layer system
   const layerRegistry = new LayerRegistry();
   layerRegistry.setViewer(viewer);
 
@@ -194,11 +269,20 @@ async function bootstrap(): Promise<void> {
     layerRegistry.register(new GPSConstellationLayer(objectRenderer)),
     layerRegistry.register(new OrbitPathsLayer(orbitEngine)),
     layerRegistry.register(new TrailsLayer(trailEngine)),
+    // v0.5 Global Digital Twin Layers
+    layerRegistry.register(new CountriesLayer(entityRenderer)),
+    layerRegistry.register(new Buildings3DLayer(buildingRenderer)),
+    layerRegistry.register(new RoadsLayer(entityRenderer)),
+    layerRegistry.register(new HydrologyLayer(entityRenderer)),
+    layerRegistry.register(new AirportsLayer(entityRenderer)),
+    layerRegistry.register(new PortsLayer(entityRenderer)),
+    layerRegistry.register(new InfrastructureLayer(entityRenderer)),
+    layerRegistry.register(new PopulationLayer(entityRenderer)),
   ]);
 
   log.info(`${layerRegistry.getAll().length} total layers registered`);
 
-  // 9. Initialize UI
+  // 10. Initialize UI
   const uiManager = new UIManager();
   uiManager.init(
     viewer,
@@ -210,6 +294,9 @@ async function bootstrap(): Promise<void> {
     filterEngine,
     objectEngine,
     mobilityFilterEngine,
+    geospatialEngine,
+    terrainIntel,
+    timeController,
   );
 
   // 10. Play landing animation

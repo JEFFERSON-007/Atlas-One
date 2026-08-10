@@ -40,6 +40,15 @@ export interface AppEvents {
   'object:deselect': void;
   'mobility-provider:fetch-start': { providerId: string };
   'mobility-provider:fetch-complete': { providerId: string; objectCount: number; success: boolean };
+  // v0.5 — Global Digital Twin events
+  'entities:updated': { totalCount: number; addedCount: number; updatedCount: number };
+  'selection:changed': import('../twin/selection/selection-manager').SelectionPayload;
+  'twin-provider:fetch-start': { providerId: string };
+  'twin-provider:fetch-complete': { providerId: string; entityCount: number; success: boolean };
+  'lod:changed': { level: import('../twin/entity/geospatial-entity.types').LODLevel; cameraHeightKm: number };
+  'time:updated': { currentTime: Date; isPaused: boolean; isLive: boolean; speedMultiplier: number };
+  'terrain:hover': { latitude: number; longitude: number; elevationMeters: number };
+  'terrain:exaggeration-changed': { multiplier: number };
 }
 
 type EventCallback<T> = T extends void ? () => void : (payload: T) => void;
