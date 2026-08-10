@@ -138,6 +138,7 @@ export class AISShipProvider implements IObjectProvider {
     return true;
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async fetchObjects(): Promise<DynamicObject[]> {
     if (!this.initialized) {
       this.generateShips();
@@ -248,7 +249,7 @@ export class AISShipProvider implements IObjectProvider {
    */
   private advanceShips(): void {
     for (const ship of this.ships) {
-      const meta = ship.metadata as Record<string, unknown>;
+      const meta = ship.metadata;
       let progress = (meta['progress'] as number) || 0;
       const direction = (meta['direction'] as number) || 1;
       const lane = SHIPPING_LANES.find((l) => l.name === meta['lane']);

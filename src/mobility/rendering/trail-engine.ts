@@ -22,7 +22,7 @@ export class TrailEngine {
 
   init(viewer: Viewer): void {
     this.viewer = viewer;
-    this.polylines = viewer.scene.primitives.add(new PolylineCollection());
+    this.polylines = viewer.scene.primitives.add(new PolylineCollection()) as PolylineCollection;
     log.info('Trail engine initialized');
   }
 

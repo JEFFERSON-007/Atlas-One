@@ -120,7 +120,7 @@ export class MobilityFilterPanel {
     const closeBtn = querySelectorSafe('#btn-close-mobility-filter');
     closeBtn?.addEventListener('click', () => this.hide());
 
-    const searchInput = querySelectorSafe('#mobility-search-input') as HTMLInputElement | null;
+    const searchInput = querySelectorSafe<HTMLInputElement>('#mobility-search-input');
     searchInput?.addEventListener('input', () => this.updateFilter());
 
     const checkboxes = this.container?.querySelectorAll('.mobility-type-checkbox');
@@ -139,7 +139,7 @@ export class MobilityFilterPanel {
   private updateFilter(): void {
     if (!this.filterEngine) return;
 
-    const searchInput = querySelectorSafe('#mobility-search-input') as HTMLInputElement | null;
+    const searchInput = querySelectorSafe<HTMLInputElement>('#mobility-search-input');
     const checkboxes = this.container?.querySelectorAll('.mobility-type-checkbox:checked') as NodeListOf<HTMLInputElement>;
 
     const types: ObjectType[] = [];

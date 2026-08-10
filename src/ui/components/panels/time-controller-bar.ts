@@ -124,7 +124,7 @@ export class TimeControllerBar {
       this.render();
     });
 
-    const speedSelect = querySelectorSafe('#select-time-speed') as HTMLSelectElement | null;
+    const speedSelect = querySelectorSafe<HTMLSelectElement>('#select-time-speed');
     speedSelect?.addEventListener('change', (e) => {
       const val = parseFloat((e.target as HTMLSelectElement).value) as PlaybackSpeed;
       this.timeController?.setSpeed(val);

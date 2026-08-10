@@ -7,7 +7,7 @@
 import type { GeospatialEntityEngine } from '../entity/geospatial-entity-engine';
 import type { EarthEventEngine } from '../../events/engine/event-engine';
 import type { DynamicObjectEngine } from '../../mobility/engine/object-engine';
-import type { GeospatialEntity } from '../entity/geospatial-entity.types';
+import { type GeospatialEntity, EntityType } from '../entity/geospatial-entity.types';
 import type { EarthEvent } from '../../events/earth-event.types';
 import type { DynamicObject } from '../../mobility/dynamic-object.types';
 import type { WeatherResult } from '../../api/providers/weather-provider.interface';
@@ -56,8 +56,8 @@ export class LocationContextEngine {
       ? this.entityEngine.store.spatialIndex.queryRadius(lat, lng, radiusKm)
       : [];
 
-    const countryEntity = nearbyEntities.find((e) => e.type === 'country');
-    const nearestCity = nearbyEntities.find((e) => e.type === 'city');
+    const countryEntity = nearbyEntities.find((e) => e.type === EntityType.Country);
+    const nearestCity = nearbyEntities.find((e) => e.type === EntityType.City);
 
     // 2. Local Weather (via Open-Meteo)
     let weather: WeatherResult | undefined;

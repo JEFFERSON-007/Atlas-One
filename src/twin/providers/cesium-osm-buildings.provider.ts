@@ -7,6 +7,7 @@
 import {
   type Viewer,
   Cesium3DTileset,
+  Cesium3DTileStyle,
   createOsmBuildingsAsync,
 } from 'cesium';
 import type { IGeospatialProvider, GeospatialProviderInfo } from './geospatial-provider.interface';
@@ -37,6 +38,7 @@ export class CesiumOSMBuildingsProvider implements IGeospatialProvider {
     return true;
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async fetchEntities(): Promise<GeospatialEntity[]> {
     // 3D Tiles stream geometry directly to the GPU — return empty array for entity store
     return [];
@@ -73,7 +75,7 @@ export class CesiumOSMBuildingsProvider implements IGeospatialProvider {
   }
 
   /** Applies a Cesium3DTileStyle to the tileset. */
-  setStyle(style: any): void {
+  setStyle(style: Cesium3DTileStyle): void {
     if (this.tileset) {
       this.tileset.style = style;
     }

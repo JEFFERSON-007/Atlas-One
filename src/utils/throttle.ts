@@ -6,6 +6,7 @@
  * @param limit - Minimum time between invocations in milliseconds
  * @returns A throttled version of the function
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function throttle<T extends (...args: any[]) => void>(
   fn: T,
   limit: number,

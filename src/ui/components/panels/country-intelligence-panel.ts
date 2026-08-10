@@ -122,7 +122,7 @@ export class CountryIntelligencePanel {
   }
 
   private renderCountryHtml(c: GeospatialEntity): string {
-    const p = c.properties;
+    const p = c.properties as Record<string, any>;
 
     return `
       <div class="ao-panel-header">

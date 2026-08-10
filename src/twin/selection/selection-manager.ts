@@ -57,7 +57,7 @@ export class SelectionManager {
 
     // Single click handler for all scene elements
     this.handler.setInputAction((click: { position: Cartesian2 }) => {
-      this.handlePick(click.position);
+      void this.handlePick(click.position);
     }, ScreenSpaceEventType.LEFT_CLICK);
 
     log.info('Unified Selection Manager initialized');

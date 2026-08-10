@@ -9,7 +9,7 @@ import {
   PolylineCollection,
   type Viewer,
 } from 'cesium';
-import type { GeospatialEntity } from '../entity/geospatial-entity.types';
+import { type GeospatialEntity, EntityType } from '../entity/geospatial-entity.types';
 import { createLogger } from '../../utils/logger';
 
 const log = createLogger('VectorFeatureRenderer');
@@ -20,7 +20,7 @@ export class VectorFeatureRenderer {
 
   init(viewer: Viewer): void {
     this.viewer = viewer;
-    this.polylines = viewer.scene.primitives.add(new PolylineCollection());
+    this.polylines = viewer.scene.primitives.add(new PolylineCollection()) as PolylineCollection;
     log.info('Vector Feature Renderer initialized');
   }
 
@@ -41,7 +41,7 @@ export class VectorFeatureRenderer {
 
       this.polylines.add({
         positions,
-        width: item.type === 'river' ? 3.0 : 2.0,
+        width: item.type === EntityType.River ? 3.0 : 2.0,
         material: {
           fabric: {
             type: 'Color',

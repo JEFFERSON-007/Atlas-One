@@ -34,7 +34,7 @@ export class DigitalTwinPanel {
     this.unsubscribers.push(
       eventBus.on('selection:changed', (payload) => {
         if (payload.type !== 'none') {
-          this.showSelection(payload as SelectionPayload);
+          this.showSelection(payload);
         } else {
           this.hide();
         }
@@ -202,7 +202,7 @@ export class DigitalTwinPanel {
         return `
           <div style="font-size: 0.85rem;">
             <div style="font-weight: 600; margin-bottom: 0.4rem;">Nearby Airports & Ports (${graph?.relatedAirports.length || 0})</div>
-            ${graph?.relatedAirports.map((a) => `✈️ <b>${a.name}</b> (${a.properties['iata'] || 'N/A'})`).join('<br>') || 'None within 300km'}
+            ${graph?.relatedAirports.map((a) => `✈️ <b>${a.name}</b> (${(a.properties as Record<string, any>)['iata'] || 'N/A'})`).join('<br>') || 'None within 300km'}
             ${graph?.relatedPorts.map((p) => `<br>⚓ <b>${p.name}</b> (${p.country})`).join('') || ''}
           </div>
         `;

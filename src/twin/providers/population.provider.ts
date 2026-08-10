@@ -47,6 +47,7 @@ export class PopulationProvider implements IGeospatialProvider {
     return true;
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async fetchEntities(): Promise<GeospatialEntity[]> {
     const entities: GeospatialEntity[] = [];
 

@@ -69,7 +69,7 @@ export class ObjectListPanel {
     const allObjects = this.getObjects();
     const filtered = this.filterType === 'all'
       ? allObjects
-      : allObjects.filter((o) => o.type === this.filterType);
+      : allObjects.filter((o) => (o.type as string) === this.filterType);
 
     const sorted = [...filtered].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 

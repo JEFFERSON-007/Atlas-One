@@ -22,7 +22,7 @@ export class OrbitEngine {
 
   async init(viewer: Viewer): Promise<void> {
     this.viewer = viewer;
-    this.polylines = viewer.scene.primitives.add(new PolylineCollection());
+    this.polylines = viewer.scene.primitives.add(new PolylineCollection()) as PolylineCollection;
 
     try {
       this.satLib = await import('satellite.js');
