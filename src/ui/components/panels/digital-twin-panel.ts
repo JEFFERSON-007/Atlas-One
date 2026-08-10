@@ -81,10 +81,6 @@ export class DigitalTwinPanel {
     }
   }
 
-  isVisible(): boolean {
-    return this.visible;
-  }
-
   private render(): void {
     if (!this.container || !this.currentPayload) return;
 

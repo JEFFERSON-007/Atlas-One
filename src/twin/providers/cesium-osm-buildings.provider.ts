@@ -72,6 +72,13 @@ export class CesiumOSMBuildingsProvider implements IGeospatialProvider {
     }
   }
 
+  /** Applies a Cesium3DTileStyle to the tileset. */
+  setStyle(style: any): void {
+    if (this.tileset) {
+      this.tileset.style = style;
+    }
+  }
+
   /** Returns whether 3D buildings are currently enabled. */
   isTilesetVisible(): boolean {
     return this.enabled;

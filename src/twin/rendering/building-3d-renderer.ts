@@ -49,7 +49,6 @@ export class Building3DRenderer {
   }
 
   dispose(): void {
-    this.viewer = null;
     this.provider = null;
     log.info('Building 3D Renderer disposed');
   }
