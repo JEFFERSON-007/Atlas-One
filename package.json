@@ -18,7 +18,7 @@
   "dependencies": {
     "cesium": "^1.122.0",
     "gsap": "^3.12.5",
-    "satellite.js": "^5.0.0"
+    "satellite.js": "^4.1.4"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.0",
