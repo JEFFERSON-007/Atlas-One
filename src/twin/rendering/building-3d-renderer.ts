@@ -15,7 +15,7 @@ const log = createLogger('Building3DRenderer');
 export class Building3DRenderer {
   private provider: CesiumOSMBuildingsProvider | null = null;
 
-  init(viewer: Viewer, provider: CesiumOSMBuildingsProvider): void {
+  init(_viewer: Viewer, provider: CesiumOSMBuildingsProvider): void {
     this.provider = provider;
     log.info('Building 3D Renderer initialized');
   }
