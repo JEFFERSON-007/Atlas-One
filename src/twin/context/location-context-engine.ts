@@ -38,8 +38,8 @@ export class LocationContextEngine {
     objectEngine?: DynamicObjectEngine,
   ): void {
     this.entityEngine = entityEngine;
-    this.eventEngine = eventEngine;
-    this.objectEngine = objectEngine;
+    this.eventEngine = eventEngine ?? null;
+    this.objectEngine = objectEngine ?? null;
     log.info('Location Context Engine initialized');
   }
 

@@ -4,7 +4,6 @@
  */
 
 import {
-  Color,
   Cesium3DTileStyle,
   type Viewer,
 } from 'cesium';
@@ -14,11 +13,9 @@ import { createLogger } from '../../utils/logger';
 const log = createLogger('Building3DRenderer');
 
 export class Building3DRenderer {
-  private viewer: Viewer | null = null;
   private provider: CesiumOSMBuildingsProvider | null = null;
 
   init(viewer: Viewer, provider: CesiumOSMBuildingsProvider): void {
-    this.viewer = viewer;
     this.provider = provider;
     log.info('Building 3D Renderer initialized');
   }
@@ -38,6 +35,7 @@ export class Building3DRenderer {
           ],
         },
       });
+      this.provider.setStyle(style);
       // Style applied
       log.info('Applied height-based coloring to 3D buildings');
     } catch {

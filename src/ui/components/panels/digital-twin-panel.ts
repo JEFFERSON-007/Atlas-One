@@ -61,6 +61,18 @@ export class DigitalTwinPanel {
     });
   }
 
+  isVisible(): boolean {
+    return this.visible;
+  }
+
+  toggle(): void {
+    if (this.visible) {
+      this.hide();
+    } else if (this.currentPayload) {
+      this.showSelection(this.currentPayload);
+    }
+  }
+
   hide(): void {
     this.visible = false;
     this.currentPayload = null;

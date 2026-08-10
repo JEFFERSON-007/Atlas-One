@@ -19,7 +19,6 @@ import {
 } from 'cesium';
 import type { GeospatialEntity } from '../entity/geospatial-entity.types';
 import { EntityType, ENTITY_TYPE_COLORS, ENTITY_TYPE_ICONS } from '../entity/geospatial-entity.types';
-import { eventBus } from '../../hooks/use-event-bus';
 import { createLogger } from '../../utils/logger';
 
 const log = createLogger('EntityRenderer');

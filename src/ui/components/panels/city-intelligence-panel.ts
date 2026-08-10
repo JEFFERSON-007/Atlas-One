@@ -49,6 +49,10 @@ export class CityIntelligencePanel {
     else this.show();
   }
 
+  isVisible(): boolean {
+    return this.visible;
+  }
+
   show(): void {
     this.visible = true;
     if (this.container) {

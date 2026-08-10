@@ -5,6 +5,7 @@
  */
 
 import {
+  Cartesian2,
   Cartographic,
   Math as CesiumMath,
   ScreenSpaceEventHandler,
@@ -34,7 +35,7 @@ export class TerrainIntelligence {
     this.handler = new ScreenSpaceEventHandler(viewer.scene.canvas);
 
     // Mouse move hover elevation picker
-    this.handler.setInputAction((movement: { endPosition: { x: number; y: number } }) => {
+    this.handler.setInputAction((movement: { endPosition: Cartesian2 }) => {
       const ray = viewer.camera.getPickRay(movement.endPosition);
       if (!ray) return;
 

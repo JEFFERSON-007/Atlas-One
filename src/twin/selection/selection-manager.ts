@@ -51,7 +51,7 @@ export class SelectionManager {
   ): void {
     this.viewer = viewer;
     this.entityEngine = entityEngine;
-    this.relatedSystem = relatedSystem;
+    this.relatedSystem = relatedSystem ?? null;
 
     this.handler = new ScreenSpaceEventHandler(viewer.scene.canvas);
 
