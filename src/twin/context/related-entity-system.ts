@@ -6,7 +6,7 @@
 
 import { type GeospatialEntity, EntityType } from '../entity/geospatial-entity.types';
 import type { EarthEvent } from '../../events/earth-event.types';
-import { type DynamicObject, DynamicObjectType } from '../../mobility/dynamic-object.types';
+import { type DynamicObject, ObjectType } from '../../mobility/dynamic-object.types';
 import type { LocationContextEngine, LocationContext } from './location-context-engine';
 
 export interface RelatedEntityGraph {
@@ -55,8 +55,8 @@ export class RelatedEntitySystem {
     const relatedAirports = context.nearbyEntities.filter((e) => e.type === EntityType.Airport);
     const relatedPorts = context.nearbyEntities.filter((e) => e.type === EntityType.Port);
     const relatedCities = context.nearbyEntities.filter((e) => e.type === EntityType.City);
-    const relatedFlights = context.nearbyObjects.filter((o) => o.type === DynamicObjectType.Aircraft);
-    const relatedShips = context.nearbyObjects.filter((o) => o.type === DynamicObjectType.Ship);
+    const relatedFlights = context.nearbyObjects.filter((o) => o.type === ObjectType.Aircraft);
+    const relatedShips = context.nearbyObjects.filter((o) => o.type === ObjectType.Ship);
 
     return {
       targetEntityId: entity.id,
