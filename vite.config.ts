@@ -51,6 +51,7 @@ export default defineConfig({
         manualChunks: {
           cesium: ['cesium'],
           gsap: ['gsap'],
+          satellite: ['satellite.js'],
         },
       },
     },
