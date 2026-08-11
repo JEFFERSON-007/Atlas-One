@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 declare module 'satellite.js' {
   export interface SatRec {
     no: number;
