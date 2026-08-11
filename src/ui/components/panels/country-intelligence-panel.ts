@@ -122,6 +122,7 @@ export class CountryIntelligencePanel {
   }
 
   private renderCountryHtml(c: GeospatialEntity): string {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const p = c.properties as Record<string, any>;
 
     return `

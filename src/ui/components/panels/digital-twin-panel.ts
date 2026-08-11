@@ -198,14 +198,18 @@ export class DigitalTwinPanel {
           </div>
         `;
 
-      case 'infrastructure':
+      case 'infrastructure': {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const airportRows = graph?.relatedAirports.map((a) => `✈️ <b>${a.name}</b> (${(a.properties as Record<string, any>)['iata'] || 'N/A'})`).join('<br>') || 'None within 300km';
+        const portRows = graph?.relatedPorts.map((p) => `<br>⚓ <b>${p.name}</b> (${p.country})`).join('') || '';
         return `
           <div style="font-size: 0.85rem;">
-            <div style="font-weight: 600; margin-bottom: 0.4rem;">Nearby Airports & Ports (${graph?.relatedAirports.length || 0})</div>
-            ${graph?.relatedAirports.map((a) => `✈️ <b>${a.name}</b> (${(a.properties as Record<string, any>)['iata'] || 'N/A'})`).join('<br>') || 'None within 300km'}
-            ${graph?.relatedPorts.map((p) => `<br>⚓ <b>${p.name}</b> (${p.country})`).join('') || ''}
+            <div style="font-weight: 600; margin-bottom: 0.4rem;">Nearby Airports &amp; Ports (${graph?.relatedAirports.length || 0})</div>
+            ${airportRows}
+            ${portRows}
           </div>
         `;
+      }
 
       case 'transportation':
         return `

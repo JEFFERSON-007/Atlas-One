@@ -11,8 +11,8 @@ declare module 'satellite.js' {
   }
 
   export interface PositionAndVelocity {
-    position: EciVec3 | boolean;
-    velocity: EciVec3 | boolean;
+    position: EciVec3 | false;
+    velocity: EciVec3 | false;
   }
 
   export interface GeodeticLocation {
