@@ -99,7 +99,7 @@ export class CesiumOSMBuildingsProvider implements IGeospatialProvider {
       };
 
       if ('readyEvent' in this.tileset) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         (this.tileset as any).readyEvent.addEventListener(applyPendingStyle);
       } else {
         setTimeout(applyPendingStyle, 0);
