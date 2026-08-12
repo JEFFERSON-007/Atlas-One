@@ -7,6 +7,7 @@
 import {
   Cartesian3,
   Color,
+  Material,
   PolylineCollection,
   type Viewer,
 } from 'cesium';
@@ -54,14 +55,7 @@ export class TrailEngine {
       this.polylines.add({
         positions,
         width: obj.trailState.width || 1.5,
-        material: {
-          fabric: {
-            type: 'Color',
-            uniforms: {
-              color,
-            },
-          },
-        },
+        material: Material.fromType('Color', { color }),
       });
     }
   }

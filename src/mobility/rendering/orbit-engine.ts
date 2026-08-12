@@ -6,6 +6,7 @@
 import {
   Cartesian3,
   Color,
+  Material,
   PolylineCollection,
   type Viewer,
 } from 'cesium';
@@ -81,15 +82,8 @@ export class OrbitEngine {
           const color = Color.fromCssColorString(obj.color).withAlpha(0.4);
           this.polylines.add({
             positions,
-            width: obj.id.includes('25544') ? 2.0 : 1.0, // Thicker for ISS
-            material: {
-              fabric: {
-                type: 'Color',
-                uniforms: {
-                  color,
-                },
-              },
-            },
+            width: obj.id.includes('25544') ? 2.0 : 1.0,
+            material: Material.fromType('Color', { color }),
           });
         }
       } catch {
