@@ -57,7 +57,7 @@ export class OrbitEngine {
 
     // Only show orbits for priority types, capped at MAX_ORBITS to prevent visual flooding
     const candidates = objects
-      .filter((o) => o.visible && ORBIT_PRIORITY_TYPES.has(o.type as ObjectType))
+      .filter((o) => o.visible && ORBIT_PRIORITY_TYPES.has(o.type))
       .slice(0, MAX_ORBITS);
 
     const now = new Date();
