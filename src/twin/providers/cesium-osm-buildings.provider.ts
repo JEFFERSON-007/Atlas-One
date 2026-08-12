@@ -12,7 +12,6 @@ import {
   type Viewer,
   Cesium3DTileset,
   Cesium3DTileStyle,
-  Ion,
   createOsmBuildingsAsync,
 } from 'cesium';
 import type { IGeospatialProvider, GeospatialProviderInfo } from './geospatial-provider.interface';
@@ -22,19 +21,13 @@ import {
 } from '../entity/geospatial-entity.types';
 import { createLogger } from '../../utils/logger';
 
+import { getAppConfig } from '../../config/app.config';
+
 const log = createLogger('CesiumOSMBuildingsProvider');
 
-/** Cesium Ion default token placeholder — prefix Cesium ships with (no real access). */
-const ION_TOKEN_PLACEHOLDER = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
-
-/** Returns true only if a real (non-placeholder) Ion token is configured. */
+/** Returns true only if a real Ion token was configured via VITE_CESIUM_ION_TOKEN. */
 function hasValidIonToken(): boolean {
-  const token = Ion.defaultAccessToken;
-  return (
-    typeof token === 'string' &&
-    token.length > 100 &&
-    !token.startsWith(ION_TOKEN_PLACEHOLDER)
-  );
+  return getAppConfig().hasCesiumIon;
 }
 
 export class CesiumOSMBuildingsProvider implements IGeospatialProvider {
