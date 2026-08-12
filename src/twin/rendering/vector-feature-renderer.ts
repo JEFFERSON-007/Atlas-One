@@ -6,6 +6,7 @@
 import {
   Cartesian3,
   Color,
+  Material,
   PolylineCollection,
   type Viewer,
 } from 'cesium';
@@ -39,15 +40,13 @@ export class VectorFeatureRenderer {
 
       const color = Color.fromCssColorString(item.color || '#3b82f6').withAlpha(0.7);
 
+      // Must use Material.fromType() — passing a raw fabric object causes shader crashes
+      const material = Material.fromType('Color', { color });
+
       this.polylines.add({
         positions,
         width: item.type === EntityType.River ? 3.0 : 2.0,
-        material: {
-          fabric: {
-            type: 'Color',
-            uniforms: { color },
-          },
-        },
+        material,
       });
     }
   }
