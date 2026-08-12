@@ -11,9 +11,22 @@ import {
   type Viewer,
 } from 'cesium';
 import type { DynamicObject } from '../dynamic-object.types';
+import { ObjectType } from '../dynamic-object.types';
 import { createLogger } from '../../utils/logger';
 
 const log = createLogger('OrbitEngine');
+
+/** Max simultaneous orbit paths to render — prevents visual flooding. */
+const MAX_ORBITS = 30;
+
+/**
+ * Object types whose orbits should be shown by default.
+ * Dense constellations (Starlink, GPS block) are excluded to avoid clutter.
+ */
+const ORBIT_PRIORITY_TYPES = new Set([
+  ObjectType.ISS,
+  ObjectType.Satellite,
+]);
 
 export class OrbitEngine {
   private viewer: Viewer | null = null;
@@ -42,11 +55,14 @@ export class OrbitEngine {
 
     this.polylines.removeAll();
 
+    // Only show orbits for priority types, capped at MAX_ORBITS to prevent visual flooding
+    const candidates = objects
+      .filter((o) => o.visible && ORBIT_PRIORITY_TYPES.has(o.type as ObjectType))
+      .slice(0, MAX_ORBITS);
+
     const now = new Date();
 
-    for (const obj of objects) {
-      if (!obj.visible) continue;
-
+    for (const obj of candidates) {
       const tleLine1 = obj.metadata['tleLine1'] as string | undefined;
       const tleLine2 = obj.metadata['tleLine2'] as string | undefined;
 
