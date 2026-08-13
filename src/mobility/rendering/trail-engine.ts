@@ -20,6 +20,7 @@ export class TrailEngine {
   private viewer: Viewer | null = null;
   private polylines: PolylineCollection | null = null;
   private enabled = true;
+  private materialCache = new Map<string, Material>();
 
   init(viewer: Viewer): void {
     this.viewer = viewer;
@@ -50,12 +51,18 @@ export class TrailEngine {
         Cartesian3.fromDegrees(obj.longitude, obj.latitude, obj.altitude ?? 0),
       );
 
-      const color = Color.fromCssColorString(obj.trailState.color).withAlpha(0.6);
+      const colorString = obj.trailState.color;
+      let material = this.materialCache.get(colorString);
+      if (!material) {
+        const color = Color.fromCssColorString(colorString).withAlpha(0.6);
+        material = Material.fromType('Color', { color });
+        this.materialCache.set(colorString, material);
+      }
 
       this.polylines.add({
         positions,
         width: obj.trailState.width || 1.5,
-        material: Material.fromType('Color', { color }),
+        material,
       });
     }
   }

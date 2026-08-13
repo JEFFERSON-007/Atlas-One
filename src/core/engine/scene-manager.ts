@@ -87,6 +87,7 @@ export class SceneManager {
     const scene = this.viewer.scene;
     scene.globe.enableLighting = true;
     scene.globe.depthTestAgainstTerrain = true;
+    scene.globe.translucency.enabled = false;
     scene.fog.enabled = qualityPreset.fog;
 
     // FXAA

@@ -18,6 +18,7 @@ const log = createLogger('VectorFeatureRenderer');
 export class VectorFeatureRenderer {
   private viewer: Viewer | null = null;
   private polylines: PolylineCollection | null = null;
+  private materialCache = new Map<string, Material>();
 
   init(viewer: Viewer): void {
     this.viewer = viewer;
@@ -38,10 +39,13 @@ export class VectorFeatureRenderer {
 
       if (positions.length < 2) continue;
 
-      const color = Color.fromCssColorString(item.color || '#3b82f6').withAlpha(0.7);
-
-      // Must use Material.fromType() — passing a raw fabric object causes shader crashes
-      const material = Material.fromType('Color', { color });
+      const colorString = item.color || '#3b82f6';
+      let material = this.materialCache.get(colorString);
+      if (!material) {
+        const color = Color.fromCssColorString(colorString).withAlpha(0.7);
+        material = Material.fromType('Color', { color });
+        this.materialCache.set(colorString, material);
+      }
 
       this.polylines.add({
         positions,

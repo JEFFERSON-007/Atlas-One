@@ -33,6 +33,7 @@ export class OrbitEngine {
   private polylines: PolylineCollection | null = null;
   private satLib: typeof import('satellite.js') | null = null;
   private enabled = true;
+  private materialCache = new Map<string, Material>();
 
   async init(viewer: Viewer): Promise<void> {
     this.viewer = viewer;
@@ -95,11 +96,17 @@ export class OrbitEngine {
         }
 
         if (positions.length > 2) {
-          const color = Color.fromCssColorString(obj.color).withAlpha(0.4);
+          const colorString = obj.color;
+          let material = this.materialCache.get(colorString);
+          if (!material) {
+            const color = Color.fromCssColorString(colorString).withAlpha(0.4);
+            material = Material.fromType('Color', { color });
+            this.materialCache.set(colorString, material);
+          }
           this.polylines.add({
             positions,
             width: obj.id.includes('25544') ? 2.0 : 1.0,
-            material: Material.fromType('Color', { color }),
+            material,
           });
         }
       } catch {
