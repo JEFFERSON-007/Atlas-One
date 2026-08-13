@@ -20,6 +20,9 @@
 | Feature | Description |
 |---|---|
 | 🌍 **Earth Event Engine** | Generic, reusable real-time natural event monitoring system |
+| 🚀 **Global Mobility Engine** | Live tracking of flights (OpenSky), satellites (CelesTrak), ISS, and ships (AIS) |
+| 🛰️ **Orbital Mechanics** | Real-time SGP4 TLE orbital path propagation & 3D motion trails |
+| 🏢 **Digital Twin Layer** | 3D Buildings (OSM), global country borders, rivers, lakes, and city labels |
 | 🌋 **6 Live Data Providers** | USGS Earthquakes, NASA Wildfires, Smithsonian Volcanoes, Blitzortung Lightning, NOAA Storms, GDACS Tsunamis |
 | 📊 **Earth Intelligence Dashboard** | Real-time stat cards, severity breakdown bars, and critical alert highlights |
 | 📍 **Severity Markers & Animation** | SVG data URI markers with color/size severity coding and pulse animation rings |
@@ -29,8 +32,6 @@
 | 🔍 **Universal Filter System** | Search keywords, event types, and severity level filtering |
 | ⏱️ **Event Timeline Strip** | Bottom temporal control bar for time-series visualization |
 | 🌐 **Interactive 3D Globe** | Photorealistic Earth with high-res terrain, atmosphere glow, and HDR lighting |
-| 🌤️ **Live Weather System** | Pluggable weather architecture powered by Open-Meteo |
-| ℹ️ **Information Panel** | Click any globe location for geocoded address, live weather metrics & local time |
 | ☁️ **Global Cloud Overlay** | Real MODIS cloud coverage via NASA GIBS imagery |
 | 🗂️ **Modular Layer Manager** | Satellite imagery, terrain, clouds, atmosphere, day/night, events, heatmaps |
 
@@ -42,25 +43,12 @@
 src/
 ├── config/                  # App & Cesium configuration & quality presets
 ├── core/engine/             # Scene, Camera, Lighting, Animation
-│   ├── camera/
-│   ├── lighting/
-│   ├── scene/
-│   └── animation/
-├── globe/                   # Earth rendering subsystems
-│   ├── terrain/
-│   ├── imagery/providers/
-│   ├── clouds/              # NASA GIBS MODIS cloud layer
-│   └── atmosphere/          # Sky scattering & depth fog
-├── layers/                  # Modular layer system
-│   └── implementations/     # Imagery, terrain, clouds, atmosphere, day/night, etc.
-├── api/                     # HTTP client & service adapters
-│   ├── providers/           # Pluggable Weather providers (Open-Meteo)
-│   ├── services/            # Weather service with 30s TTL cache & deduplication
-│   └── adapters/            # Nominatim, Weather adapter facade
-├── ui/                      # Glassmorphism UI components
-│   └── components/
-│       ├── toolbar/
-│       └── panels/          # Search, Layers, Settings, InfoPanel, Coordinates, FPS
+├── twin/                    # Digital Twin engine (Buildings, Borders, Hydrology, Cities)
+├── mobility/                # Live tracking (Satellites, ISS, Flights, Ships, Orbits, Trails)
+├── events/                  # Natural event tracking (Earthquakes, Volcanoes, Storms)
+├── globe/                   # Earth rendering subsystems (Terrain, Imagery, Clouds, Atmosphere)
+├── layers/                  # Modular layer system (Toggleable map features)
+├── ui/                      # Glassmorphism UI components (Dashboards, Panels, Overlays)
 ├── hooks/                   # Event bus
 ├── utils/                   # Debounce, throttle, DOM, validators, logger
 ├── styles/                  # CSS design system & glassmorphism tokens
@@ -74,8 +62,8 @@ src/
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) 18+
-- [npm](https://www.npmjs.com/) 9+
+- [Node.js](https://nodejs.org/) 22+ (Required for `@cesium/engine`)
+- [npm](https://www.npmjs.com/) 10+
 
 ### Installation
 
@@ -117,11 +105,11 @@ Atlas One uses environment variables for API keys. Copy `.env.example` to `.env`
 
 | Variable | Required | Description |
 |---|---|---|
-| `VITE_CESIUM_ION_TOKEN` | Recommended | Enables terrain and premium imagery. [Get free token →](https://ion.cesium.com/tokens) |
+| `VITE_CESIUM_ION_TOKEN` | Recommended | Enables terrain and 3D buildings. [Get free token →](https://ion.cesium.com/tokens) |
 | `VITE_OPENWEATHER_API_KEY` | No | Future: weather layer |
 | `VITE_MAPTILER_API_KEY` | No | Future: alternative map tiles |
 
-> **Without a Cesium Ion token**, the app runs with OpenStreetMap tiles and flat terrain — fully functional, but less visually impressive.
+> **Without a Cesium Ion token**, the app runs with OpenStreetMap tiles, flat terrain, and no 3D buildings — fully functional, but less visually immersive.
 
 ---
 
@@ -134,13 +122,6 @@ Push to `main` and GitHub Actions will automatically build and deploy:
 1. Go to your repo → **Settings** → **Pages**
 2. Set Source to **GitHub Actions**
 3. Push to `main` — the workflow handles the rest
-
-### Manual Deployment
-
-```bash
-npm run build
-# Upload the `dist/` folder to your hosting provider
-```
 
 ### Custom Base Path
 
@@ -169,16 +150,11 @@ Atlas One uses a **premium dark glassmorphism** design:
 
 | Module | Status |
 |---|---|
-| Weather Layer | 🔲 Stub ready |
-| Earthquake Layer | 🔲 Stub ready |
-| Flight Tracking | 🔲 Planned |
-| Ship Tracking | 🔲 Planned |
-| Satellite Orbits | 🔲 Planned |
-| Wildfire Detection | 🔲 Planned |
-| Volcano Monitoring | 🔲 Planned |
-| AI Assistant | 🔲 Planned |
-| Historical Timeline | 🔲 Planned |
-| Analytics Dashboard | 🔲 Planned |
+| Weather Radar Overlay | 🔲 Planned |
+| Cyber Threat Map | 🔲 Planned |
+| Historical Timeline Slider | 🔲 Planned |
+| Submarine Cable Network | 🔲 Planned |
+| Mobile Companion App | 🔲 Planned |
 
 ---
 
@@ -212,6 +188,6 @@ Atlas One uses a **premium dark glassmorphism** design:
 
 **Built with ❤️ for Earth Intelligence**
 
-*Atlas One v0.1*
+*Atlas One v0.5.0*
 
 </div>
