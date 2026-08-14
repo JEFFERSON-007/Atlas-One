@@ -96,6 +96,8 @@ export class TrailEngine {
   clear(): void {
     if (this.polylines) {
       this.polylines.removeAll();
+      this.polylineMap.clear();
+      this.materialCache.clear();
     }
   }
 

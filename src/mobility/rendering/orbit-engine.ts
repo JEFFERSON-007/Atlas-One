@@ -144,6 +144,8 @@ export class OrbitEngine {
   clear(): void {
     if (this.polylines) {
       this.polylines.removeAll();
+      this.polylineMap.clear();
+      this.materialCache.clear();
     }
   }
 
