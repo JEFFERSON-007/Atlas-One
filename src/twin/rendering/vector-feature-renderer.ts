@@ -18,7 +18,6 @@ const log = createLogger('VectorFeatureRenderer');
 export class VectorFeatureRenderer {
   private viewer: Viewer | null = null;
   private polylines: PolylineCollection | null = null;
-  private materialCache = new Map<string, Material>();
 
   init(viewer: Viewer): void {
     this.viewer = viewer;
@@ -40,12 +39,8 @@ export class VectorFeatureRenderer {
       if (positions.length < 2) continue;
 
       const colorString = item.color || '#3b82f6';
-      let material = this.materialCache.get(colorString);
-      if (!material) {
-        const color = Color.fromCssColorString(colorString).withAlpha(0.7);
-        material = Material.fromType('Color', { color });
-        this.materialCache.set(colorString, material);
-      }
+      const color = Color.fromCssColorString(colorString).withAlpha(0.7);
+      const material = Material.fromType('Color', { color });
 
       this.polylines.add({
         positions,
@@ -57,7 +52,6 @@ export class VectorFeatureRenderer {
 
   clear(): void {
     this.polylines?.removeAll();
-    this.materialCache.clear();
   }
 
   dispose(): void {

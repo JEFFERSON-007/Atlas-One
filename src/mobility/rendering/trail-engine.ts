@@ -21,7 +21,6 @@ export class TrailEngine {
   private viewer: Viewer | null = null;
   private polylines: PolylineCollection | null = null;
   private enabled = true;
-  private materialCache = new Map<string, Material>();
 
   init(viewer: Viewer): void {
     this.viewer = viewer;
@@ -59,12 +58,8 @@ export class TrailEngine {
       let polyline = this.polylineMap.get(obj.id);
       
       if (!polyline) {
-        let material = this.materialCache.get(colorString);
-        if (!material) {
-          const color = Color.fromCssColorString(colorString).withAlpha(0.6);
-          material = Material.fromType('Color', { color });
-          this.materialCache.set(colorString, material);
-        }
+        const color = Color.fromCssColorString(colorString).withAlpha(0.6);
+        const material = Material.fromType('Color', { color });
 
         polyline = this.polylines.add({
           positions,
@@ -97,7 +92,6 @@ export class TrailEngine {
     if (this.polylines) {
       this.polylines.removeAll();
       this.polylineMap.clear();
-      this.materialCache.clear();
     }
   }
 
