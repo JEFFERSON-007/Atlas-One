@@ -8,6 +8,7 @@ import {
   Cartesian3,
   Color,
   Material,
+  Polyline,
   PolylineCollection,
   type Viewer,
 } from 'cesium';
@@ -28,7 +29,7 @@ export class TrailEngine {
     log.info('Trail engine initialized');
   }
 
-  private polylineMap = new Map<string, any>(); // Map object ID to Polyline instance
+  private polylineMap = new Map<string, Polyline>(); // Map object ID to Polyline instance
 
   /**
    * Updates trails for a list of dynamic objects based on their history buffers.
@@ -55,8 +56,6 @@ export class TrailEngine {
       activeIds.add(obj.id);
 
       const colorString = obj.trailState.color;
-      
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       let polyline = this.polylineMap.get(obj.id);
       
       if (!polyline) {
@@ -74,7 +73,6 @@ export class TrailEngine {
         });
         this.polylineMap.set(obj.id, polyline);
       } else {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         polyline.positions = positions;
       }
     }
