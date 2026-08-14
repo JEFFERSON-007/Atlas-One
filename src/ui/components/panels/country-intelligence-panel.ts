@@ -132,6 +132,8 @@ export class CountryIntelligencePanel {
       languages?: string;
       currencies?: string;
       timezones?: string;
+      tld?: string;
+      borders?: string;
     }
     const p = c.properties as CountryProps;
 
