@@ -57,6 +57,7 @@ export class VectorFeatureRenderer {
 
   clear(): void {
     this.polylines?.removeAll();
+    this.materialCache.clear();
   }
 
   dispose(): void {

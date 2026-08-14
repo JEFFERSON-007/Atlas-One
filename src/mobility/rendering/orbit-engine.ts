@@ -48,13 +48,15 @@ export class OrbitEngine {
     log.info('Orbit engine initialized');
   }
 
+  private polylineMap = new Map<string, any>(); // Map object ID to Polyline instance
+
   /**
    * Renders orbital paths for satellite objects that contain TLE metadata.
    */
   renderOrbits(objects: DynamicObject[]): void {
     if (!this.viewer || !this.polylines || !this.enabled || !this.satLib) return;
 
-    this.polylines.removeAll();
+    const activeIds = new Set<string>();
 
     // Only show orbits for priority types, capped at MAX_ORBITS to prevent visual flooding
     const candidates = objects
@@ -96,21 +98,40 @@ export class OrbitEngine {
         }
 
         if (positions.length > 2) {
+          activeIds.add(obj.id);
           const colorString = obj.color;
-          let material = this.materialCache.get(colorString);
-          if (!material) {
-            const color = Color.fromCssColorString(colorString).withAlpha(0.4);
-            material = Material.fromType('Color', { color });
-            this.materialCache.set(colorString, material);
+          
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          let polyline = this.polylineMap.get(obj.id);
+          
+          if (!polyline) {
+            let material = this.materialCache.get(colorString);
+            if (!material) {
+              const color = Color.fromCssColorString(colorString).withAlpha(0.4);
+              material = Material.fromType('Color', { color });
+              this.materialCache.set(colorString, material);
+            }
+            polyline = this.polylines.add({
+              positions,
+              width: obj.id.includes('25544') ? 2.0 : 1.0,
+              material,
+            });
+            this.polylineMap.set(obj.id, polyline);
+          } else {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+            polyline.positions = positions;
           }
-          this.polylines.add({
-            positions,
-            width: obj.id.includes('25544') ? 2.0 : 1.0,
-            material,
-          });
         }
-      } catch {
-        // Skip malformed TLE
+      } catch (err) {
+        log.warn(`Failed to propagate orbit for ${obj.id}`, err);
+      }
+    }
+
+    // Clean up stale polylines
+    for (const [id, polyline] of this.polylineMap.entries()) {
+      if (!activeIds.has(id)) {
+        this.polylines.remove(polyline);
+        this.polylineMap.delete(id);
       }
     }
   }

@@ -28,14 +28,15 @@ export class TrailEngine {
     log.info('Trail engine initialized');
   }
 
+  private polylineMap = new Map<string, any>(); // Map object ID to Polyline instance
+
   /**
    * Updates trails for a list of dynamic objects based on their history buffers.
    */
   updateTrails(objects: DynamicObject[]): void {
     if (!this.viewer || !this.polylines || !this.enabled) return;
 
-    // Clear existing polylines
-    this.polylines.removeAll();
+    const activeIds = new Set<string>();
 
     for (const obj of objects) {
       if (!obj.visible || !obj.trailState.enabled || obj.historyBuffer.length < 2) {
@@ -51,19 +52,39 @@ export class TrailEngine {
         Cartesian3.fromDegrees(obj.longitude, obj.latitude, obj.altitude ?? 0),
       );
 
-      const colorString = obj.trailState.color;
-      let material = this.materialCache.get(colorString);
-      if (!material) {
-        const color = Color.fromCssColorString(colorString).withAlpha(0.6);
-        material = Material.fromType('Color', { color });
-        this.materialCache.set(colorString, material);
-      }
+      activeIds.add(obj.id);
 
-      this.polylines.add({
-        positions,
-        width: obj.trailState.width || 1.5,
-        material,
-      });
+      const colorString = obj.trailState.color;
+      
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      let polyline = this.polylineMap.get(obj.id);
+      
+      if (!polyline) {
+        let material = this.materialCache.get(colorString);
+        if (!material) {
+          const color = Color.fromCssColorString(colorString).withAlpha(0.6);
+          material = Material.fromType('Color', { color });
+          this.materialCache.set(colorString, material);
+        }
+
+        polyline = this.polylines.add({
+          positions,
+          width: obj.trailState.width || 1.5,
+          material,
+        });
+        this.polylineMap.set(obj.id, polyline);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        polyline.positions = positions;
+      }
+    }
+
+    // Clean up stale polylines
+    for (const [id, polyline] of this.polylineMap.entries()) {
+      if (!activeIds.has(id)) {
+        this.polylines.remove(polyline);
+        this.polylineMap.delete(id);
+      }
     }
   }
 
