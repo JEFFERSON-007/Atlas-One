@@ -96,7 +96,8 @@ class EventBus {
     if (!set) return;
     for (const callback of set) {
       try {
-        (callback as (...a: unknown[]) => void)(...args);
+        // @ts-expect-error - Callback signature is safely matched by emit type constraints
+        callback(...args);
       } catch {
         // Event handlers should not crash the bus
       }

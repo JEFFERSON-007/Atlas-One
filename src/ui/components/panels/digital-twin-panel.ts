@@ -199,7 +199,7 @@ export class DigitalTwinPanel {
         `;
 
       case 'infrastructure': {
-        const airportRows = graph?.relatedAirports.map((a) => `✈️ <b>${a.name}</b> (${(a.properties as Record<string, unknown>)['iata'] as string || 'N/A'})`).join('<br>') || 'None within 300km';
+        const airportRows = graph?.relatedAirports.map((a) => `✈️ <b>${a.name}</b> (${a.properties['iata'] as string || 'N/A'})`).join('<br>') || 'None within 300km';
         const portRows = graph?.relatedPorts.map((p) => `<br>⚓ <b>${p.name}</b> (${p.country})`).join('') || '';
         return `
           <div style="font-size: 0.85rem;">
