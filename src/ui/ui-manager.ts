@@ -25,6 +25,8 @@ import { CountryIntelligencePanel } from './components/panels/country-intelligen
 import { CityIntelligencePanel } from './components/panels/city-intelligence-panel';
 import { GlobeHUD } from './components/panels/globe-hud';
 import { TimeControllerBar } from './components/panels/time-controller-bar';
+import { AiAssistantPanel } from './components/panels/ai-assistant-panel';
+import type { AIEngine } from '../ai/engine';
 import type { DynamicObjectEngine } from '../mobility/engine/object-engine';
 import type { MobilityFilterEngine } from '../mobility/engine/mobility-filter-engine';
 import type { GeospatialEntityEngine } from '../twin/entity/geospatial-entity-engine';
@@ -66,6 +68,7 @@ export class UIManager {
   private eventTimeline: EventTimeline;
   private coordinatesDisplay: CoordinatesDisplay;
   private fpsCounter: FPSCounter;
+  private aiAssistantPanel: AiAssistantPanel;
 
   constructor() {
     this.toolbar = new Toolbar();
@@ -89,6 +92,7 @@ export class UIManager {
     this.eventTimeline = new EventTimeline();
     this.coordinatesDisplay = new CoordinatesDisplay();
     this.fpsCounter = new FPSCounter();
+    this.aiAssistantPanel = new AiAssistantPanel();
   }
 
   /**
@@ -107,6 +111,7 @@ export class UIManager {
     geospatialEngine?: GeospatialEntityEngine,
     terrainIntel?: TerrainIntelligence,
     timeController?: TimeController,
+    aiEngine?: AIEngine,
   ): void {
     const overlayId = 'ui-overlay';
 
@@ -122,6 +127,10 @@ export class UIManager {
     this.searchPanel.init(overlayId, viewer);
     this.layersPanel.init(overlayId, layerRegistry);
     this.infoPanel.init(overlayId);
+
+    if (aiEngine) {
+      this.aiAssistantPanel.init(overlayId, aiEngine);
+    }
 
     // Initialize v0.3 Earth Event panels
     if (eventEngine) {
@@ -177,7 +186,7 @@ export class UIManager {
         animationSpeed: 1.0,
       },
       (key: string, value: unknown) => {
-        this.handleSettingChange(key, value, cameraController, sceneManager, globeManager);
+        this.handleSettingChange(key, value, cameraController, sceneManager, globeManager, aiEngine);
       },
     );
 
@@ -205,6 +214,7 @@ export class UIManager {
       this.digitalTwinPanel,
       this.countryIntelligencePanel,
       this.cityIntelligencePanel,
+      this.aiAssistantPanel,
     ];
 
     switch (buttonId) {
@@ -232,6 +242,12 @@ export class UIManager {
         break;
       case 'mobility-list':
         this.toggleExclusivePanel(this.objectListPanel, leftPanels, 'btn-mobility-list');
+        break;
+      case 'mobility-filter':
+        this.toggleExclusivePanel(this.mobilityFilterPanel, leftPanels, 'btn-mobility-filter');
+        break;
+      case 'btn-ai-assistant':
+        this.toggleExclusivePanel(this.aiAssistantPanel, leftPanels, 'btn-ai-assistant');
         break;
       case 'mobility-filter':
         this.toggleExclusivePanel(this.mobilityFilterPanel, leftPanels, 'btn-mobility-filter');
@@ -276,6 +292,7 @@ export class UIManager {
     cameraController: CameraController,
     sceneManager: SceneManager,
     globeManager: GlobeManager,
+    aiEngine?: AIEngine,
   ): void {
     switch (key) {
       case 'showFps':
@@ -293,6 +310,17 @@ export class UIManager {
       case 'graphicsQuality':
         updateGraphicsQuality(value as GraphicsQuality);
         sceneManager.applyQuality(value as GraphicsQuality);
+        break;
+      case 'aiProvider':
+      case 'aiApiKey':
+      case 'aiEndpoint':
+        if (aiEngine) {
+          const state = this.settingsPanel.getState();
+          aiEngine.setProvider(state.aiProvider, {
+            apiKey: state.aiApiKey,
+            endpoint: state.aiEndpoint
+          });
+        }
         break;
     }
   }

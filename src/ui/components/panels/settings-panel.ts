@@ -17,6 +17,9 @@ export interface SettingsState {
   clouds: boolean;
   graphicsQuality: GraphicsQuality;
   animationSpeed: number;
+  aiProvider: 'MOCK' | 'LOCAL' | 'REMOTE';
+  aiApiKey: string;
+  aiEndpoint: string;
 }
 
 /**
@@ -32,9 +35,16 @@ export class SettingsPanel {
     clouds: false,
     graphicsQuality: 'medium',
     animationSpeed: 1.0,
+    aiProvider: 'MOCK',
+    aiApiKey: '',
+    aiEndpoint: '',
   };
 
   private onSettingChange: ((key: string, value: unknown) => void) | null = null;
+
+  public getState(): SettingsState {
+    return this.state;
+  }
 
   /**
    * Initializes the settings panel.
@@ -90,6 +100,21 @@ export class SettingsPanel {
 
     // Animation Speed
     content.appendChild(this.createSlider('animationSpeed', 'Animation Speed', this.state.animationSpeed, 0.1, 3.0, 0.1));
+
+    // AI Settings
+    const aiSection = createElement('div', { class: 'tn-settings-panel__section', style: 'margin-top: 16px; border-top: 1px solid var(--border-color); padding-top: 16px;' });
+    aiSection.appendChild(createElement('h3', { style: 'margin-bottom: 12px; font-size: 14px; font-weight: 600;' }, 'AI Assistant Configuration'));
+    
+    aiSection.appendChild(this.createSelect('aiProvider', 'AI Provider', [
+      { value: 'MOCK', label: 'Mock (Demo)' },
+      { value: 'LOCAL', label: 'Local LLM (Ollama/LMStudio)' },
+      { value: 'REMOTE', label: 'OpenAI (Remote)' },
+    ], this.state.aiProvider));
+
+    aiSection.appendChild(this.createInput('aiEndpoint', 'Endpoint URL (Local)', this.state.aiEndpoint, 'http://localhost:11434/v1/chat/completions'));
+    aiSection.appendChild(this.createInput('aiApiKey', 'API Key (OpenAI)', this.state.aiApiKey, 'sk-...', 'password'));
+
+    content.appendChild(aiSection);
 
     this.panel.appendChild(content);
     parent.appendChild(this.panel);
@@ -167,28 +192,71 @@ export class SettingsPanel {
     max: number,
     step: number,
   ): HTMLElement {
-    const row = createElement('div', { class: 'tn-settings-panel__row tn-settings-panel__row--slider' });
+    const row = createElement('div', { class: 'tn-settings-panel__row' });
     const lbl = createElement('label', {
       class: 'tn-settings-panel__label',
       for: `setting-${key}`,
-    }, `${label}: ${value.toFixed(1)}x`);
+    }, label);
 
     const input = createElement('input', {
       type: 'range',
       id: `setting-${key}`,
       class: 'tn-settings-panel__slider',
-      min: String(min),
-      max: String(max),
-      step: String(step),
-      value: String(value),
+      min: min.toString(),
+      max: max.toString(),
+      step: step.toString(),
+      value: value.toString(),
       'aria-label': label,
     });
 
+    const valDisplay = createElement('span', { class: 'tn-settings-panel__slider-val' }, value.toString());
+
     input.addEventListener('input', () => {
-      const val = parseFloat(input.value);
-      (this.state as unknown as Record<string, unknown>)[key] = val;
-      lbl.textContent = `${label}: ${val.toFixed(1)}x`;
-      this.emitChange(key, val);
+      valDisplay.textContent = (input as HTMLInputElement).value;
+    });
+
+    input.addEventListener('change', () => {
+      const v = parseFloat((input as HTMLInputElement).value);
+      (this.state as unknown as Record<string, unknown>)[key] = v;
+      this.emitChange(key, v);
+    });
+
+    const wrapper = createElement('div', { style: 'display: flex; align-items: center; gap: 8px;' });
+    wrapper.appendChild(input);
+    wrapper.appendChild(valDisplay);
+
+    row.appendChild(lbl);
+    row.appendChild(wrapper);
+    return row;
+  }
+
+  private createInput(
+    key: string,
+    label: string,
+    current: string,
+    placeholder: string = '',
+    type: string = 'text'
+  ): HTMLElement {
+    const row = createElement('div', { class: 'tn-settings-panel__row' });
+    const lbl = createElement('label', {
+      class: 'tn-settings-panel__label',
+      for: `setting-${key}`,
+    }, label);
+
+    const input = createElement('input', {
+      type,
+      id: `setting-${key}`,
+      class: 'tn-settings-panel__input',
+      value: current,
+      placeholder,
+      'aria-label': label,
+      style: 'flex: 1; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white;'
+    });
+
+    input.addEventListener('change', () => {
+      const v = (input as HTMLInputElement).value;
+      (this.state as unknown as Record<string, unknown>)[key] = v;
+      this.emitChange(key, v);
     });
 
     row.appendChild(lbl);

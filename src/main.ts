@@ -19,6 +19,10 @@ import { loadAppConfig } from './config/app.config';
 import { createLogger } from './utils/logger';
 import { eventBus } from './hooks/use-event-bus';
 
+// v0.6 — AI Assistant
+import { AIEngine } from './ai/engine';
+import { MockAIProvider } from './ai/providers/mock-provider';
+
 // v0.3 — Earth Event Engine imports
 import { EarthEventEngine } from './events/engine/event-engine';
 import { EventRenderer } from './events/rendering/event-renderer';
@@ -282,6 +286,17 @@ async function bootstrap(): Promise<void> {
 
   log.info(`${layerRegistry.getAll().length} total layers registered`);
 
+  // 9.5 Initialize v0.6 AI Assistant
+  const aiEngine = new AIEngine({
+    layers: layerRegistry,
+    camera: cameraController,
+    events: eventEngine,
+    mobility: objectEngine,
+  });
+  
+  // Register default provider
+  aiEngine.setProvider('MOCK');
+
   // 10. Initialize UI
   const uiManager = new UIManager();
   uiManager.init(
@@ -297,6 +312,7 @@ async function bootstrap(): Promise<void> {
     geospatialEngine,
     terrainIntel,
     timeController,
+    aiEngine
   );
 
   // 10. Play landing animation
