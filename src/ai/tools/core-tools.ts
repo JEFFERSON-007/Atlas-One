@@ -65,7 +65,7 @@ export const showLayerTool: AITool = {
     
     const layers = context.services?.layers as LayerRegistry | undefined;
     if (layers) {
-      const layer = layers.getLayer(actualId);
+      const layer = layers.get(actualId);
       if (layer) {
         layer.setEnabled(true);
         return { success: true, layer: actualId };
@@ -103,7 +103,7 @@ export const hideLayerTool: AITool = {
 
     const layers = context.services?.layers as LayerRegistry | undefined;
     if (layers) {
-      const layer = layers.getLayer(actualId);
+      const layer = layers.get(actualId);
       if (layer) {
         layer.setEnabled(false);
         return { success: true, layer: actualId };
@@ -132,14 +132,14 @@ export const queryEarthquakesTool: AITool = {
     // Enable the layer first
     const layers = context.services?.layers as LayerRegistry | undefined;
     if (layers) {
-      const layer = layers.getLayer('earthquakes');
+      const layer = layers.get('earthquakes');
       if (layer) layer.setEnabled(true);
     }
 
     const events = context.services?.events as EarthEventEngine | undefined;
     if (events) {
       const allEvents: EarthEvent[] = events.store.getAll();
-      const quakes = allEvents.filter((e: EarthEvent) => e.type === 'EARTHQUAKE');
+      const quakes = allEvents.filter((e: EarthEvent) => e.type === 'earthquake');
       
       let filtered = quakes;
       if (minMagnitude !== undefined) {

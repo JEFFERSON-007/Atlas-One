@@ -96,7 +96,8 @@ Output: {"id":"124","intent":"FLY_TO_LOCATION","location":{"name":"Tokyo"},"conf
       }
 
       const data = (await response.json()) as OpenAIChatResponse;
-      const content = data.choices[0].message.content;
+      const content = data.choices[0]?.message.content;
+      if (!content) throw new Error('No content returned from OpenAI');
       const parsed = JSON.parse(content) as AICommand;
       
       return {
@@ -138,7 +139,7 @@ Respond naturally as an assistant. Do NOT fabricate data. If data is missing, st
       });
 
       const data = (await response.json()) as OpenAIChatResponse;
-      return data.choices[0].message.content;
+      return data.choices[0]?.message.content || 'No summary generated.';
     } catch (e) {
       log.error('Failed to generate response via OpenAI', e);
       return "Command executed successfully, but failed to generate a summary.";
