@@ -67,7 +67,7 @@ export const showLayerTool: AITool = {
     if (layers) {
       const layer = layers.get(actualId);
       if (layer) {
-        layer.setEnabled(true);
+        layer.enable();
         return { success: true, layer: actualId };
       }
       return { success: false, message: `Layer ${actualId} not found.` };
@@ -105,7 +105,7 @@ export const hideLayerTool: AITool = {
     if (layers) {
       const layer = layers.get(actualId);
       if (layer) {
-        layer.setEnabled(false);
+        layer.disable();
         return { success: true, layer: actualId };
       }
     }
@@ -133,7 +133,7 @@ export const queryEarthquakesTool: AITool = {
     const layers = context.services?.layers as LayerRegistry | undefined;
     if (layers) {
       const layer = layers.get('earthquakes');
-      if (layer) layer.setEnabled(true);
+      if (layer) layer.enable();
     }
 
     const events = context.services?.events as EarthEventEngine | undefined;
