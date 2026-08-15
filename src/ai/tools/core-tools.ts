@@ -15,7 +15,7 @@ export const flyToLocationTool: AITool = {
     },
     required: ['locationName']
   },
-  execute: async (input: unknown, context: AIContext) => {
+  execute: async (input: unknown, _context: AIContext) => {
     const { locationName } = input as { locationName: string };
     
     // Use the existing search service
