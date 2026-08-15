@@ -9,11 +9,11 @@ export class MockAIProvider implements AIProvider {
   name = 'MockAIProvider';
   type = 'MOCK' as const;
 
-  async init(_config?: AIProviderConfig): Promise<void> {
-    // No initialization required
+  init(_config?: AIProviderConfig): Promise<void> {
+    return Promise.resolve();
   }
 
-  async parseIntent(text: string, _context: AIContext): Promise<AICommand> {
+  parseIntent(text: string, _context: AIContext): Promise<AICommand> {
     const lowerText = text.toLowerCase();
     
     const command: AICommand = {
@@ -86,27 +86,27 @@ export class MockAIProvider implements AIProvider {
       command.timeRange = { relative: 'today' };
     }
 
-    return command;
+    return Promise.resolve(command);
   }
 
-  async generateResponse(command: AICommand, toolResults: unknown, _context: AIContext): Promise<string> {
+  generateResponse(command: AICommand, toolResults: unknown, _context: AIContext): Promise<string> {
     if (command.intent === 'UNKNOWN') {
-      return "I'm sorry, I didn't understand that request. Try asking about earthquakes, flights, or flying to a location.";
+      return Promise.resolve("I'm sorry, I didn't understand that request. Try asking about earthquakes, flights, or flying to a location.");
     }
 
     // Very basic templated responses based on tools
     if (command.intent === 'QUERY_EARTHQUAKES') {
       const res = toolResults as { count?: number };
       if (res && res.count !== undefined) {
-        return `Found ${res.count} earthquakes matching your criteria. I have updated the globe.`;
+        return Promise.resolve(`Found ${res.count} earthquakes matching your criteria. I have updated the globe.`);
       }
-      return 'I have updated the earthquake visualization on the globe.';
+      return Promise.resolve('I have updated the earthquake visualization on the globe.');
     }
 
     if (command.intent === 'FLY_TO_LOCATION') {
-      return `Flying to ${command.location?.name || 'that location'}.`;
+      return Promise.resolve(`Flying to ${command.location?.name || 'that location'}.`);
     }
 
-    return 'I have processed your request and updated Atlas One.';
+    return Promise.resolve('I have processed your request and updated Atlas One.');
   }
 }

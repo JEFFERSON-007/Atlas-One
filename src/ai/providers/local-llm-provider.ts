@@ -3,6 +3,10 @@ import { createLogger } from '../../utils/logger';
 
 const log = createLogger('LocalLLMProvider');
 
+interface OllamaResponse {
+  response: string;
+}
+
 /**
  * Local LLM Provider for AI Assistant.
  * Uses a local API endpoint (e.g. Ollama running on localhost:11434).
@@ -14,13 +18,14 @@ export class LocalLLMProvider implements AIProvider {
   private endpoint = 'http://localhost:11434/api/generate';
   private model = 'llama3';
 
-  async init(config?: AIProviderConfig): Promise<void> {
+  init(config?: AIProviderConfig): Promise<void> {
     if (config?.endpoint) {
       this.endpoint = config.endpoint;
     }
     if (config?.model) {
       this.model = config.model;
     }
+    return Promise.resolve();
   }
 
   async parseIntent(text: string, _context: AIContext): Promise<AICommand> {
@@ -48,7 +53,7 @@ User: ${text}`;
         throw new Error(`Local LLM error: ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as OllamaResponse;
       const parsed = JSON.parse(data.response) as AICommand;
       
       return {
@@ -77,7 +82,7 @@ User: ${text}`;
         })
       });
 
-      const data = await response.json();
+      const data = (await response.json()) as OllamaResponse;
       return data.response.trim();
     } catch (e) {
       log.error('Failed to generate response via Local LLM', e);

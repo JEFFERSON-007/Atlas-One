@@ -81,11 +81,11 @@ export interface AIContext {
   
   // Internal engine references for tools to interact with the globe
   services?: {
-    camera?: any;
-    events?: any;
-    mobility?: any;
-    layers?: any;
-    search?: any;
+    camera?: unknown;
+    events?: unknown;
+    mobility?: unknown;
+    layers?: unknown;
+    search?: unknown;
   };
 }
 

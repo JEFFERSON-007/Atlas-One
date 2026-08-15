@@ -1,5 +1,8 @@
 import type { AIContext, AITool } from '../types';
 import { performSearch, flyToResult } from '../../api/search.service';
+import type { LayerRegistry } from '../../layers/layer-registry';
+import type { EarthEventEngine } from '../../events/engine/event-engine';
+import type { EarthEvent } from '../../events/earth-event.types';
 
 /**
  * Searches for a location and flies the camera to it.
@@ -18,7 +21,6 @@ export const flyToLocationTool: AITool = {
   execute: async (input: unknown, _context: AIContext) => {
     const { locationName } = input as { locationName: string };
     
-    // Use the existing search service
     const results = await performSearch(locationName);
     
     if (!results || results.length === 0) {
@@ -50,10 +52,9 @@ export const showLayerTool: AITool = {
     },
     required: ['layerId']
   },
-  execute: async (input: unknown, context: AIContext) => {
+  execute: (input: unknown, context: AIContext) => {
     const { layerId } = input as { layerId: string };
     
-    // Map natural language to internal layer IDs
     const normalizedId = layerId.toLowerCase();
     let actualId = normalizedId;
     
@@ -62,8 +63,9 @@ export const showLayerTool: AITool = {
     if (normalizedId.includes('flight') || normalizedId.includes('plane')) actualId = 'flights';
     if (normalizedId.includes('ship')) actualId = 'ships';
     
-    if (context.services?.layers) {
-      const layer = context.services.layers.getLayer(actualId);
+    const layers = context.services?.layers as LayerRegistry | undefined;
+    if (layers) {
+      const layer = layers.getLayer(actualId);
       if (layer) {
         layer.setEnabled(true);
         return { success: true, layer: actualId };
@@ -89,7 +91,7 @@ export const hideLayerTool: AITool = {
     },
     required: ['layerId']
   },
-  execute: async (input: unknown, context: AIContext) => {
+  execute: (input: unknown, context: AIContext) => {
     const { layerId } = input as { layerId: string };
     const normalizedId = layerId.toLowerCase();
     let actualId = normalizedId;
@@ -99,8 +101,9 @@ export const hideLayerTool: AITool = {
     if (normalizedId.includes('flight') || normalizedId.includes('plane')) actualId = 'flights';
     if (normalizedId.includes('ship')) actualId = 'ships';
 
-    if (context.services?.layers) {
-      const layer = context.services.layers.getLayer(actualId);
+    const layers = context.services?.layers as LayerRegistry | undefined;
+    if (layers) {
+      const layer = layers.getLayer(actualId);
       if (layer) {
         layer.setEnabled(false);
         return { success: true, layer: actualId };
@@ -123,33 +126,36 @@ export const queryEarthquakesTool: AITool = {
       minMagnitude: { type: 'number' }
     }
   },
-  execute: async (input: unknown, context: AIContext) => {
+  execute: (input: unknown, context: AIContext) => {
     const { minMagnitude } = (input || {}) as { minMagnitude?: number };
     
     // Enable the layer first
-    if (context.services?.layers) {
-      const layer = context.services.layers.getLayer('earthquakes');
+    const layers = context.services?.layers as LayerRegistry | undefined;
+    if (layers) {
+      const layer = layers.getLayer('earthquakes');
       if (layer) layer.setEnabled(true);
     }
 
-    if (context.services?.events) {
-      const allEvents = context.services.events.store.getAll();
-      const quakes = allEvents.filter((e: any) => e.type === 'EARTHQUAKE');
+    const events = context.services?.events as EarthEventEngine | undefined;
+    if (events) {
+      const allEvents: EarthEvent[] = events.store.getAll();
+      const quakes = allEvents.filter((e: EarthEvent) => e.type === 'EARTHQUAKE');
       
       let filtered = quakes;
       if (minMagnitude !== undefined) {
-        filtered = quakes.filter((e: any) => e.metadata?.magnitude >= minMagnitude);
-      }
-      
-      // Update filter engine if available so the UI updates
-      if (context.services?.layers && context.services.layers.getLayer('earthquakes')) {
-          // This is a simplification; in a full implementation we'd hook into the FilterEngine.
+        filtered = quakes.filter((e: EarthEvent) => {
+          const mag = (e.metadata as Record<string, unknown>)?.magnitude;
+          return typeof mag === 'number' && mag >= minMagnitude;
+        });
       }
       
       return { 
         success: true, 
         count: filtered.length, 
-        topEvents: filtered.slice(0, 3).map((e: any) => ({ mag: e.metadata?.magnitude, place: e.metadata?.place })) 
+        topEvents: filtered.slice(0, 3).map((e: EarthEvent) => {
+          const meta = e.metadata as Record<string, unknown> | undefined;
+          return { mag: meta?.magnitude, place: meta?.place };
+        }) 
       };
     }
     return { success: false, message: 'Event service unavailable' };

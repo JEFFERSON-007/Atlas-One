@@ -28,7 +28,7 @@ export class AIEngine {
     this.registerTool(queryEarthquakesTool);
     
     // Default to MockProvider for GitHub Pages safe execution
-    this.setProvider('MOCK');
+    void this.setProvider('MOCK');
   }
 
   public async setProvider(type: 'MOCK' | 'LOCAL' | 'REMOTE', config?: { apiKey?: string; endpoint?: string }) {
@@ -80,7 +80,7 @@ export class AIEngine {
     if (onProgress) onProgress('Generating response...');
     try {
       return await this.provider.generateResponse(command, toolResult, this.context);
-    } catch (e) {
+    } catch {
       return 'Command executed successfully, but failed to generate a response summary.';
     }
   }

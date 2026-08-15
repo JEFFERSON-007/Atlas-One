@@ -3,6 +3,14 @@ import { createLogger } from '../../utils/logger';
 
 const log = createLogger('OpenAIProvider');
 
+interface OpenAIChatResponse {
+  choices: Array<{
+    message: {
+      content: string;
+    };
+  }>;
+}
+
 /**
  * OpenAI Provider for AI Assistant.
  * IMPORTANT: Because this is a frontend-only GitHub Pages app, this provider
@@ -17,13 +25,14 @@ export class OpenAIProvider implements AIProvider {
   private apiKey: string | null = null;
   private model = 'gpt-4o-mini';
 
-  async init(config?: AIProviderConfig): Promise<void> {
+  init(config?: AIProviderConfig): Promise<void> {
     if (config?.apiKey) {
       this.apiKey = config.apiKey;
     }
     if (config?.model) {
       this.model = config.model;
     }
+    return Promise.resolve();
   }
 
   /**
@@ -86,7 +95,7 @@ Output: {"id":"124","intent":"FLY_TO_LOCATION","location":{"name":"Tokyo"},"conf
         throw new Error(`OpenAI API error: ${response.statusText}`);
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as OpenAIChatResponse;
       const content = data.choices[0].message.content;
       const parsed = JSON.parse(content) as AICommand;
       
@@ -128,7 +137,7 @@ Respond naturally as an assistant. Do NOT fabricate data. If data is missing, st
         })
       });
 
-      const data = await response.json();
+      const data = (await response.json()) as OpenAIChatResponse;
       return data.choices[0].message.content;
     } catch (e) {
       log.error('Failed to generate response via OpenAI', e);
