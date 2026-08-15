@@ -1,4 +1,4 @@
-import type { AICommand, AIContext, AIIntent, AIProvider, AIProviderConfig } from '../types';
+import type { AICommand, AIContext, AIProvider, AIProviderConfig } from '../types';
 
 /**
  * A browser-safe Mock AI Provider for GitHub Pages deployment.
@@ -13,7 +13,7 @@ export class MockAIProvider implements AIProvider {
     // No initialization required
   }
 
-  async parseIntent(text: string, context: AIContext): Promise<AICommand> {
+  async parseIntent(text: string, _context: AIContext): Promise<AICommand> {
     const lowerText = text.toLowerCase();
     
     const command: AICommand = {
@@ -89,7 +89,7 @@ export class MockAIProvider implements AIProvider {
     return command;
   }
 
-  async generateResponse(command: AICommand, toolResults: unknown, context: AIContext): Promise<string> {
+  async generateResponse(command: AICommand, toolResults: unknown, _context: AIContext): Promise<string> {
     if (command.intent === 'UNKNOWN') {
       return "I'm sorry, I didn't understand that request. Try asking about earthquakes, flights, or flying to a location.";
     }

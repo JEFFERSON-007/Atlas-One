@@ -21,7 +21,6 @@ import { eventBus } from './hooks/use-event-bus';
 
 // v0.6 — AI Assistant
 import { AIEngine } from './ai/engine';
-import { MockAIProvider } from './ai/providers/mock-provider';
 
 // v0.3 — Earth Event Engine imports
 import { EarthEventEngine } from './events/engine/event-engine';

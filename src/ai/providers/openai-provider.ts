@@ -1,4 +1,4 @@
-import type { AICommand, AIContext, AIIntent, AIProvider, AIProviderConfig } from '../types';
+import type { AICommand, AIContext, AIProvider, AIProviderConfig } from '../types';
 import { createLogger } from '../../utils/logger';
 
 const log = createLogger('OpenAIProvider');
@@ -100,7 +100,7 @@ Output: {"id":"124","intent":"FLY_TO_LOCATION","location":{"name":"Tokyo"},"conf
     }
   }
 
-  async generateResponse(command: AICommand, toolResults: unknown, context: AIContext): Promise<string> {
+  async generateResponse(command: AICommand, toolResults: unknown, _context: AIContext): Promise<string> {
     if (!this.apiKey) return "API key missing.";
 
     const systemPrompt = `You are Atlas One, an AI Earth Intelligence Assistant.

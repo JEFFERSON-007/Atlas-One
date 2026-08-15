@@ -1,4 +1,4 @@
-import type { AICommand, AIContext, AIIntent, AIProvider, AIProviderConfig } from '../types';
+import type { AICommand, AIContext, AIProvider, AIProviderConfig } from '../types';
 import { createLogger } from '../../utils/logger';
 
 const log = createLogger('LocalLLMProvider');
@@ -23,7 +23,7 @@ export class LocalLLMProvider implements AIProvider {
     }
   }
 
-  async parseIntent(text: string, context: AIContext): Promise<AICommand> {
+  async parseIntent(text: string, _context: AIContext): Promise<AICommand> {
     const systemPrompt = `You are an AI parsing engine. Parse the user request into JSON matching this schema:
 {"id":"uuid","intent":"SEARCH_LOCATION | FLY_TO_LOCATION | SHOW_LAYER | HIDE_LAYER | FILTER_LAYER | QUERY_EARTHQUAKES | QUERY_WILDFIRES | QUERY_FLIGHTS | QUERY_SHIPS | SUMMARIZE | UNKNOWN","location":{"name":"string"},"filters":{"key":"value"},"confidence":0.9}
 Only output the JSON object. Do not output markdown code blocks or text.
@@ -61,7 +61,7 @@ User: ${text}`;
     }
   }
 
-  async generateResponse(command: AICommand, toolResults: unknown, context: AIContext): Promise<string> {
+  async generateResponse(command: AICommand, toolResults: unknown, _context: AIContext): Promise<string> {
     const systemPrompt = `Summarize the result of command ${command.intent}. Result: ${JSON.stringify(toolResults)}. Keep it to 1 sentence.`;
 
     try {

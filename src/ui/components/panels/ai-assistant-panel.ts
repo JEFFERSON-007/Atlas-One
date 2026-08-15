@@ -152,4 +152,8 @@ export class AiAssistantPanel {
   show(): void {
     if (!this.visible) this.toggle();
   }
+
+  isVisible(): boolean {
+    return this.visible;
+  }
 }

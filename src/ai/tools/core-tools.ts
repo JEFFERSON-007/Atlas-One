@@ -27,10 +27,9 @@ export const flyToLocationTool: AITool = {
 
     const bestResult = results[0];
     
-    if (context.services?.camera) {
-      // Use the actual camera controller if available
-      flyToResult(bestResult, context.services.camera);
-      return { success: true, target: bestResult.display_name };
+    if (bestResult) {
+      flyToResult(bestResult);
+      return { success: true, target: bestResult.displayName };
     }
     
     return { success: false, message: 'Camera service unavailable' };
