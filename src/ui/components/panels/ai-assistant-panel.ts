@@ -58,16 +58,16 @@ export class AiAssistantPanel {
       class: 'tn-search-panel__input',
       placeholder: 'Ask Atlas One...',
       style: 'flex: 1; margin: 0;'
-    }) as HTMLInputElement;
+    });
 
     this.submitBtn = createElement('button', {
       class: 'tn-button tn-button--primary',
       style: 'padding: 8px 16px;'
-    }, 'Send') as HTMLButtonElement;
+    }, 'Send');
 
-    this.submitBtn.addEventListener('click', () => this.handleSubmit());
+    this.submitBtn.addEventListener('click', () => { void this.handleSubmit(); });
     this.input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') this.handleSubmit();
+      if (e.key === 'Enter') void this.handleSubmit();
     });
 
     inputContainer.appendChild(this.input);

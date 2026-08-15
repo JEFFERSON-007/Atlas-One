@@ -212,11 +212,11 @@ export class SettingsPanel {
     const valDisplay = createElement('span', { class: 'tn-settings-panel__slider-val' }, value.toString());
 
     input.addEventListener('input', () => {
-      valDisplay.textContent = (input as HTMLInputElement).value;
+      valDisplay.textContent = input.value;
     });
 
     input.addEventListener('change', () => {
-      const v = parseFloat((input as HTMLInputElement).value);
+      const v = parseFloat(input.value);
       (this.state as unknown as Record<string, unknown>)[key] = v;
       this.emitChange(key, v);
     });
@@ -254,7 +254,7 @@ export class SettingsPanel {
     });
 
     input.addEventListener('change', () => {
-      const v = (input as HTMLInputElement).value;
+      const v = input.value;
       (this.state as unknown as Record<string, unknown>)[key] = v;
       this.emitChange(key, v);
     });

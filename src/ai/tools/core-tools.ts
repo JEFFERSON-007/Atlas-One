@@ -2,7 +2,7 @@ import type { AIContext, AITool } from '../types';
 import { performSearch, flyToResult } from '../../api/search.service';
 import type { LayerRegistry } from '../../layers/layer-registry';
 import type { EarthEventEngine } from '../../events/engine/event-engine';
-import type { EarthEvent } from '../../events/earth-event.types';
+import { EventType, type EarthEvent } from '../../events/earth-event.types';
 
 /**
  * Searches for a location and flies the camera to it.
@@ -139,12 +139,12 @@ export const queryEarthquakesTool: AITool = {
     const events = context.services?.events as EarthEventEngine | undefined;
     if (events) {
       const allEvents: EarthEvent[] = events.store.getAll();
-      const quakes = allEvents.filter((e: EarthEvent) => e.type === 'earthquake');
+      const quakes = allEvents.filter((e: EarthEvent) => e.type === EventType.Earthquake);
       
       let filtered = quakes;
       if (minMagnitude !== undefined) {
         filtered = quakes.filter((e: EarthEvent) => {
-          const mag = (e.metadata as Record<string, unknown>)?.magnitude;
+          const mag = e.metadata?.magnitude;
           return typeof mag === 'number' && mag >= minMagnitude;
         });
       }
@@ -153,7 +153,7 @@ export const queryEarthquakesTool: AITool = {
         success: true, 
         count: filtered.length, 
         topEvents: filtered.slice(0, 3).map((e: EarthEvent) => {
-          const meta = e.metadata as Record<string, unknown> | undefined;
+          const meta = e.metadata;
           return { mag: meta?.magnitude, place: meta?.place };
         }) 
       };

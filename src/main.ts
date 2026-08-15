@@ -294,7 +294,7 @@ async function bootstrap(): Promise<void> {
   });
   
   // Register default provider
-  aiEngine.setProvider('MOCK');
+  void aiEngine.setProvider('MOCK');
 
   // 10. Initialize UI
   const uiManager = new UIManager();

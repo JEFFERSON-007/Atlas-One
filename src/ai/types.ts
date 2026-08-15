@@ -63,7 +63,7 @@ export interface AITool {
   description: string;
   inputSchema: AIToolInputSchema;
   permissionLevel: 'READ' | 'WRITE' | 'CONTROL';
-  execute: (input: unknown, context: AIContext) => Promise<unknown> | unknown;
+  execute: (input: unknown, context: AIContext) => unknown;
 }
 
 export interface AIContext {

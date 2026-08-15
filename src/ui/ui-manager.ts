@@ -249,9 +249,7 @@ export class UIManager {
       case 'btn-ai-assistant':
         this.toggleExclusivePanel(this.aiAssistantPanel, leftPanels, 'btn-ai-assistant');
         break;
-      case 'mobility-filter':
-        this.toggleExclusivePanel(this.mobilityFilterPanel, leftPanels, 'btn-mobility-filter');
-        break;
+
       case 'digital-twin':
         this.digitalTwinPanel.hide();
         break;
@@ -316,7 +314,7 @@ export class UIManager {
       case 'aiEndpoint':
         if (aiEngine) {
           const state = this.settingsPanel.getState();
-          aiEngine.setProvider(state.aiProvider, {
+          void aiEngine.setProvider(state.aiProvider, {
             apiKey: state.aiApiKey,
             endpoint: state.aiEndpoint
           });
