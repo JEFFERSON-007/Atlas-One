@@ -1,4 +1,5 @@
 import type { AIContext, AITool } from '../types';
+import type { TimeController } from '../../twin/time/time-controller';
 
 export const startTimelineTool: AITool = {
   name: 'startTimeline',
@@ -6,8 +7,7 @@ export const startTimelineTool: AITool = {
   permissionLevel: 'CONTROL',
   inputSchema: { type: 'object', properties: {} },
   execute: (_input: unknown, context: AIContext) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const time = context.services?.time as any;
+    const time = context.services?.time as TimeController | undefined;
     if (time && time.setPaused) {
       time.setPaused(false);
       return { success: true, message: 'Timeline started.' };
@@ -22,8 +22,7 @@ export const pauseTimelineTool: AITool = {
   permissionLevel: 'CONTROL',
   inputSchema: { type: 'object', properties: {} },
   execute: (_input: unknown, context: AIContext) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const time = context.services?.time as any;
+    const time = context.services?.time as TimeController | undefined;
     if (time && time.setPaused) {
       time.setPaused(true);
       return { success: true, message: 'Timeline paused.' };
@@ -44,8 +43,7 @@ export const setTimeTool: AITool = {
   },
   execute: (input: unknown, context: AIContext) => {
     const { targetDate } = (input || {}) as { targetDate?: string };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const time = context.services?.time as any;
+    const time = context.services?.time as TimeController | undefined;
     if (time && time.setTime && targetDate) {
       const date = new Date(targetDate);
       if (!isNaN(date.getTime())) {
