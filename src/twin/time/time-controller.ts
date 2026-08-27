@@ -5,6 +5,7 @@
  */
 
 import { eventBus } from '../../hooks/use-event-bus';
+import { TemporalMode } from './temporal-state.types';
 import { createLogger } from '../../utils/logger';
 
 const log = createLogger('TimeController');
@@ -39,10 +40,13 @@ export class TimeController {
       }
 
       eventBus.emit('time:updated', {
+        mode: this.isLive ? TemporalMode.REAL_TIME : TemporalMode.SIMULATION,
         currentTime: this.currentTime,
-        isPaused: this.isPaused,
-        isLive: this.isLive,
-        speedMultiplier: this.speedMultiplier,
+        startTime: new Date(0),
+        endTime: new Date(),
+        isPlaying: !this.isPaused,
+        playbackSpeed: this.speedMultiplier,
+        loop: false,
       });
     }, 1000);
   }
