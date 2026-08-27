@@ -24,7 +24,8 @@ import { DigitalTwinPanel } from './components/panels/digital-twin-panel';
 import { CountryIntelligencePanel } from './components/panels/country-intelligence-panel';
 import { CityIntelligencePanel } from './components/panels/city-intelligence-panel';
 import { GlobeHUD } from './components/panels/globe-hud';
-import { TimeControllerBar } from './components/panels/time-controller-bar';
+import { TimelinePanel } from './components/panels/timeline-panel';
+import { ComparisonPanel } from './components/panels/comparison-panel';
 import { AiAssistantPanel } from './components/panels/ai-assistant-panel';
 import type { AIEngine } from '../ai/engine';
 import type { DynamicObjectEngine } from '../mobility/engine/object-engine';
@@ -64,7 +65,8 @@ export class UIManager {
   private countryIntelligencePanel: CountryIntelligencePanel;
   private cityIntelligencePanel: CityIntelligencePanel;
   private globeHUD: GlobeHUD;
-  private timeControllerBar: TimeControllerBar;
+  private timelinePanel: TimelinePanel;
+  private comparisonPanel: ComparisonPanel;
   private eventTimeline: EventTimeline;
   private coordinatesDisplay: CoordinatesDisplay;
   private fpsCounter: FPSCounter;
@@ -88,7 +90,8 @@ export class UIManager {
     this.countryIntelligencePanel = new CountryIntelligencePanel();
     this.cityIntelligencePanel = new CityIntelligencePanel();
     this.globeHUD = new GlobeHUD();
-    this.timeControllerBar = new TimeControllerBar();
+    this.timelinePanel = new TimelinePanel();
+    this.comparisonPanel = new ComparisonPanel();
     this.eventTimeline = new EventTimeline();
     this.coordinatesDisplay = new CoordinatesDisplay();
     this.fpsCounter = new FPSCounter();
@@ -110,7 +113,7 @@ export class UIManager {
     mobilityFilterEngine?: MobilityFilterEngine,
     geospatialEngine?: GeospatialEntityEngine,
     terrainIntel?: TerrainIntelligence,
-    timeController?: TimeController,
+    temporalEngine?: any,
     aiEngine?: AIEngine,
   ): void {
     const overlayId = 'ui-overlay';
@@ -168,9 +171,11 @@ export class UIManager {
 
     this.globeHUD.init(overlayId, terrainIntel);
 
-    if (timeController) {
-      this.timeControllerBar.init(overlayId, timeController);
+    if (temporalEngine) {
+      this.timelinePanel.init(overlayId, temporalEngine);
     }
+
+    this.comparisonPanel.init(overlayId);
 
     this.eventTimeline.init(overlayId);
 
@@ -344,7 +349,8 @@ export class UIManager {
     this.countryIntelligencePanel.dispose();
     this.cityIntelligencePanel.dispose();
     this.globeHUD.dispose();
-    this.timeControllerBar.dispose();
+    this.timelinePanel.dispose();
+    this.comparisonPanel.dispose();
     this.eventTimeline.dispose();
     this.coordinatesDisplay.dispose();
     this.fpsCounter.dispose();

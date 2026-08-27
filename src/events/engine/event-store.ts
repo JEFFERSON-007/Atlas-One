@@ -50,7 +50,7 @@ export class EventStore {
   startExpirationCleanup(): void {
     if (this.expirationTimer) return;
     this.expirationTimer = setInterval(() => {
-      this.cleanExpired();
+      this.cleanExpired(new Date());
     }, EXPIRATION_CHECK_INTERVAL);
   }
 
@@ -284,15 +284,15 @@ export class EventStore {
   /**
    * Removes expired events.
    */
-  private cleanExpired(): void {
-    const now = new Date();
+  cleanExpired(currentTime: Date = new Date()): void {
     const toRemove: string[] = [];
 
     for (const event of this.events.values()) {
-      if (event.expiration && event.expiration <= now) {
+      if (event.expiration && event.expiration <= currentTime) {
         toRemove.push(event.id);
       }
-      if (event.status === EventStatus.Expired || event.status === EventStatus.Archived) {
+      // Archived events only get removed if we are past their expiration in the current timeline
+      if (event.status === EventStatus.Expired) {
         toRemove.push(event.id);
       }
     }

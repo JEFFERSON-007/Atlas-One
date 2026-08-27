@@ -5,6 +5,7 @@
  */
 
 import type { IEventProvider } from '../providers/event-provider.interface';
+import type { HistoricalDataProvider, HistoricalQuery } from '../../twin/time/historical-provider.interface';
 import { EventStore } from './event-store';
 import { EventScheduler } from './event-scheduler';
 import { validateEvents } from './event-validator';
@@ -21,6 +22,7 @@ export class EarthEventEngine {
   readonly store: EventStore;
   private readonly scheduler: EventScheduler;
   private readonly providers = new Map<string, IEventProvider>();
+  private readonly historicalProviders = new Map<string, HistoricalDataProvider>();
   private running = false;
 
   constructor() {
@@ -58,6 +60,26 @@ export class EarthEventEngine {
     this.providers.set(id, provider);
     this.scheduler.register(provider);
     log.info(`Provider registered: ${name} (${id})`);
+  }
+
+  /**
+   * Registers a historical data provider.
+   */
+  registerHistoricalProvider(provider: HistoricalDataProvider): void {
+    if (this.historicalProviders.has(provider.id)) {
+      log.warn(`Historical Provider already registered: ${provider.id}`);
+      return;
+    }
+    this.historicalProviders.set(provider.id, provider);
+    log.info(`Historical Provider registered: ${provider.id}`);
+  }
+
+  /**
+   * Queries historical providers for a given time range.
+   */
+  async queryHistoricalData(query: HistoricalQuery): Promise<import('../../twin/time/historical-provider.interface').HistoricalDataResponse[]> {
+    const promises = Array.from(this.historicalProviders.values()).map(provider => provider.getData(query));
+    return Promise.all(promises);
   }
 
   /**

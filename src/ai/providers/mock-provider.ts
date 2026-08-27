@@ -54,6 +54,14 @@ export class MockAIProvider implements AIProvider {
     } else if (lowerText.includes('pause time') || lowerText.includes('stop time') || lowerText.includes('halt')) {
       command.intent = 'PAUSE_TIMELINE';
       command.confidence = 0.9;
+    } else if (lowerText.includes('historical mode') || lowerText.includes('historical data') || lowerText.includes('history')) {
+      command.intent = 'SET_TEMPORAL_MODE';
+      command.parameters = { mode: 'HISTORICAL' };
+      command.confidence = 0.9;
+    } else if (lowerText.includes('real time') || lowerText.includes('live data')) {
+      command.intent = 'SET_TEMPORAL_MODE';
+      command.parameters = { mode: 'REAL_TIME' };
+      command.confidence = 0.9;
     } else if (lowerText.includes('near') || lowerText.includes('nearby') || lowerText.includes('closest')) {
       command.intent = 'GET_NEARBY_ENTITIES';
       command.confidence = 0.9;
@@ -144,6 +152,11 @@ export class MockAIProvider implements AIProvider {
 
     if (command.intent === 'PAUSE_TIMELINE') {
       return Promise.resolve('Simulation playback paused.');
+    }
+
+    if (command.intent === 'SET_TEMPORAL_MODE') {
+      const mode = command.parameters?.mode || 'REAL_TIME';
+      return Promise.resolve(`Temporal mode set to ${mode}.`);
     }
 
     return Promise.resolve('I have processed your request and updated Atlas One.');

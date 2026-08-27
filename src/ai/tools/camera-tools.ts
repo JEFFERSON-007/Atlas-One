@@ -1,56 +1,36 @@
 import type { AIContext, AITool } from '../types';
-import type { TimeController } from '../../twin/time/time-controller';
+import { performSearch, flyToResult } from '../../api/search.service';
 
-export const startTimelineTool: AITool = {
-  name: 'startTimeline',
-  description: 'Starts or resumes the simulation timeline.',
-  permissionLevel: 'CONTROL',
-  inputSchema: { type: 'object', properties: {} },
-  execute: (_input: unknown, context: AIContext) => {
-    const time = context.services?.time as TimeController | undefined;
-    if (time && time.setPaused) {
-      time.setPaused(false);
-      return { success: true, message: 'Timeline started.' };
-    }
-    return { success: false, message: 'Time service unavailable' };
-  }
-};
-
-export const pauseTimelineTool: AITool = {
-  name: 'pauseTimeline',
-  description: 'Pauses the simulation timeline.',
-  permissionLevel: 'CONTROL',
-  inputSchema: { type: 'object', properties: {} },
-  execute: (_input: unknown, context: AIContext) => {
-    const time = context.services?.time as TimeController | undefined;
-    if (time && time.setPaused) {
-      time.setPaused(true);
-      return { success: true, message: 'Timeline paused.' };
-    }
-    return { success: false, message: 'Time service unavailable' };
-  }
-};
-
-export const setTimeTool: AITool = {
-  name: 'setTime',
-  description: 'Sets the simulation time to a specific date or time.',
+/**
+ * Searches for a location and flies the camera to it.
+ */
+export const flyToLocationTool: AITool = {
+  name: 'flyToLocation',
+  description: 'Searches for a geographic location by name and flies the globe camera to it.',
   permissionLevel: 'CONTROL',
   inputSchema: {
     type: 'object',
     properties: {
-      targetDate: { type: 'string', description: 'ISO string of the date to jump to' }
-    }
+      locationName: { type: 'string' }
+    },
+    required: ['locationName']
   },
-  execute: (input: unknown, context: AIContext) => {
-    const { targetDate } = (input || {}) as { targetDate?: string };
-    const time = context.services?.time as TimeController | undefined;
-    if (time && time.setTime && targetDate) {
-      const date = new Date(targetDate);
-      if (!isNaN(date.getTime())) {
-        time.setTime(date);
-        return { success: true, message: `Time set to ${date.toISOString()}.` };
-      }
+  execute: async (input: unknown, _context: AIContext) => {
+    const { locationName } = input as { locationName: string };
+    
+    const results = await performSearch(locationName);
+    
+    if (!results || results.length === 0) {
+      return { success: false, message: `Could not find location: ${locationName}` };
     }
-    return { success: false, message: 'Time service unavailable or invalid date.' };
+
+    const bestResult = results[0];
+    
+    if (bestResult) {
+      flyToResult(bestResult);
+      return { success: true, target: bestResult.displayName };
+    }
+    
+    return { success: false, message: 'Camera service unavailable' };
   }
 };

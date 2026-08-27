@@ -57,6 +57,10 @@ import { HeatmapLayer } from './layers/implementations/heatmap.layer';
 
 // v0.4 — Dynamic Object Engine & Mobility imports
 import { DynamicObjectEngine } from './mobility/engine/object-engine';
+import { HistoricalMockProvider } from './events/providers/historical-mock-provider';
+import { TemporalMode } from './twin/time/temporal-state.types';
+import { temporalCache } from './twin/time/temporal-cache';
+import type { EarthEvent } from './events/earth-event.types';
 import { ObjectRenderer } from './mobility/rendering/object-renderer';
 import { TrailEngine } from './mobility/rendering/trail-engine';
 import { OrbitEngine } from './mobility/rendering/orbit-engine';
@@ -87,7 +91,7 @@ import { SelectionManager } from './twin/selection/selection-manager';
 import { LocationContextEngine } from './twin/context/location-context-engine';
 import { RelatedEntitySystem } from './twin/context/related-entity-system';
 import { LODManager } from './twin/lod/lod-manager';
-import { TimeController } from './twin/time/time-controller';
+import { TemporalEngine } from './twin/time/temporal-engine';
 import { TerrainIntelligence } from './twin/terrain/terrain-intelligence';
 
 // v0.5 — Digital Twin Providers
@@ -135,6 +139,10 @@ async function bootstrap(): Promise<void> {
   const cameraController = new CameraController();
   cameraController.init(viewer);
 
+  // 11. Initialize Time Control
+  const temporalEngine = new TemporalEngine();
+  temporalEngine.init();
+
   // 5. Initialize globe system (terrain, imagery, clouds, atmosphere)
   const globeManager = new GlobeManager();
   await globeManager.init(viewer);
@@ -155,6 +163,7 @@ async function bootstrap(): Promise<void> {
   eventEngine.registerProvider(new BlitzortungLightningProvider());
   eventEngine.registerProvider(new NOAAStormProvider());
   eventEngine.registerProvider(new GDACSTsunamiProvider());
+  eventEngine.registerHistoricalProvider(new HistoricalMockProvider());
 
   // Connect store changes to renderer and heatmap
   eventBus.on('events:updated', () => {
@@ -195,6 +204,47 @@ async function bootstrap(): Promise<void> {
 
   objectEngine.start();
 
+  // Temporal Integration for Historical Data
+  eventBus.on('time:updated', async (state: any) => {
+    // Ensure stores clean up correctly according to simulation time
+    eventEngine.store.cleanExpired(state.currentTime);
+
+    if (state.mode === TemporalMode.HISTORICAL) {
+      if (eventEngine.isRunning()) {
+        eventEngine.stop();
+        objectEngine.stop(); // No historical mock for mobility currently
+      }
+
+      // Simple caching by hour for the mock provider
+      const timeMs = state.currentTime.getTime();
+      const hourMs = 60 * 60 * 1000;
+      const hourStart = new Date(Math.floor(timeMs / hourMs) * hourMs);
+      const cacheKey = `hist-${hourStart.getTime()}`;
+
+      let cachedEvents = temporalCache.get<EarthEvent[]>(cacheKey);
+
+      if (!cachedEvents) {
+        const range = { start: hourStart, end: new Date(hourStart.getTime() + hourMs) };
+        const eqResp = await eventEngine.queryHistoricalData({ dataset: 'earthquakes', timeRange: range });
+        const fireResp = await eventEngine.queryHistoricalData({ dataset: 'wildfires', timeRange: range });
+        
+        cachedEvents = [];
+        for (const r of eqResp) cachedEvents.push(...r.events);
+        for (const r of fireResp) cachedEvents.push(...r.events);
+        
+        temporalCache.set(cacheKey, cachedEvents, 300);
+      }
+      
+      eventEngine.store.upsert(cachedEvents);
+
+    } else if (state.mode === TemporalMode.REAL_TIME) {
+      if (!eventEngine.isRunning()) {
+        eventEngine.start();
+        objectEngine.start();
+      }
+    }
+  });
+
   // 8. Initialize v0.5 Global Digital Twin & Geospatial Subsystems
   const entityRenderer = new EntityRenderer();
   entityRenderer.init(viewer);
@@ -226,9 +276,6 @@ async function bootstrap(): Promise<void> {
 
   const lodManager = new LODManager();
   lodManager.init(viewer);
-
-  const timeController = new TimeController();
-  timeController.init();
 
   const terrainIntel = new TerrainIntelligence();
   terrainIntel.init(viewer);
@@ -291,7 +338,7 @@ async function bootstrap(): Promise<void> {
     camera: cameraController,
     events: eventEngine,
     mobility: objectEngine,
-    time: timeController,
+    time: temporalEngine,
   });
   
   // Register default provider
@@ -311,7 +358,7 @@ async function bootstrap(): Promise<void> {
     mobilityFilterEngine,
     geospatialEngine,
     terrainIntel,
-    timeController,
+    temporalEngine,
     aiEngine
   );
 

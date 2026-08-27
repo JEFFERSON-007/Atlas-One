@@ -3,9 +3,10 @@ import { createLogger } from '../utils/logger';
 import { MockAIProvider } from './providers/mock-provider';
 import { OpenAIProvider } from './providers/openai-provider';
 import { LocalLLMProvider } from './providers/local-llm-provider';
-import { flyToLocationTool, showLayerTool, hideLayerTool, queryEarthquakesTool } from './tools/core-tools';
+import { showLayerTool, hideLayerTool, queryEarthquakesTool } from './tools/core-tools';
 import { queryWildfiresTool, queryStormsTool, queryFlightsTool, queryShipsTool, querySatellitesTool } from './tools/query-tools';
-import { startTimelineTool, pauseTimelineTool, setTimeTool } from './tools/camera-tools';
+import { flyToLocationTool as cameraFlyToLocationTool } from './tools/camera-tools';
+import { startTimelineTool, pauseTimelineTool, setTimeTool, setTemporalModeTool } from './tools/temporal-tools';
 import { compareLocationsTool, summarizeViewTool } from './tools/context-tools';
 
 const log = createLogger('AIEngine');
@@ -25,7 +26,7 @@ export class AIEngine {
     };
 
     // Register built-in tools
-    this.registerTool(flyToLocationTool);
+    this.registerTool(cameraFlyToLocationTool);
     this.registerTool(showLayerTool);
     this.registerTool(hideLayerTool);
     this.registerTool(queryEarthquakesTool);
@@ -37,6 +38,7 @@ export class AIEngine {
     this.registerTool(startTimelineTool);
     this.registerTool(pauseTimelineTool);
     this.registerTool(setTimeTool);
+    this.registerTool(setTemporalModeTool);
     this.registerTool(compareLocationsTool);
     this.registerTool(summarizeViewTool);
     
