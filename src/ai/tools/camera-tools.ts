@@ -5,7 +5,7 @@ export const startTimelineTool: AITool = {
   description: 'Starts or resumes the simulation timeline.',
   permissionLevel: 'CONTROL',
   inputSchema: { type: 'object', properties: {} },
-  execute: (input: unknown, context: AIContext) => {
+  execute: (_input: unknown, context: AIContext) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const time = context.services?.time as any;
     if (time && time.setPaused) {
@@ -21,7 +21,7 @@ export const pauseTimelineTool: AITool = {
   description: 'Pauses the simulation timeline.',
   permissionLevel: 'CONTROL',
   inputSchema: { type: 'object', properties: {} },
-  execute: (input: unknown, context: AIContext) => {
+  execute: (_input: unknown, context: AIContext) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const time = context.services?.time as any;
     if (time && time.setPaused) {

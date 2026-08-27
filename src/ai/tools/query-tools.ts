@@ -10,7 +10,7 @@ export const queryWildfiresTool: AITool = {
   description: 'Queries active wildfire data. Automatically enables the wildfires layer.',
   permissionLevel: 'READ',
   inputSchema: { type: 'object', properties: {} },
-  execute: (input: unknown, context: AIContext) => {
+  execute: (_input: unknown, context: AIContext) => {
     const layers = context.services?.layers as LayerRegistry | undefined;
     if (layers) {
       const layer = layers.get('wildfires');
@@ -31,7 +31,7 @@ export const queryStormsTool: AITool = {
   description: 'Queries active storms and weather. Automatically enables the storms layer.',
   permissionLevel: 'READ',
   inputSchema: { type: 'object', properties: {} },
-  execute: (input: unknown, context: AIContext) => {
+  execute: (_input: unknown, context: AIContext) => {
     const layers = context.services?.layers as LayerRegistry | undefined;
     if (layers) {
       const layer = layers.get('storms') || layers.get('weather');
@@ -52,7 +52,7 @@ export const queryFlightsTool: AITool = {
   description: 'Queries active flight data. Automatically enables the flights layer.',
   permissionLevel: 'READ',
   inputSchema: { type: 'object', properties: {} },
-  execute: (input: unknown, context: AIContext) => {
+  execute: (_input: unknown, context: AIContext) => {
     const layers = context.services?.layers as LayerRegistry | undefined;
     if (layers) {
       const layer = layers.get('flights');
@@ -73,7 +73,7 @@ export const queryShipsTool: AITool = {
   description: 'Queries active maritime ship data. Automatically enables the ships layer.',
   permissionLevel: 'READ',
   inputSchema: { type: 'object', properties: {} },
-  execute: (input: unknown, context: AIContext) => {
+  execute: (_input: unknown, context: AIContext) => {
     const layers = context.services?.layers as LayerRegistry | undefined;
     if (layers) {
       const layer = layers.get('ships');
@@ -94,7 +94,7 @@ export const querySatellitesTool: AITool = {
   description: 'Queries active satellite data. Automatically enables the satellites layer.',
   permissionLevel: 'READ',
   inputSchema: { type: 'object', properties: {} },
-  execute: (input: unknown, context: AIContext) => {
+  execute: (_input: unknown, context: AIContext) => {
     const layers = context.services?.layers as LayerRegistry | undefined;
     if (layers) {
       const layer = layers.get('satellites');
