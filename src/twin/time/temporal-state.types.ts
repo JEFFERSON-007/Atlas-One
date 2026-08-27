@@ -17,7 +17,7 @@ export enum DataState {
   UNKNOWN = 'unknown',
 }
 
-export type PlaybackSpeed = 0.25 | 0.5 | 1 | 2 | 5 | 10 | 50 | 100 | 1000;
+export type PlaybackSpeed = 0.25 | 0.5 | 1 | 2 | 5 | 10 | 50 | 60 | 100 | 1000 | 3600 | 86400;
 
 export interface TimeRange {
   start: Date;

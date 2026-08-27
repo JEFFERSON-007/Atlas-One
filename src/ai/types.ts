@@ -26,6 +26,7 @@ export type AIIntent =
   | 'START_TIMELINE'
   | 'PAUSE_TIMELINE'
   | 'SET_TIME'
+  | 'SET_TEMPORAL_MODE'
   | 'CHANGE_GRAPHICS'
   | 'CHANGE_GLOBE_VIEW'
   | 'SUMMARIZE'

@@ -3,6 +3,8 @@
  * Implements a publish/subscribe pattern with strong TypeScript typing.
  */
 
+import type { TemporalState } from '../twin/time/temporal-state.types';
+
 /** Map of event names to their payload types. */
 export interface AppEvents {
   'layer:toggle': { layerId: string; enabled: boolean };
@@ -46,9 +48,11 @@ export interface AppEvents {
   'twin-provider:fetch-start': { providerId: string };
   'twin-provider:fetch-complete': { providerId: string; entityCount: number; success: boolean };
   'lod:changed': { level: import('../twin/entity/geospatial-entity.types').LODLevel; cameraHeightKm: number };
-  'time:updated': { currentTime: Date; isPaused: boolean; isLive: boolean; speedMultiplier: number };
+  'time:updated': TemporalState;
   'terrain:hover': { latitude: number; longitude: number; elevationMeters: number };
   'terrain:exaggeration-changed': { multiplier: number };
+  'ui:toggle-comparison': void;
+  'time:comparison-split': { position: number };
 }
 
 type EventCallback<T> = T extends void ? () => void : (payload: T) => void;

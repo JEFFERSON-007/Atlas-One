@@ -4,7 +4,7 @@
  */
 
 import { HistoricalDataProvider, HistoricalQuery, HistoricalDataResponse, DataAvailability } from '../../twin/time/historical-provider.interface';
-import { DataState, TimeRange } from '../../twin/time/temporal-state.types';
+import { DataState } from '../../twin/time/temporal-state.types';
 import { EarthEvent, EventType, EventSeverity, EventPriority, EventStatus } from '../earth-event.types';
 import { createLogger } from '../../utils/logger';
 
@@ -130,7 +130,7 @@ export class HistoricalMockProvider implements HistoricalDataProvider {
     };
   }
 
-  async getNearestTimestamp(dataset: string, time: Date): Promise<Date | null> {
+  async getNearestTimestamp(_dataset: string, time: Date): Promise<Date | null> {
     return time; // Mock implies continuous data
   }
 }

@@ -32,7 +32,6 @@ import type { DynamicObjectEngine } from '../mobility/engine/object-engine';
 import type { MobilityFilterEngine } from '../mobility/engine/mobility-filter-engine';
 import type { GeospatialEntityEngine } from '../twin/entity/geospatial-entity-engine';
 import type { TerrainIntelligence } from '../twin/terrain/terrain-intelligence';
-import type { TimeController } from '../twin/time/time-controller';
 import type { LayerRegistry } from '../layers/layer-registry';
 import type { CameraController } from '../core/engine/camera/camera-controller';
 import type { SceneManager } from '../core/engine/scene-manager';
