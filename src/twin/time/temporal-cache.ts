@@ -75,13 +75,10 @@ export class TemporalCache {
   }
 
   private evictToFit(neededBytes: number): void {
-    let freedBytes = 0;
-    
     // 1. Clean expired entries first
     const now = Date.now();
     for (const [key, entry] of this.cache.entries()) {
       if (now > entry.expiresAt) {
-        freedBytes += entry.sizeBytes;
         this.cache.delete(key);
         this.currentMemoryBytes -= entry.sizeBytes;
       }

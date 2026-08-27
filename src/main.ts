@@ -205,7 +205,7 @@ async function bootstrap(): Promise<void> {
   objectEngine.start();
 
   // Temporal Integration for Historical Data
-  eventBus.on('time:updated', async (state: any) => {
+  eventBus.on('time:updated', (state) => {
     // Ensure stores clean up correctly according to simulation time
     eventEngine.store.cleanExpired(state.currentTime);
 
@@ -221,21 +221,23 @@ async function bootstrap(): Promise<void> {
       const hourStart = new Date(Math.floor(timeMs / hourMs) * hourMs);
       const cacheKey = `hist-${hourStart.getTime()}`;
 
-      let cachedEvents = temporalCache.get<EarthEvent[]>(cacheKey);
+      const cachedEvents = temporalCache.get<EarthEvent[]>(cacheKey);
 
       if (!cachedEvents) {
         const range = { start: hourStart, end: new Date(hourStart.getTime() + hourMs) };
-        const eqResp = await eventEngine.queryHistoricalData({ dataset: 'earthquakes', timeRange: range });
-        const fireResp = await eventEngine.queryHistoricalData({ dataset: 'wildfires', timeRange: range });
-        
-        cachedEvents = [];
-        for (const r of eqResp) cachedEvents.push(...r.events);
-        for (const r of fireResp) cachedEvents.push(...r.events);
-        
-        temporalCache.set(cacheKey, cachedEvents, 300);
+        void Promise.all([
+          eventEngine.queryHistoricalData({ dataset: 'earthquakes', timeRange: range }),
+          eventEngine.queryHistoricalData({ dataset: 'wildfires', timeRange: range }),
+        ]).then(([eqResps, fireResps]) => {
+          const events: EarthEvent[] = [];
+          for (const r of eqResps) events.push(...r.events);
+          for (const r of fireResps) events.push(...r.events);
+          temporalCache.set(cacheKey, events, 300);
+          eventEngine.store.upsert(events);
+        });
+      } else {
+        eventEngine.store.upsert(cachedEvents);
       }
-      
-      eventEngine.store.upsert(cachedEvents);
 
     } else if (state.mode === TemporalMode.REAL_TIME) {
       if (!eventEngine.isRunning()) {

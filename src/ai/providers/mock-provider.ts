@@ -155,7 +155,7 @@ export class MockAIProvider implements AIProvider {
     }
 
     if (command.intent === 'SET_TEMPORAL_MODE') {
-      const mode = command.parameters?.mode || 'REAL_TIME';
+      const mode = String(command.parameters?.mode ?? 'REAL_TIME');
       return Promise.resolve(`Temporal mode set to ${mode}.`);
     }
 

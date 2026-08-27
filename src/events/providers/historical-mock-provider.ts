@@ -21,7 +21,7 @@ export class HistoricalMockProvider implements HistoricalDataProvider {
     };
   }
 
-  async getAvailability(): Promise<DataAvailability[]> {
+  getAvailability(): Promise<DataAvailability[]> {
     const now = new Date();
     const tenYearsAgo = new Date();
     tenYearsAgo.setFullYear(now.getFullYear() - 10);
@@ -130,7 +130,7 @@ export class HistoricalMockProvider implements HistoricalDataProvider {
     };
   }
 
-  async getNearestTimestamp(_dataset: string, time: Date): Promise<Date | null> {
+  getNearestTimestamp(_dataset: string, time: Date): Promise<Date | null> {
     return time; // Mock implies continuous data
   }
 }
