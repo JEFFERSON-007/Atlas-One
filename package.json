@@ -1,7 +1,7 @@
 {
   "name": "atlas-one",
   "private": true,
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Global Digital Twin & Geospatial Intelligence Platform",
   "type": "module",
   "scripts": {

@@ -5,6 +5,16 @@ All notable changes to the **Atlas One** Earth Intelligence Platform project wil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - AI Earth Intelligence Assistant - 2026-08-27
+
+### Added
+- **AI Intelligence Engine**: Integrated AI Engine capable of parsing natural language geographic and temporal queries.
+- **Provider Support**: Abstracted `AIProvider` supporting Mock (safe fallback), Local LLM (Ollama), and Remote (OpenAI API).
+- **Core AI Tools**: `flyToLocation`, `showLayer`, `hideLayer`.
+- **Query AI Tools**: `queryEarthquakes`, `queryWildfires`, `queryStorms`, `queryFlights`, `queryShips`, `querySatellites`.
+- **Camera & Timeline Tools**: `startTimeline`, `pauseTimeline`, `setTime`, `compareLocations`, `summarizeView`.
+- **Documentation**: Extensive Markdown documentation for architecture (`AI-ARCHITECTURE.md`), tools (`AI-TOOLS.md`), and providers (`AI-PROVIDERS.md`).
+
 ## [0.5.0] - Global Digital Twin & Geospatial Intelligence Platform - 2026-08-10
 
 ### Added

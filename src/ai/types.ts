@@ -86,6 +86,7 @@ export interface AIContext {
     mobility?: unknown;
     layers?: unknown;
     search?: unknown;
+    time?: unknown;
   };
 }
 

@@ -34,6 +34,19 @@
 - [ ] Measurement tools (distance, area, elevation profile)
 - [ ] Custom GeoJSON / KML data import
 
+## Version 0.5.0 — Dynamic Object Engine & Global Mobility (Completed)
+- [x] Abstract Dynamic Object Engine for tracking moving entities
+- [x] Live Flight tracking via OpenSky Network
+- [x] Live Maritime Ship tracking via AIS
+- [x] Live Satellite and ISS tracking via CelesTrak
+- [x] Object trajectory prediction and historical trails
+
+## Version 0.6.0 — AI Earth Intelligence Assistant (Completed)
+- [x] Integrated AI Engine capable of natural language geographic querying
+- [x] Support for Mock (offline), Local LLM (Ollama), and Remote (OpenAI) providers
+- [x] Tools to query earthquakes, wildfires, storms, flights, ships, and satellites
+- [x] Tools to control the camera (fly to) and simulation timeline (start, pause, jump to)
+
 ## Version 1.0.0 — Production Earth Intelligence Platform (Goal)
 - [ ] Multi-provider weather system (Open-Meteo, OpenWeatherMap, MeteoBlue)
 - [ ] Offline caching & progressive web app (PWA) support

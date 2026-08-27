@@ -45,6 +45,24 @@ export class MockAIProvider implements AIProvider {
     } else if (lowerText.includes('compare')) {
       command.intent = 'COMPARE_LOCATIONS';
       command.confidence = 0.9;
+    } else if (lowerText.includes('fast forward') || lowerText.includes('set time') || lowerText.includes('jump to')) {
+      command.intent = 'SET_TIME';
+      command.confidence = 0.9;
+    } else if (lowerText.includes('start time') || lowerText.includes('play time') || lowerText.includes('resume')) {
+      command.intent = 'START_TIMELINE';
+      command.confidence = 0.9;
+    } else if (lowerText.includes('pause time') || lowerText.includes('stop time') || lowerText.includes('halt')) {
+      command.intent = 'PAUSE_TIMELINE';
+      command.confidence = 0.9;
+    } else if (lowerText.includes('near') || lowerText.includes('nearby') || lowerText.includes('closest')) {
+      command.intent = 'GET_NEARBY_ENTITIES';
+      command.confidence = 0.9;
+    } else if (lowerText.includes('infrastructure') || lowerText.includes('road')) {
+      command.intent = 'QUERY_INFRASTRUCTURE';
+      command.confidence = 0.9;
+    } else if (lowerText.includes('population') || lowerText.includes('people')) {
+      command.intent = 'QUERY_POPULATION';
+      command.confidence = 0.9;
     } else if (lowerText.includes('what am i looking at') || lowerText.includes('summarize')) {
       command.intent = 'SUMMARIZE';
       command.confidence = 0.9;
@@ -105,6 +123,27 @@ export class MockAIProvider implements AIProvider {
 
     if (command.intent === 'FLY_TO_LOCATION') {
       return Promise.resolve(`Flying to ${command.location?.name || 'that location'}.`);
+    }
+
+    if (command.intent.startsWith('QUERY_')) {
+      const res = toolResults as { count?: number };
+      const entityName = command.intent.replace('QUERY_', '').toLowerCase().replace(/_/g, ' ');
+      if (res && res.count !== undefined) {
+        return Promise.resolve(`Found ${res.count} ${entityName} matching your criteria. I have updated the globe.`);
+      }
+      return Promise.resolve(`I have updated the ${entityName} visualization on the globe.`);
+    }
+
+    if (command.intent === 'SET_TIME') {
+      return Promise.resolve('I have updated the simulation time as requested.');
+    }
+
+    if (command.intent === 'START_TIMELINE') {
+      return Promise.resolve('Simulation playback started.');
+    }
+
+    if (command.intent === 'PAUSE_TIMELINE') {
+      return Promise.resolve('Simulation playback paused.');
     }
 
     return Promise.resolve('I have processed your request and updated Atlas One.');

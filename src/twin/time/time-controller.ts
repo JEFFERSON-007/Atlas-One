@@ -59,6 +59,12 @@ export class TimeController {
     this.isPaused = paused;
   }
 
+  /** Sets the simulation time directly. */
+  setTime(date: Date): void {
+    this.currentTime = new Date(date);
+    log.info(`Time Controller set to ${this.currentTime.toISOString()}`);
+  }
+
   /** Enables live real-time clock mode. */
   setLiveMode(): void {
     this.isLive = true;

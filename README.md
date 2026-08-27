@@ -21,6 +21,7 @@
 |---|---|
 | 🌍 **Earth Event Engine** | Generic, reusable real-time natural event monitoring system |
 | 🚀 **Global Mobility Engine** | Live tracking of flights (OpenSky), satellites (CelesTrak), ISS, and ships (AIS) |
+| 🤖 **AI Intelligence Engine** | Natural language spatial querying and LLM-powered context analysis |
 | 🛰️ **Orbital Mechanics** | Real-time SGP4 TLE orbital path propagation & 3D motion trails |
 | 🏢 **Digital Twin Layer** | 3D Buildings (OSM), global country borders, rivers, lakes, and city labels |
 | 🌋 **6 Live Data Providers** | USGS Earthquakes, NASA Wildfires, Smithsonian Volcanoes, Blitzortung Lightning, NOAA Storms, GDACS Tsunamis |

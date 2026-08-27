@@ -4,6 +4,9 @@ import { MockAIProvider } from './providers/mock-provider';
 import { OpenAIProvider } from './providers/openai-provider';
 import { LocalLLMProvider } from './providers/local-llm-provider';
 import { flyToLocationTool, showLayerTool, hideLayerTool, queryEarthquakesTool } from './tools/core-tools';
+import { queryWildfiresTool, queryStormsTool, queryFlightsTool, queryShipsTool, querySatellitesTool } from './tools/query-tools';
+import { startTimelineTool, pauseTimelineTool, setTimeTool } from './tools/camera-tools';
+import { compareLocationsTool, summarizeViewTool } from './tools/context-tools';
 
 const log = createLogger('AIEngine');
 
@@ -26,6 +29,16 @@ export class AIEngine {
     this.registerTool(showLayerTool);
     this.registerTool(hideLayerTool);
     this.registerTool(queryEarthquakesTool);
+    this.registerTool(queryWildfiresTool);
+    this.registerTool(queryStormsTool);
+    this.registerTool(queryFlightsTool);
+    this.registerTool(queryShipsTool);
+    this.registerTool(querySatellitesTool);
+    this.registerTool(startTimelineTool);
+    this.registerTool(pauseTimelineTool);
+    this.registerTool(setTimeTool);
+    this.registerTool(compareLocationsTool);
+    this.registerTool(summarizeViewTool);
     
     // Default to MockProvider for GitHub Pages safe execution
     void this.setProvider('MOCK');
@@ -107,7 +120,39 @@ export class AIEngine {
         toolName = 'queryEarthquakes';
         input = { minMagnitude: command.filters?.minMagnitude };
         break;
-      // ... Add mapping for other intents
+      case 'QUERY_WILDFIRES':
+        toolName = 'queryWildfires';
+        break;
+      case 'QUERY_STORMS':
+      case 'QUERY_WEATHER':
+        toolName = 'queryStorms';
+        break;
+      case 'QUERY_FLIGHTS':
+        toolName = 'queryFlights';
+        break;
+      case 'QUERY_SHIPS':
+        toolName = 'queryShips';
+        break;
+      case 'QUERY_SATELLITES':
+        toolName = 'querySatellites';
+        break;
+      case 'START_TIMELINE':
+        toolName = 'startTimeline';
+        break;
+      case 'PAUSE_TIMELINE':
+        toolName = 'pauseTimeline';
+        break;
+      case 'SET_TIME':
+        toolName = 'setTime';
+        input = { targetDate: command.timeRange?.start || command.timeRange?.end };
+        break;
+      case 'COMPARE_LOCATIONS':
+        toolName = 'compareLocations';
+        input = { locationA: command.location?.name, locationB: command.entities?.[0] }; // Basic mapping
+        break;
+      case 'SUMMARIZE':
+        toolName = 'summarizeView';
+        break;
       default:
         log.warn(`No specific tool mapped for intent: ${command.intent}`);
         return { success: false, reason: 'unsupported_intent' };

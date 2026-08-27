@@ -291,6 +291,7 @@ async function bootstrap(): Promise<void> {
     camera: cameraController,
     events: eventEngine,
     mobility: objectEngine,
+    time: timeController,
   });
   
   // Register default provider
