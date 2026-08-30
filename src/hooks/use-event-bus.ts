@@ -53,6 +53,11 @@ export interface AppEvents {
   'terrain:exaggeration-changed': { multiplier: number };
   'ui:toggle-comparison': void;
   'time:comparison-split': { position: number };
+  // v0.8 — Visual Overhaul events
+  'sensor:changed': { mode: import('../core/engine/postfx/sensor-mode.types').SensorMode };
+  'hud:toggle': void;
+  'detection:toggle': void;
+  'share:copied': { url: string };
 }
 
 type EventCallback<T> = T extends void ? () => void : (payload: T) => void;

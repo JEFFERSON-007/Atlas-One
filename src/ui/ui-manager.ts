@@ -27,6 +27,14 @@ import { GlobeHUD } from './components/panels/globe-hud';
 import { TimelinePanel } from './components/panels/timeline-panel';
 import { ComparisonPanel } from './components/panels/comparison-panel';
 import { AiAssistantPanel } from './components/panels/ai-assistant-panel';
+
+// v0.8 — Visual Overhaul
+import { SensorModePanel } from './components/panels/sensor-mode-panel';
+import { MilitaryHUD } from './components/hud/military-hud';
+import { DetectionOverlay } from './components/hud/detection-overlay';
+import type { PostProcessManager } from '../core/engine/postfx/post-process-manager';
+import type { URLStateManager } from '../core/state/url-state-manager';
+import { eventBus } from '../hooks/use-event-bus';
 import type { AIEngine } from '../ai/engine';
 import type { DynamicObjectEngine } from '../mobility/engine/object-engine';
 import type { MobilityFilterEngine } from '../mobility/engine/mobility-filter-engine';
@@ -72,6 +80,12 @@ export class UIManager {
   private fpsCounter: FPSCounter;
   private aiAssistantPanel: AiAssistantPanel;
 
+  // v0.8 Visual Overhaul
+  private sensorModePanel: SensorModePanel;
+  private militaryHUD: MilitaryHUD;
+  private detectionOverlay: DetectionOverlay;
+  private urlStateManager?: URLStateManager;
+
   constructor() {
     this.toolbar = new Toolbar();
     this.searchPanel = new SearchPanel();
@@ -96,6 +110,10 @@ export class UIManager {
     this.coordinatesDisplay = new CoordinatesDisplay();
     this.fpsCounter = new FPSCounter();
     this.aiAssistantPanel = new AiAssistantPanel();
+
+    this.sensorModePanel = new SensorModePanel();
+    this.militaryHUD = new MilitaryHUD();
+    this.detectionOverlay = new DetectionOverlay();
   }
 
   /**
@@ -115,8 +133,12 @@ export class UIManager {
     terrainIntel?: TerrainIntelligence,
     temporalEngine?: TemporalEngine,
     aiEngine?: AIEngine,
+    postProcessManager?: PostProcessManager,
+    urlStateManager?: URLStateManager
   ): void {
     const overlayId = 'ui-overlay';
+    
+    this.urlStateManager = urlStateManager;
 
     // Initialize toast system
     initNotificationToast();
@@ -133,6 +155,21 @@ export class UIManager {
 
     if (aiEngine) {
       this.aiAssistantPanel.init(overlayId, aiEngine);
+    }
+
+    if (postProcessManager) {
+      this.sensorModePanel.init(overlayId, postProcessManager);
+    }
+    
+    // The HUD and Overlays are separate from the DOM panels (mostly)
+    // but they append absolute positioned elements to the overlay container
+    this.militaryHUD.init(overlayId);
+    this.detectionOverlay.init(overlayId, viewer, sceneManager);
+
+    // Initial state matching
+    if (postProcessManager) {
+      this.militaryHUD.setVisible(postProcessManager.getMode() !== 'NORMAL');
+      this.detectionOverlay.setVisible(postProcessManager.getMode() !== 'NORMAL');
     }
 
     // Initialize v0.3 Earth Event panels
@@ -197,6 +234,23 @@ export class UIManager {
 
     this.coordinatesDisplay.init(overlayId);
     this.fpsCounter.init(overlayId);
+
+    // v0.8 Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Don't trigger if user is typing in an input/textarea
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+      
+      const key = e.key.toLowerCase();
+      if (key === 'h') {
+        this.militaryHUD.toggle();
+        eventBus.emit('hud:toggle');
+      } else if (key === 'd') {
+        this.detectionOverlay.toggle();
+        eventBus.emit('detection:toggle');
+      }
+    });
 
     log.info('UI Manager initialized with v0.3 Events, v0.4 Mobility, & v0.5 Digital Twin panels');
   }
@@ -266,6 +320,16 @@ export class UIManager {
         break;
       case 'coordinates':
         this.coordinatesDisplay.toggle();
+        break;
+      case 'sensor-mode':
+        this.toggleExclusivePanel(this.sensorModePanel, leftPanels, 'btn-sensor-mode');
+        break;
+      case 'share':
+        if (this.urlStateManager) {
+          this.urlStateManager.copyShareLink().then(() => {
+            eventBus.emit('notification:show', { message: 'Share link copied to clipboard', type: 'info' });
+          });
+        }
         break;
       case 'home':
         break;
@@ -354,6 +418,9 @@ export class UIManager {
     this.eventTimeline.dispose();
     this.coordinatesDisplay.dispose();
     this.fpsCounter.dispose();
+    this.sensorModePanel.dispose();
+    this.militaryHUD.dispose();
+    this.detectionOverlay.dispose();
     log.info('UI Manager disposed');
   }
 }

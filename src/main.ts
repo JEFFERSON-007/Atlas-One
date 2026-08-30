@@ -22,6 +22,10 @@ import { eventBus } from './hooks/use-event-bus';
 // v0.6 — AI Assistant
 import { AIEngine } from './ai/engine';
 
+// v0.8 — Visual Overhaul
+import { PostProcessManager } from './core/engine/postfx/post-process-manager';
+import { URLStateManager } from './core/state/url-state-manager';
+
 // v0.3 — Earth Event Engine imports
 import { EarthEventEngine } from './events/engine/event-engine';
 import { EventRenderer } from './events/rendering/event-renderer';
@@ -346,6 +350,16 @@ async function bootstrap(): Promise<void> {
   // Register default provider
   void aiEngine.setProvider('MOCK');
 
+  // v0.8 Initialize Visual Overhaul systems
+  const postProcessManager = new PostProcessManager();
+  postProcessManager.init(viewer);
+
+  const urlStateManager = new URLStateManager();
+  urlStateManager.init(viewer, postProcessManager, layerRegistry);
+  
+  // Apply URL state before creating UI
+  const stateApplied = urlStateManager.applyFromURL();
+
   // 10. Initialize UI
   const uiManager = new UIManager();
   uiManager.init(
@@ -361,13 +375,17 @@ async function bootstrap(): Promise<void> {
     geospatialEngine,
     terrainIntel,
     temporalEngine,
-    aiEngine
+    aiEngine,
+    postProcessManager,
+    urlStateManager
   );
 
-  // 10. Play landing animation
-  const animationController = new AnimationController();
-  animationController.init(viewer);
-  await animationController.playLandingSequence();
+  // 10. Play landing animation (only if URL state wasn't applied)
+  if (!stateApplied) {
+    const animationController = new AnimationController();
+    animationController.init(viewer);
+    await animationController.playLandingSequence();
+  }
 
   // 11. Show notification
   if (!config.hasCesiumIon) {

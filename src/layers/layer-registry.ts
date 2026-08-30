@@ -92,6 +92,26 @@ export class LayerRegistry {
   }
 
   /**
+   * Returns all currently enabled layers.
+   */
+  getActiveLayers(): ILayer[] {
+    return this.getAll().filter((l) => l.isEnabled());
+  }
+
+  /**
+   * Enables a layer by ID. No-op if already enabled or not found.
+   */
+  enableLayer(layerId: LayerId): void {
+    const layer = this.layers.get(layerId);
+    if (layer && !layer.isEnabled()) {
+      layer.enable();
+      eventBus.emit('layer:toggle', { layerId, enabled: true });
+      log.info(`Layer enabled: ${layerId}`);
+    }
+  }
+
+
+  /**
    * Removes and disposes a layer.
    */
   remove(layerId: LayerId): void {
