@@ -235,6 +235,13 @@ export class UIManager {
     this.coordinatesDisplay.init(overlayId);
     this.fpsCounter.init(overlayId);
 
+    // v0.8 Visual Overhaul
+    if (postProcessManager) {
+      this.sensorModePanel.init(overlayId, postProcessManager);
+    }
+    this.militaryHUD.init(overlayId, viewer);
+    this.detectionOverlay.init(overlayId, viewer);
+
     // v0.8 Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
       // Don't trigger if user is typing in an input/textarea
@@ -274,6 +281,7 @@ export class UIManager {
       this.countryIntelligencePanel,
       this.cityIntelligencePanel,
       this.aiAssistantPanel,
+      this.sensorModePanel,
     ];
 
     switch (buttonId) {
