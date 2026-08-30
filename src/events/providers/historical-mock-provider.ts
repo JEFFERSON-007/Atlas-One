@@ -26,7 +26,7 @@ export class HistoricalMockProvider implements HistoricalDataProvider {
     const tenYearsAgo = new Date();
     tenYearsAgo.setFullYear(now.getFullYear() - 10);
 
-    return [
+    return Promise.resolve([
       {
         dataset: 'earthquakes',
         availableRanges: [{ start: tenYearsAgo, end: now }],
@@ -37,7 +37,7 @@ export class HistoricalMockProvider implements HistoricalDataProvider {
         availableRanges: [{ start: tenYearsAgo, end: now }],
         resolutionMinutes: 1440,
       }
-    ];
+    ]);
   }
 
   async getData(query: HistoricalQuery): Promise<HistoricalDataResponse> {
@@ -131,6 +131,6 @@ export class HistoricalMockProvider implements HistoricalDataProvider {
   }
 
   getNearestTimestamp(_dataset: string, time: Date): Promise<Date | null> {
-    return time; // Mock implies continuous data
+    return Promise.resolve(time); // Mock implies continuous data
   }
 }
