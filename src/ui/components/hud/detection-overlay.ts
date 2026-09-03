@@ -8,7 +8,6 @@ import {
   Cartesian3,
   SceneTransforms,
   type Viewer,
-  type Entity,
 } from 'cesium';
 import { createElement } from '../../../utils/dom';
 import { createLogger } from '../../../utils/logger';

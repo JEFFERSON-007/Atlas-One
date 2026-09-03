@@ -27,6 +27,7 @@ import { GlobeHUD } from './components/panels/globe-hud';
 import { TimelinePanel } from './components/panels/timeline-panel';
 import { ComparisonPanel } from './components/panels/comparison-panel';
 import { AiAssistantPanel } from './components/panels/ai-assistant-panel';
+import { SensorMode } from '../core/engine/postfx/sensor-mode.types';
 
 // v0.8 — Visual Overhaul
 import { SensorModePanel } from './components/panels/sensor-mode-panel';
