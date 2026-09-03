@@ -63,7 +63,7 @@ export class DetectionOverlay {
         z-index: 75;
         display: none;
       `,
-    }) as HTMLCanvasElement;
+    });
 
     parent.appendChild(this.canvas);
     this.ctx = this.canvas.getContext('2d');
