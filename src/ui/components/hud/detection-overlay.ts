@@ -4,17 +4,15 @@
  * tactical identification boxes around each visible entity.
  */
 
-import type { Viewer } from 'cesium';
 import {
   Cartesian3,
   SceneTransforms,
-  Cartographic,
-  Math as CesiumMath,
-  Ellipsoid,
+  type Viewer,
+  type Entity,
 } from 'cesium';
 import { createElement } from '../../../utils/dom';
 import { createLogger } from '../../../utils/logger';
-import { eventBus } from '../../../hooks/use-event-bus';
+
 
 const log = createLogger('DetectionOverlay');
 
@@ -77,7 +75,12 @@ export class DetectionOverlay {
   }
 
   toggle(): void {
-    this.isVisible = !this.isVisible;
+    this.setVisible(!this.isVisible);
+  }
+
+  setVisible(visible: boolean): void {
+    if (this.isVisible === visible) return;
+    this.isVisible = visible;
     if (this.canvas) {
       this.canvas.style.display = this.isVisible ? 'block' : 'none';
     }
@@ -210,7 +213,7 @@ export class DetectionOverlay {
       iss: '◉',
       default: '◇',
     };
-    return icons[type] ?? icons['default'];
+    return icons[type] ?? '◇';
   }
 
   private drawDetectionBox(entity: DetectedEntity): void {
@@ -226,7 +229,7 @@ export class DetectionOverlay {
     const y = screenPos.y;
     const boxW = 80;
     const boxH = 32;
-    const color = TYPE_COLORS[entity.type] ?? TYPE_COLORS['default'];
+    const color = TYPE_COLORS[entity.type] ?? '#ffffff';
 
     // Box outline
     this.ctx.strokeStyle = color;

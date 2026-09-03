@@ -131,7 +131,7 @@ export class URLStateManager {
     if (this.layerRegistry) {
       const activeLayers = this.layerRegistry
         .getActiveLayers()
-        .map((l) => l.id);
+        .map((l) => l.metadata.id);
       if (activeLayers.length > 0) {
         state.layers = activeLayers;
       }

@@ -88,12 +88,11 @@ export class PostProcessManager {
     eventBus.emit('sensor:changed', { mode });
   }
 
-  /** Cycles to the next sensor mode. */
   cycleMode(): SensorMode {
-    const modes = Object.values(SensorMode);
+    const modes = Object.values(SensorMode) as SensorMode[];
     const currentIndex = modes.indexOf(this.currentMode);
     const nextIndex = (currentIndex + 1) % modes.length;
-    const next = modes[nextIndex];
+    const next = modes[nextIndex] as SensorMode;
     this.setMode(next);
     return next;
   }

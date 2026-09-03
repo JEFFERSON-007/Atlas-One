@@ -56,6 +56,10 @@ export class SensorModePanel {
     this.container.style.display = isShown ? 'none' : 'flex';
   }
 
+  isVisible(): boolean {
+    return this.container?.style.display === 'flex';
+  }
+
   show(): void {
     if (this.container) this.container.style.display = 'flex';
   }

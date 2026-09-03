@@ -54,7 +54,12 @@ export class MilitaryHUD {
   }
 
   toggle(): void {
-    this.isVisible = !this.isVisible;
+    this.setVisible(!this.isVisible);
+  }
+
+  setVisible(visible: boolean): void {
+    if (this.isVisible === visible) return;
+    this.isVisible = visible;
     if (this.container) {
       this.container.style.display = this.isVisible ? 'block' : 'none';
     }

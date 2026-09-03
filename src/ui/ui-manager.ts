@@ -163,13 +163,13 @@ export class UIManager {
     
     // The HUD and Overlays are separate from the DOM panels (mostly)
     // but they append absolute positioned elements to the overlay container
-    this.militaryHUD.init(overlayId);
-    this.detectionOverlay.init(overlayId, viewer, sceneManager);
+    this.militaryHUD.init(overlayId, viewer);
+    this.detectionOverlay.init(overlayId, viewer);
 
     // Initial state matching
     if (postProcessManager) {
-      this.militaryHUD.setVisible(postProcessManager.getMode() !== 'NORMAL');
-      this.detectionOverlay.setVisible(postProcessManager.getMode() !== 'NORMAL');
+      this.militaryHUD.setVisible(postProcessManager.getMode() !== SensorMode.NORMAL);
+      this.detectionOverlay.setVisible(postProcessManager.getMode() !== SensorMode.NORMAL);
     }
 
     // Initialize v0.3 Earth Event panels
@@ -239,8 +239,6 @@ export class UIManager {
     if (postProcessManager) {
       this.sensorModePanel.init(overlayId, postProcessManager);
     }
-    this.militaryHUD.init(overlayId, viewer);
-    this.detectionOverlay.init(overlayId, viewer);
 
     // v0.8 Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
