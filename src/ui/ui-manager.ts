@@ -35,6 +35,10 @@ import { MilitaryHUD } from './components/hud/military-hud';
 import { DetectionOverlay } from './components/hud/detection-overlay';
 import type { PostProcessManager } from '../core/engine/postfx/post-process-manager';
 import type { URLStateManager } from '../core/state/url-state-manager';
+import { EnvironmentalDashboard } from './components/panels/environmental-dashboard';
+import { EnvironmentalLegendPanel } from './components/panels/environmental-legend-panel';
+import { ClimateAnalyticsPanel } from './components/panels/climate-analytics-panel';
+import type { EnvironmentalDataEngine } from '../environment/engine/environmental-data-engine';
 import { eventBus } from '../hooks/use-event-bus';
 import type { AIEngine } from '../ai/engine';
 import type { DynamicObjectEngine } from '../mobility/engine/object-engine';
@@ -85,6 +89,9 @@ export class UIManager {
   private sensorModePanel: SensorModePanel;
   private militaryHUD: MilitaryHUD;
   private detectionOverlay: DetectionOverlay;
+  private envDashboard: EnvironmentalDashboard;
+  private envLegend: EnvironmentalLegendPanel;
+  private climateAnalytics: ClimateAnalyticsPanel;
   private urlStateManager?: URLStateManager;
 
   constructor() {
@@ -115,6 +122,9 @@ export class UIManager {
     this.sensorModePanel = new SensorModePanel();
     this.militaryHUD = new MilitaryHUD();
     this.detectionOverlay = new DetectionOverlay();
+    this.envDashboard = new EnvironmentalDashboard();
+    this.envLegend = new EnvironmentalLegendPanel();
+    this.climateAnalytics = new ClimateAnalyticsPanel();
   }
 
   /**
@@ -135,7 +145,8 @@ export class UIManager {
     temporalEngine?: TemporalEngine,
     aiEngine?: AIEngine,
     postProcessManager?: PostProcessManager,
-    urlStateManager?: URLStateManager
+    urlStateManager?: URLStateManager,
+    envEngine?: EnvironmentalDataEngine
   ): void {
     const overlayId = 'ui-overlay';
     
@@ -241,6 +252,12 @@ export class UIManager {
       this.sensorModePanel.init(overlayId, postProcessManager);
     }
 
+    if (envEngine) {
+      this.envDashboard.init(overlayId, envEngine);
+    }
+    this.envLegend.init(overlayId);
+    this.climateAnalytics.init(overlayId);
+
     // v0.8 Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
       // Don't trigger if user is typing in an input/textarea
@@ -255,6 +272,8 @@ export class UIManager {
       } else if (key === 'd') {
         this.detectionOverlay.toggle();
         eventBus.emit('detection:toggle');
+      } else if (key === 'e') {
+        this.envDashboard.toggle();
       }
     });
 
@@ -281,6 +300,7 @@ export class UIManager {
       this.cityIntelligencePanel,
       this.aiAssistantPanel,
       this.sensorModePanel,
+      this.climateAnalytics,
     ];
 
     switch (buttonId) {
@@ -314,6 +334,9 @@ export class UIManager {
         break;
       case 'btn-ai-assistant':
         this.toggleExclusivePanel(this.aiAssistantPanel, leftPanels, 'btn-ai-assistant');
+        break;
+      case 'climate-analytics':
+        this.toggleExclusivePanel(this.climateAnalytics, leftPanels, 'btn-climate-analytics');
         break;
 
       case 'digital-twin':
@@ -428,6 +451,9 @@ export class UIManager {
     this.sensorModePanel.dispose();
     this.militaryHUD.dispose();
     this.detectionOverlay.dispose();
+    this.envDashboard.dispose();
+    this.envLegend.dispose();
+    this.climateAnalytics.dispose();
     log.info('UI Manager disposed');
   }
 }

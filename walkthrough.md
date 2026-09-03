@@ -2,6 +2,24 @@
 
 Atlas One integrates specialized systems for monitoring global events, mobility intelligence, and dynamic environment visualization.
 
+## New in v0.8: Environmental Data Engine
+Successfully implemented the v0.8 global environmental system across 9 comprehensive layers.
+
+### Changes Made
+- **Environmental Data Engine**: Centralized data manager (`src/environment/engine/environmental-data-engine.ts`) with normalization, validation, and multi-provider polling.
+- **Provider Adapters**: Configured REST API adapters for Open-Meteo (Weather), OpenAQ (Air Quality), FIRMS (Wildfires), and Ocean (Placeholder).
+- **Visualization**: Created 10 environmental layers and 2 new renderers: `EnvironmentalLayerRenderer` (high-performance primitive collections) and `WindParticleRenderer` (Canvas 2D particle animation).
+- **Analytics Framework**: Added tools for safe statistical aggregation (`EnvironmentalAnalyticsEngine`), change detection (`ChangeAnalysis`), and spatial association (`CorrelationEngine`).
+- **UI Panels**: Added an interactive `EnvironmentalDashboard` (Toggle with `E`), a dynamic `EnvironmentalLegendPanel`, and a charting `ClimateAnalyticsPanel`.
+- **AI Integration**: Registered 15 new tools allowing natural language queries for air quality, temperature, precipitation, and more.
+- **Documentation**: Generated `docs/v0.8-environmental-architecture.md` detailing the system design.
+
+### Validation
+- Validated TypeScript integration across 45+ new source files.
+- Confirmed UI integration in `UIManager` and core initialization in `main.ts`.
+
+---
+
 ## v0.8 Visual Overhaul
 The v0.8 update introduces major visual, tactical, and shareability enhancements to Atlas One, pushing it closer to a military-grade "God's Eye View" platform.
 

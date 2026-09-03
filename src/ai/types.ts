@@ -21,6 +21,21 @@ export type AIIntent =
   | 'QUERY_INFRASTRUCTURE'
   | 'QUERY_POPULATION'
   | 'QUERY_ENVIRONMENT'
+  | 'QUERY_AIR_QUALITY'
+  | 'QUERY_TEMPERATURE'
+  | 'QUERY_PRECIPITATION'
+  | 'QUERY_WIND'
+  | 'QUERY_VEGETATION'
+  | 'QUERY_FOREST'
+  | 'QUERY_WATER'
+  | 'QUERY_FLOOD'
+  | 'QUERY_DROUGHT'
+  | 'QUERY_SNOW'
+  | 'QUERY_ICE'
+  | 'QUERY_OCEAN'
+  | 'QUERY_ENVIRONMENTAL_HISTORY'
+  | 'COMPARE_ENVIRONMENTAL_DATA'
+  | 'GET_ENVIRONMENTAL_CONTEXT'
   | 'GET_NEARBY_ENTITIES'
   | 'GET_RELATED_ENTITIES'
   | 'START_TIMELINE'
@@ -88,6 +103,7 @@ export interface AIContext {
     layers?: unknown;
     search?: unknown;
     time?: unknown;
+    environment?: unknown;
   };
 }
 

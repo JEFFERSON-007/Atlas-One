@@ -112,8 +112,29 @@ import { RoadsLayer } from './layers/implementations/roads.layer';
 import { HydrologyLayer } from './layers/implementations/hydrology.layer';
 import { AirportsLayer } from './layers/implementations/airports.layer';
 import { PortsLayer } from './layers/implementations/ports.layer';
-import { InfrastructureLayer } from './layers/implementations/infrastructure.layer';
 import { PopulationLayer } from './layers/implementations/population.layer';
+
+// v0.8 — Environmental Engine & UI
+import { EnvironmentalDataEngine } from './environment/engine/environmental-data-engine';
+import { OpenMeteoWeatherProvider } from './environment/providers/open-meteo-weather.provider';
+import { OpenAQAirQualityProvider } from './environment/providers/openaq-air-quality.provider';
+import { FIRMSActiveFireProvider } from './environment/providers/firms-active-fire.provider';
+import { OceanPlaceholderProvider } from './environment/providers/ocean-placeholder.provider';
+
+import { TemperatureLayer } from './layers/implementations/temperature.layer';
+import { PrecipitationLayer } from './layers/implementations/precipitation.layer';
+import { WindLayer } from './layers/implementations/wind.layer';
+import { AirQualityLayer } from './layers/implementations/air-quality.layer';
+import { VegetationLayer } from './layers/implementations/vegetation.layer';
+import { FloodLayer } from './layers/implementations/flood.layer';
+import { DroughtLayer } from './layers/implementations/drought.layer';
+import { SnowIceLayer } from './layers/implementations/snow-ice.layer';
+import { OceanTemperatureLayer } from './layers/implementations/ocean-temperature.layer';
+import { OceanCurrentsLayer } from './layers/implementations/ocean-currents.layer';
+
+import { EnvironmentalLayerRenderer } from './environment/rendering/environmental-layer-renderer';
+import { WindParticleRenderer } from './environment/rendering/wind-particle-renderer';
+import { DataLegend } from './environment/rendering/data-legend';
 
 const log = createLogger('Main');
 
@@ -150,6 +171,14 @@ async function bootstrap(): Promise<void> {
   // 5. Initialize globe system (terrain, imagery, clouds, atmosphere)
   const globeManager = new GlobeManager();
   await globeManager.init(viewer);
+
+  // 5.5 Initialize v0.8 Environmental Data Engine
+  const envEngine = new EnvironmentalDataEngine();
+  envEngine.registerProvider(new OpenMeteoWeatherProvider());
+  envEngine.registerProvider(new OpenAQAirQualityProvider());
+  envEngine.registerProvider(new FIRMSActiveFireProvider());
+  envEngine.registerProvider(new OceanPlaceholderProvider());
+  await envEngine.start();
 
   // 6. Initialize v0.3 Earth Event Subsystems
   const eventRenderer = new EventRenderer();
@@ -298,6 +327,13 @@ async function bootstrap(): Promise<void> {
   const layerRegistry = new LayerRegistry();
   layerRegistry.setViewer(viewer);
 
+  // v0.8 Renderers
+  const envLayerRenderer = new EnvironmentalLayerRenderer();
+  envLayerRenderer.init(viewer);
+  
+  const windParticleRenderer = new WindParticleRenderer();
+  windParticleRenderer.init(viewer);
+
   // Register all layers
   await Promise.all([
     layerRegistry.register(new SatelliteImageryLayer()),
@@ -334,6 +370,17 @@ async function bootstrap(): Promise<void> {
     layerRegistry.register(new PortsLayer(entityRenderer)),
     layerRegistry.register(new InfrastructureLayer(entityRenderer)),
     layerRegistry.register(new PopulationLayer(entityRenderer)),
+    // v0.8 Environmental Layers
+    layerRegistry.register(new TemperatureLayer(envEngine, envLayerRenderer)),
+    layerRegistry.register(new PrecipitationLayer(envEngine, envLayerRenderer)),
+    layerRegistry.register(new WindLayer(envEngine, windParticleRenderer)),
+    layerRegistry.register(new AirQualityLayer(envEngine, envLayerRenderer)),
+    layerRegistry.register(new VegetationLayer(envEngine, envLayerRenderer)),
+    layerRegistry.register(new FloodLayer(envEngine, envLayerRenderer)),
+    layerRegistry.register(new DroughtLayer(envEngine, envLayerRenderer)),
+    layerRegistry.register(new SnowIceLayer(envEngine, envLayerRenderer)),
+    layerRegistry.register(new OceanTemperatureLayer(envEngine, envLayerRenderer)),
+    layerRegistry.register(new OceanCurrentsLayer(envEngine, windParticleRenderer)),
   ]);
 
   log.info(`${layerRegistry.getAll().length} total layers registered`);
@@ -345,6 +392,7 @@ async function bootstrap(): Promise<void> {
     events: eventEngine,
     mobility: objectEngine,
     time: temporalEngine,
+    environment: envEngine,
   });
   
   // Register default provider
@@ -377,7 +425,8 @@ async function bootstrap(): Promise<void> {
     temporalEngine,
     aiEngine,
     postProcessManager,
-    urlStateManager
+    urlStateManager,
+    envEngine
   );
 
   const animationController = new AnimationController();

@@ -8,6 +8,7 @@ import { queryWildfiresTool, queryStormsTool, queryFlightsTool, queryShipsTool, 
 import { flyToLocationTool as cameraFlyToLocationTool } from './tools/camera-tools';
 import { startTimelineTool, pauseTimelineTool, setTimeTool, setTemporalModeTool } from './tools/temporal-tools';
 import { compareLocationsTool, summarizeViewTool } from './tools/context-tools';
+import { environmentalTools } from './tools/environmental-tools';
 
 const log = createLogger('AIEngine');
 
@@ -41,6 +42,10 @@ export class AIEngine {
     this.registerTool(setTemporalModeTool);
     this.registerTool(compareLocationsTool);
     this.registerTool(summarizeViewTool);
+    
+    for (const tool of environmentalTools) {
+      this.registerTool(tool);
+    }
     
     // Default to MockProvider for GitHub Pages safe execution
     void this.setProvider('MOCK');
@@ -155,6 +160,21 @@ export class AIEngine {
       case 'SUMMARIZE':
         toolName = 'summarizeView';
         break;
+      case 'QUERY_AIR_QUALITY': toolName = 'queryAirQuality'; break;
+      case 'QUERY_TEMPERATURE': toolName = 'queryTemperature'; break;
+      case 'QUERY_PRECIPITATION': toolName = 'queryPrecipitation'; break;
+      case 'QUERY_WIND': toolName = 'queryWind'; break;
+      case 'QUERY_VEGETATION': toolName = 'queryVegetation'; break;
+      case 'QUERY_FOREST': toolName = 'queryForest'; break;
+      case 'QUERY_WATER': toolName = 'queryWater'; break;
+      case 'QUERY_FLOOD': toolName = 'queryFlood'; break;
+      case 'QUERY_DROUGHT': toolName = 'queryDrought'; break;
+      case 'QUERY_SNOW': toolName = 'querySnow'; break;
+      case 'QUERY_ICE': toolName = 'queryIce'; break;
+      case 'QUERY_OCEAN': toolName = 'queryOcean'; break;
+      case 'QUERY_ENVIRONMENTAL_HISTORY': toolName = 'queryEnvironmentalHistory'; break;
+      case 'COMPARE_ENVIRONMENTAL_DATA': toolName = 'compareEnvironmentalData'; break;
+      case 'GET_ENVIRONMENTAL_CONTEXT': toolName = 'getEnvironmentalContext'; break;
       default:
         log.warn(`No specific tool mapped for intent: ${command.intent}`);
         return { success: false, reason: 'unsupported_intent' };
