@@ -333,7 +333,7 @@ export class UIManager {
         break;
       case 'share':
         if (this.urlStateManager) {
-          this.urlStateManager.copyShareLink().then(() => {
+          void this.urlStateManager.copyShareLink().then(() => {
             eventBus.emit('notification:show', { message: 'Share link copied to clipboard', type: 'info' });
           });
         }
