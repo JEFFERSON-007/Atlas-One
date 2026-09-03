@@ -4,10 +4,7 @@
  * Does not claim causation from correlation.
  */
 
-import { createLogger } from '../../utils/logger';
 import type { EnvironmentalObservation } from '../types/environmental.types';
-
-const log = createLogger('CorrelationEngine');
 
 export interface CorrelatedCondition {
   variable: string;

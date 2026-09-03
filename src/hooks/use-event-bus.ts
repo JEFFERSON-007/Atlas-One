@@ -58,6 +58,11 @@ export interface AppEvents {
   'hud:toggle': void;
   'detection:toggle': void;
   'share:copied': { url: string };
+  // v0.8 — Environmental Data Engine
+  'environment:data-loaded': { variable: import('../environment/types/environmental.types').EnvironmentalVariable; count: number; dataState: import('../environment/types/environmental.types').DataState };
+  'environment:provider-error': { variable: import('../environment/types/environmental.types').EnvironmentalVariable; provider: string; error: string };
+  'environment:legend-update': { variable: import('../environment/types/environmental.types').EnvironmentalVariable; state: import('../environment/types/environmental.types').DataState; ranges: { min: number; max: number; label: string; color: string }[] };
+  'environment:legend-hide': void;
 }
 
 type EventCallback<T> = T extends void ? () => void : (payload: T) => void;

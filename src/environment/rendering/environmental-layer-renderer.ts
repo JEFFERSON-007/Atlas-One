@@ -59,7 +59,6 @@ export class EnvironmentalLayerRenderer {
   private viewer: Viewer | null = null;
   private pointCollection: PointPrimitiveCollection | null = null;
   private labelCollection: LabelCollection | null = null;
-  private currentVariable: EnvironmentalVariable | null = null;
 
   init(viewer: Viewer): void {
     this.viewer = viewer;
@@ -77,7 +76,6 @@ export class EnvironmentalLayerRenderer {
     if (!this.pointCollection || !this.labelCollection) return;
 
     this.clear();
-    this.currentVariable = variable;
 
     const scale = COLOR_SCALES[variable] ?? COLOR_SCALES[EnvironmentalVariable.Temperature]!;
 
@@ -113,8 +111,8 @@ export class EnvironmentalLayerRenderer {
     scale: ColorStop[],
   ): EnvironmentalLegend {
     const values = observations.map(o => o.value);
-    const min = values.length > 0 ? Math.min(...values) : scale[0].value;
-    const max = values.length > 0 ? Math.max(...values) : scale[scale.length - 1].value;
+    const min = values.length > 0 ? Math.min(...values) : (scale[0]?.value ?? 0);
+    const max = values.length > 0 ? Math.max(...values) : (scale[scale.length - 1]?.value ?? 0);
     const unit = observations[0]?.unit ?? '';
     const dataState = observations[0]?.dataState ?? DataState.UNAVAILABLE;
     const timestamp = observations[0]?.timestamp ?? null;
@@ -134,14 +132,16 @@ export class EnvironmentalLayerRenderer {
   /** Interpolates color from a scale based on value. */
   private interpolateColor(value: number, scale: ColorStop[]): Color {
     if (scale.length === 0) return Color.WHITE;
-    if (value <= scale[0].value) return Color.fromCssColorString(scale[0].color);
-    if (value >= scale[scale.length - 1].value) return Color.fromCssColorString(scale[scale.length - 1].color);
+    if (value <= (scale[0]?.value ?? 0)) return Color.fromCssColorString(scale[0]?.color ?? '#fff');
+    if (value >= (scale[scale.length - 1]?.value ?? 0)) return Color.fromCssColorString(scale[scale.length - 1]?.color ?? '#fff');
 
     for (let i = 0; i < scale.length - 1; i++) {
-      if (value >= scale[i].value && value <= scale[i + 1].value) {
-        const t = (value - scale[i].value) / (scale[i + 1].value - scale[i].value);
-        const c1 = Color.fromCssColorString(scale[i].color);
-        const c2 = Color.fromCssColorString(scale[i + 1].color);
+      const s1 = scale[i];
+      const s2 = scale[i + 1];
+      if (s1 && s2 && value >= s1.value && value <= s2.value) {
+        const t = (value - s1.value) / (s2.value - s1.value);
+        const c1 = Color.fromCssColorString(s1.color);
+        const c2 = Color.fromCssColorString(s2.color);
         return Color.lerp(c1, c2, t, new Color());
       }
     }

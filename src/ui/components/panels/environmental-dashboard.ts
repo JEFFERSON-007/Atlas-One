@@ -197,7 +197,7 @@ export class EnvironmentalDashboard {
       if (cached.length > 0) {
         const avg = cached.reduce((s, o) => s + o.value, 0) / cached.length;
         metric.value = avg.toFixed(1);
-        metric.dataState = cached[0].dataState;
+        metric.dataState = cached[0]!.dataState;
         valueEl.textContent = `${metric.value} ${metric.unit}`;
         valueEl.style.color = 'rgba(255, 255, 255, 0.9)';
       } else {

@@ -3,10 +3,7 @@
  * Supports min/max/median/moving-average, percent change, anomaly delta.
  */
 
-import { createLogger } from '../../utils/logger';
 import type { EnvironmentalObservation } from '../types/environmental.types';
-
-const log = createLogger('EnvironmentalAnalytics');
 
 export interface TimeSeriesPoint {
   timestamp: Date;
@@ -44,9 +41,11 @@ export class EnvironmentalAnalyticsEngine {
 
     const sum = values.reduce((a, b) => a + b, 0);
     const mean = sum / values.length;
-    const median = values.length % 2 === 0
-      ? (values[values.length / 2 - 1] + values[values.length / 2]) / 2
-      : values[Math.floor(values.length / 2)];
+    
+    const mid1 = values[values.length / 2 - 1] ?? 0;
+    const mid2 = values[values.length / 2] ?? 0;
+    const midOdd = values[Math.floor(values.length / 2)] ?? 0;
+    const median = values.length % 2 === 0 ? (mid1 + mid2) / 2 : midOdd;
 
     const variance = values.reduce((acc, v) => acc + (v - mean) ** 2, 0) / values.length;
     const stddev = Math.sqrt(variance);
@@ -55,8 +54,8 @@ export class EnvironmentalAnalyticsEngine {
     // Safe division: returns null if first value is 0
     let percentChange: number | null = null;
     if (points.length >= 2) {
-      const first = points[0].value;
-      const last = points[points.length - 1].value;
+      const first = points[0]?.value ?? 0;
+      const last = points[points.length - 1]?.value ?? 0;
       if (first !== 0) {
         percentChange = Math.round(((last - first) / Math.abs(first)) * 10000) / 100;
       }
@@ -64,10 +63,10 @@ export class EnvironmentalAnalyticsEngine {
 
     return {
       variable: observations[0].variable,
-      location: locationLabel ?? `${observations[0].latitude.toFixed(2)}, ${observations[0].longitude.toFixed(2)}`,
+      location: locationLabel ?? `${observations[0]?.latitude.toFixed(2)}, ${observations[0]?.longitude.toFixed(2)}`,
       points,
-      min: values[0],
-      max: values[values.length - 1],
+      min: values[0] ?? 0,
+      max: values[values.length - 1] ?? 0,
       mean: Math.round(mean * 100) / 100,
       median: Math.round(median * 100) / 100,
       stddev: Math.round(stddev * 100) / 100,
@@ -84,10 +83,11 @@ export class EnvironmentalAnalyticsEngine {
     for (let i = windowSize - 1; i < points.length; i++) {
       let sum = 0;
       for (let j = i - windowSize + 1; j <= i; j++) {
-        sum += points[j].value;
+        sum += points[j]?.value ?? 0;
       }
+      const ts = points[i]?.timestamp ?? new Date();
       result.push({
-        timestamp: points[i].timestamp,
+        timestamp: ts,
         value: Math.round((sum / windowSize) * 100) / 100,
       });
     }

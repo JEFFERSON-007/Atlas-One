@@ -142,8 +142,8 @@ export class ClimateAnalyticsPanel {
     const max = Math.max(...values);
     const range = max - min || 1;
 
-    const timeMin = points[0].timestamp.getTime();
-    const timeMax = points[points.length - 1].timestamp.getTime();
+    const timeMin = points[0]?.timestamp.getTime() ?? Date.now();
+    const timeMax = points[points.length - 1]?.timestamp.getTime() ?? Date.now();
     const timeRange = timeMax - timeMin || 1;
 
     // Grid lines
@@ -168,8 +168,10 @@ export class ClimateAnalyticsPanel {
     this.ctx.beginPath();
     this.ctx.moveTo(padding.left, padding.top + plotH);
     for (let i = 0; i < points.length; i++) {
-      const x = padding.left + ((points[i].timestamp.getTime() - timeMin) / timeRange) * plotW;
-      const y = padding.top + plotH - ((points[i].value - min) / range) * plotH;
+      const p = points[i];
+      if (!p) continue;
+      const x = padding.left + ((p.timestamp.getTime() - timeMin) / timeRange) * plotW;
+      const y = padding.top + plotH - ((p.value - min) / range) * plotH;
       this.ctx.lineTo(x, y);
     }
     this.ctx.lineTo(padding.left + plotW, padding.top + plotH);
@@ -180,8 +182,10 @@ export class ClimateAnalyticsPanel {
     // Line
     this.ctx.beginPath();
     for (let i = 0; i < points.length; i++) {
-      const x = padding.left + ((points[i].timestamp.getTime() - timeMin) / timeRange) * plotW;
-      const y = padding.top + plotH - ((points[i].value - min) / range) * plotH;
+      const p = points[i];
+      if (!p) continue;
+      const x = padding.left + ((p.timestamp.getTime() - timeMin) / timeRange) * plotW;
+      const y = padding.top + plotH - ((p.value - min) / range) * plotH;
       if (i === 0) this.ctx.moveTo(x, y);
       else this.ctx.lineTo(x, y);
     }

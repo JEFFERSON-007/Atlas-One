@@ -3,9 +3,7 @@
  * Handles zero denominators safely. Never claims precision beyond data resolution.
  */
 
-import { createLogger } from '../../utils/logger';
-
-const log = createLogger('ChangeAnalysis');
+import type { EnvironmentalObservation } from '../types/environmental.types';
 
 export interface ChangeResult {
   difference: number;
@@ -84,7 +82,7 @@ export function computeAreaChange(
   let sumChange = 0;
 
   for (let i = 0; i < len; i++) {
-    const diff = comparisonValues[i] - baselineValues[i];
+    const diff = (comparisonValues[i] ?? 0) - (baselineValues[i] ?? 0);
     sumChange += diff;
 
     if (Math.abs(diff) > threshold) {

@@ -57,8 +57,9 @@ export class FIRMSActiveFireProvider implements IEnvironmentalProvider {
         return this.emptyResult();
       }
 
-      // Parse CSV header
-      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const firstLine = lines[0];
+      if (!firstLine) return this.emptyResult();
+      const headers = firstLine.split(',').map(h => h.trim().toLowerCase());
       const latIdx = headers.indexOf('latitude');
       const lonIdx = headers.indexOf('longitude');
       const frpIdx = headers.indexOf('frp');
@@ -78,11 +79,11 @@ export class FIRMSActiveFireProvider implements IEnvironmentalProvider {
         const cols = lines[i]?.split(',');
         if (!cols || cols.length < Math.max(latIdx, lonIdx) + 1) continue;
 
-        const lat = parseFloat(cols[latIdx]);
-        const lon = parseFloat(cols[lonIdx]);
+        const lat = parseFloat(cols[latIdx] ?? '');
+        const lon = parseFloat(cols[lonIdx] ?? '');
         if (isNaN(lat) || isNaN(lon)) continue;
 
-        const frp = frpIdx !== -1 ? parseFloat(cols[frpIdx]) : 0;
+        const frp = frpIdx !== -1 ? parseFloat(cols[frpIdx] ?? '') : 0;
         const dateStr = dateIdx !== -1 ? cols[dateIdx] : '';
         const timeStr = timeIdx !== -1 ? cols[timeIdx] : '0000';
         const confStr = confIdx !== -1 ? cols[confIdx]?.trim() : '';
@@ -99,7 +100,7 @@ export class FIRMSActiveFireProvider implements IEnvironmentalProvider {
         const obs: EnvironmentalObservation = {
           id: `firms-${lat.toFixed(3)}-${lon.toFixed(3)}-${i}`,
           dataset: 'nasa-firms-viirs-nrt',
-          variable: EnvironmentalVariable.FireRadiativePower,
+          variable: EnvironmentalVariable.Wildfires,
           latitude: lat,
           longitude: lon,
           altitude: null,
