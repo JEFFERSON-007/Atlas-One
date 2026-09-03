@@ -184,7 +184,7 @@ export class EnvironmentalDataEngine {
     }
   }
 
-  private unavailableResult(variable: EnvironmentalVariable): EnvironmentalResult {
+  private unavailableResult(_variable: EnvironmentalVariable): EnvironmentalResult {
     return {
       observations: [],
       provider: 'none',

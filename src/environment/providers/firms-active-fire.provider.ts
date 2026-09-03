@@ -100,7 +100,7 @@ export class FIRMSActiveFireProvider implements IEnvironmentalProvider {
         const obs: EnvironmentalObservation = {
           id: `firms-${lat.toFixed(3)}-${lon.toFixed(3)}-${i}`,
           dataset: 'nasa-firms-viirs-nrt',
-          variable: EnvironmentalVariable.Wildfires,
+          variable: EnvironmentalVariable.FireRadiativePower,
           latitude: lat,
           longitude: lon,
           altitude: null,

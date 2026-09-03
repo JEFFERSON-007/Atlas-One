@@ -3,7 +3,7 @@
  * Handles zero denominators safely. Never claims precision beyond data resolution.
  */
 
-import type { EnvironmentalObservation } from '../types/environmental.types';
+
 
 export interface ChangeResult {
   difference: number;

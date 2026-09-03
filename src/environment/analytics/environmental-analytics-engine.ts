@@ -62,7 +62,7 @@ export class EnvironmentalAnalyticsEngine {
     }
 
     return {
-      variable: observations[0].variable,
+      variable: observations[0]!.variable,
       location: locationLabel ?? `${observations[0]?.latitude.toFixed(2)}, ${observations[0]?.longitude.toFixed(2)}`,
       points,
       min: values[0] ?? 0,

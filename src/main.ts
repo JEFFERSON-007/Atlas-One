@@ -31,7 +31,7 @@ import { EarthEventEngine } from './events/engine/event-engine';
 import { EventRenderer } from './events/rendering/event-renderer';
 import { HeatmapEngine } from './events/rendering/heatmap-engine';
 import { FilterEngine } from './events/engine/filter-engine';
-import { DataState, EnvironmentalVariable } from './environment/types/environmental.types';
+
 
 // v0.3 — Event Providers
 import { USGSEarthquakeProvider } from './events/providers/usgs-earthquake.provider';
@@ -332,7 +332,7 @@ async function bootstrap(): Promise<void> {
   envLayerRenderer.init(viewer);
   
   const windParticleRenderer = new WindParticleRenderer();
-  windParticleRenderer.init(viewer.container);
+  windParticleRenderer.init(viewer.container as HTMLElement);
 
   // Register all layers
   await Promise.all([
