@@ -380,11 +380,18 @@ async function bootstrap(): Promise<void> {
     urlStateManager
   );
 
+  const animationController = new AnimationController();
+  animationController.init(viewer);
+
   // 10. Play landing animation (only if URL state wasn't applied)
   if (!stateApplied) {
-    const animationController = new AnimationController();
-    animationController.init(viewer);
     await animationController.playLandingSequence();
+  } else {
+    // Bypass animation but still remove the loading overlay
+    const splash = document.getElementById('splash-screen');
+    const uiOverlay = document.getElementById('ui-overlay');
+    if (splash) splash.style.display = 'none';
+    if (uiOverlay) uiOverlay.style.opacity = '1';
   }
 
   // 11. Show notification
